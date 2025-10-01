@@ -1,44 +1,47 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Products · GreenBites{% endblock %}
+{% block title %}Products index{% endblock %}
 
 {% block body %}
-<main class="products-page" aria-labelledby="products-heading">
-    <section class="products-hero">
-        <div class="products-hero__media">
-            <img src="{{ asset('imageeee/fresh.png') }}" alt="Splashing fresh salad" />
-        </div>
-        <div class="products-hero__text">
-            <span class="eyebrow">Pick your favorites</span>
-            <h1 id="products-heading">Our <span class="accent">Products</span></h1>
-            <p class="products-subtitle">Freshness in every bite.</p>
-            <ul class="category-pills" role="list">
-                <li class="pill pill--active">All Products</li>
-                <li class="pill">Vegetables</li>
-                <li class="pill">Fruits</li>
-                <li class="pill">Bowls</li>
-                <li class="pill">Drinks</li>
-            </ul>
-        </div>
-    </section>
+    <h1>Products index</h1>
 
-    <section class="products-grid" aria-label="Product list">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>NutritionalInfo</th>
+                <th>Availability</th>
+                <th>SubscriptionEligible</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
         {% for product in products %}
-            <article class="product-card">
-                <div class="product-media">
-                    <img src="{{ asset(product.image) }}" alt="{{ product.name }}" loading="lazy">
-                </div>
-                <div class="product-info">
-                    <h2 class="product-name">{{ product.name }}</h2>
-                    <p class="product-price">${{ product.price|number_format(2, '.', ',') }} <span class="unit">{{ product.unit }}</span></p>
-                    <button class="btn-add" type="button" aria-label="Add {{ product.name }} to cart">Add to Cart</button>
-                </div>
-            </article>
+            <tr>
+                <td>{{ product.id }}</td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.category }}</td>
+                <td>{{ product.description }}</td>
+                <td>{{ product.price }}</td>
+                <td>{{ product.NutritionalInfo }}</td>
+                <td>{{ product.Availability }}</td>
+                <td>{{ product.SubscriptionEligible }}</td>
+                <td>
+                    <a href="{{ path('app_products_show', {'id': product.id}) }}">show</a>
+                    <a href="{{ path('app_products_edit', {'id': product.id}) }}">edit</a>
+                </td>
+            </tr>
         {% else %}
-            <p>No products available.</p>
+            <tr>
+                <td colspan="9">no records found</td>
+            </tr>
         {% endfor %}
-    </section>
-</main>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_products_new') }}">Create new</a>
 {% endblock %}
-
-
