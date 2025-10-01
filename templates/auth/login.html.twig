@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in · GreenBites{% endblock %}
+
+{% block body %}
+<main class="auth-page">
+    <section class="auth-hero">
+        <div class="auth-illustration"></div>
+        <div class="auth-card">
+            <h1>Log In</h1>
+            <form class="auth-form" method="post" action="#">
+                <label>
+                    <span>Email</span>
+                    <input type="email" required placeholder="you@example.com">
+                </label>
+                <label>
+                    <span>Password</span>
+                    <input type="password" required placeholder="********">
+                </label>
+                <div class="auth-actions">
+                    <button class="btn-primary" type="submit">Log In</button>
+                </div>
+            </form>
+            <p class="auth-alt">Don't have an account? <a href="{{ path('app_signup') }}">Sign up</a></p>
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+

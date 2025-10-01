@@ -1,0 +1,120 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}GreenBites{% endblock %}
+
+{% block body %}
+<div class="topbar">
+    <div class="container">
+        <div class="topbar-left">Best deals every day</div>
+        <div class="topbar-right">Call us: <strong>1 900 888 123</strong></div>
+    </div>
+    
+</div>
+
+<header class="navbar" role="banner">
+    <div class="container navbar-inner">
+        <div class="logo" aria-label="Site logo"><img src="{{ asset('imageeee/logo.png') }}" alt="GreenBites logo"><span>GreenBites</span></div>
+        <form class="search-box" role="search" aria-label="Site search">
+            <input type="search" placeholder="Search for products..." aria-label="Search" />
+            <button type="submit">Search</button>
+        </form>
+        <div class="actions-wrap">
+            <nav class="actions" aria-label="Quick actions">
+                <a href="#" class="nav-link">Compare</a>
+                <a href="#" class="nav-link">Wishlist</a>
+                <a href="#" class="nav-link">Cart</a>
+                <a href="#" class="nav-link">Account</a>
+            </nav>
+            
+        </div>
+    </div>
+</header>
+
+<nav class="menu-bar" aria-label="Primary">
+    <div class="container menu-inner">
+        <a class="btn-category" href="#">Browse All Categories</a>
+        <ul class="menu">
+            <li><a href="#">Hot Deals</a></li>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="{{ path('app_products_index') }}">Shop</a></li>
+            <li><a href="#">Vendors</a></li>
+            <li><a href="#">Pages</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+        <div class="auth-links menu-auth">
+            <a href="{{ path('app_login') }}" class="auth-link">Log in</a>
+            <span class="sep">or</span>
+            <a href="{{ path('app_signup') }}" class="auth-link">Sign up</a>
+        </div>
+    </div>
+</nav>
+
+<main class="hero hero--large hero--bg">
+    <div class="container hero-inner">
+        <div class="hero-text">
+            <h1 class="hero-title"><span class="green">Freshness in every</span><br><span class="orange">bite</span></h1>
+            <p class="hero-subtitle">Save up to 50% off on your first order</p>
+            <form class="hero-subscribe" action="#" method="post" aria-label="Email subscribe">
+                <input type="email" placeholder="Your email address" aria-label="Email address" required />
+                <button type="submit">Subscribe</button>
+            </form>
+        </div>
+
+        <div class="hero-img">
+            <img src="{{ asset('imageeee/fresh.png') }}" alt="Fresh produce arranged on a table">
+        </div>
+    </div>
+</main>
+<section class="features">
+    <div class="container features-inner">
+        <div class="feature">
+            <div class="feature-icon">🥬</div>
+            <h3 class="feature-title">Fresh Produce</h3>
+            <p class="feature-text">Sourced daily from trusted local farms.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">⏱️</div>
+            <h3 class="feature-title">Fast Delivery</h3>
+            <p class="feature-text">Same‑day delivery in select areas.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">💚</div>
+            <h3 class="feature-title">Sustainable</h3>
+            <p class="feature-text">Eco‑friendly packaging and practices.</p>
+        </div>
+    </div>
+    
+    <div class="container teaser">
+        <h2 class="teaser-title">Popular picks</h2>
+        <div class="teaser-grid">
+            <article class="card">
+                <div class="card-thumb" style="background-image:url('{{ asset('imageeee/GardenGlow.jpg') }}'); background-size:cover; background-position:center;"></div>
+                <h4 class="card-title">Organic Lettuce</h4>
+                <p class="card-price">₱120</p>
+                <button class="btn-primary">Add to cart</button>
+            </article>
+            <article class="card">
+                <div class="card-thumb" style="background-image:url('{{ asset('imageeee/MediterraneanFetaFeast.jpg') }}'); background-size:cover; background-position:center;"></div>
+                <h4 class="card-title">Cherry Tomatoes</h4>
+                <p class="card-price">₱95</p>
+                <button class="btn-primary">Add to cart</button>
+            </article>
+            <article class="card">
+                <div class="card-thumb" style="background-image:url('{{ asset('imageeee/GlobalGrainBowl.jpg') }}'); background-size:cover; background-position:center;"></div>
+                <h4 class="card-title">Cucumbers</h4>
+                <p class="card-price">₱80</p>
+                <button class="btn-primary">Add to cart</button>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="cta-strip">
+    <div class="container cta-inner">
+        <h3 class="cta-title">Eat clean. Feel great.</h3>
+        <a href="#" class="btn-primary btn-lg">Shop fresh now</a>
+    </div>
+    
+</section>
+{% endblock %}

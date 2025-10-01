@@ -1,0 +1,40 @@
+services:
+   mysql:
+      image: mysql:8.0
+      restart: unless-stopped
+      environment:
+        MYSQL_ROOT_PASSWORD: nathan_root_password
+        MYSQL_DATABASE: nathan_db
+        MYSQL_USER: nathan_user
+        MYSQL_PASSWORD: nathan_password
+      ports:
+        - "3306:3306"
+      volumes:
+        - mysql_data:/var/lib/mysql
+      networks:
+        - nathan_network
+
+   phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      restart: unless-stopped
+      environment:
+         PMA_HOST: mysql
+         PMA_USER: nathan_user
+         PMA_PASSWORD: nathan_password
+      ports: 
+        - "8080:80"
+      depends_on:
+        - mysql
+      networks:
+        - nathan_network
+
+
+volumes:
+  mysql_data:
+
+networks:
+  nathan_network:
+
+       
+
+        

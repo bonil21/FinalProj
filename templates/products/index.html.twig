@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Products · GreenBites{% endblock %}
+
+{% block body %}
+<main class="products-page" aria-labelledby="products-heading">
+    <section class="products-hero">
+        <div class="products-hero__media">
+            <img src="{{ asset('imageeee/fresh.png') }}" alt="Splashing fresh salad" />
+        </div>
+        <div class="products-hero__text">
+            <span class="eyebrow">Pick your favorites</span>
+            <h1 id="products-heading">Our <span class="accent">Products</span></h1>
+            <p class="products-subtitle">Freshness in every bite.</p>
+            <ul class="category-pills" role="list">
+                <li class="pill pill--active">All Products</li>
+                <li class="pill">Vegetables</li>
+                <li class="pill">Fruits</li>
+                <li class="pill">Bowls</li>
+                <li class="pill">Drinks</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="products-grid" aria-label="Product list">
+        {% for product in products %}
+            <article class="product-card">
+                <div class="product-media">
+                    <img src="{{ asset(product.image) }}" alt="{{ product.name }}" loading="lazy">
+                </div>
+                <div class="product-info">
+                    <h2 class="product-name">{{ product.name }}</h2>
+                    <p class="product-price">${{ product.price|number_format(2, '.', ',') }} <span class="unit">{{ product.unit }}</span></p>
+                    <button class="btn-add" type="button" aria-label="Add {{ product.name }} to cart">Add to Cart</button>
+                </div>
+            </article>
+        {% else %}
+            <p>No products available.</p>
+        {% endfor %}
+    </section>
+</main>
+{% endblock %}
+
+
