@@ -406,7 +406,32 @@ body {
 .cta-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
 .cta-title { font-size: 1.6rem; font-weight: 700; }
 
-@media (max-width: 900px) {
-    .features-inner, .teaser-grid { grid-template-columns: 1fr; }
-    .cta-inner { flex-direction: column; text-align: center; }
+/* Create Product Form Styles */
+.create-product-page { background:#f3e3d0; min-height:100vh; }
+.create-product-wrapper { max-width: 980px; margin: 0 auto; padding: 24px 20px 60px; }
+.create-brand-row { display:flex; align-items:center; gap:16px; }
+.brand-logo { height:64px; width:auto; }
+.brand-text { font-size:64px; line-height:1; font-weight:800; letter-spacing:.02em; }
+.brand-green { color:#2e4a2f; }
+.brand-orange { color:#FFA62B; }
+.brand-s { margin-left:2px; }
+.page-title { margin:18px 0 24px; text-align:center; font-size:32px; font-weight:800; }
+
+/* two-column form grid like the reference */
+.form-grid { display:grid; grid-template-columns: 260px 1fr; align-items:center; gap: 18px 28px; padding-top: 6px; }
+.form-label { justify-self:start; font-weight:700; color:#2c2c2c; text-transform:uppercase; letter-spacing:.04em; }
+.input-pill { width:100%; background:#fff; border:0; padding:16px 20px; border-radius:999px; box-shadow: inset 0 0 0 2px #eee; font-size:16px; }
+.input-pill:focus { outline:none; box-shadow: inset 0 0 0 2px #28a745; }
+.input-pill--textarea { border-radius:999px; }
+
+.actions-row { display:flex; align-items:center; gap:18px; margin-top: 26px; }
+.btn-save { background:#FFA62B; color:#1b1b1b; border:0; border-radius:6px; padding:12px 18px; font-weight:800; text-transform:uppercase; cursor:pointer; }
+.btn-cancel { color:#1b1b1b; text-decoration:underline; font-weight:700; text-transform:uppercase; }
+
+@media (max-width: 720px) {
+  .create-brand-row { justify-content:center; }
+  .brand-logo { height:48px; }
+  .brand-text { font-size:44px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-label { margin-top:8px; }
 }

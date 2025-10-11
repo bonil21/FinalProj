@@ -5,10 +5,26 @@ namespace App\Entity;
 use App\Repository\ProductsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Category;
 
 #[ORM\Entity(repositoryClass: ProductsRepository::class)]
 class Products
 {
+    #[ORM\ManyToOne(targetEntity: Category::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Category $category = null;
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
+        return $this;
+    }
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -17,8 +33,7 @@ class Products
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $category = null;
+
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
@@ -34,6 +49,9 @@ class Products
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $SubscriptionEligible = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image = null;
 
     public function getId(): ?int
     {
@@ -52,17 +70,6 @@ class Products
         return $this;
     }
 
-    public function getCategory(): ?string
-    {
-        return $this->category;
-    }
-
-    public function setCategory(string $category): static
-    {
-        $this->category = $category;
-
-        return $this;
-    }
 
     public function getDescription(): ?string
     {
@@ -120,6 +127,18 @@ class Products
     public function setSubscriptionEligible(string $SubscriptionEligible): static
     {
         $this->SubscriptionEligible = $SubscriptionEligible;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(string $image): static
+    {
+        $this->image = $image;
 
         return $this;
     }
