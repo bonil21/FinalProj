@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  {{ encore_entry_link_tags('admin') }}
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-container">
+  <div class="sidebar">
+    <div>
+      <img src="{{ asset('imageeee/logo.png') }}" alt="GreenBites Logo 2025" style="width:80px; margin-bottom:1.5rem;">
+      <h2>GreenBites</h2>
+      <a href="{{ path('admin_dashboard') }}" class="{% if active_menu is defined and active_menu == 'dashboard' %}active{% endif %}">📊 Dashboard Overview</a>
+      <a href="{{ path('admin_products') }}" class="{% if active_menu is defined and active_menu == 'products' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;">🥗 Products</a>
+      <a href="{{ path('admin_orders') }}" class="{% if active_menu is defined and active_menu == 'orders' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;">📦 Orders</a>
+      <a href="{{ path('app_subscription_index') }}" class="{% if active_menu is defined and active_menu == 'subscriptions' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;">📋 Subscriptions</a>
+      <a href="{{ path('admin_customers') }}" class="{% if active_menu is defined and active_menu == 'customers' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;">👥 Customers</a>
+      <a href="{{ path('app_payment_index') }}" class="{% if active_menu is defined and active_menu == 'payments' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;">💳 Payments & Transactions</a>
+      <hr>
+      <a href="{{ path('admin_feedback') }}" class="{% if active_menu is defined and active_menu == 'feedback' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;">⭐ Feedback / Reviews</a>
+      <a href="{{ path('admin_promotions') }}" class="{% if active_menu is defined and active_menu == 'promotions' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;">🎉 Promotions</a>
+      <a href="{{ path('admin_settings') }}" class="{% if active_menu is defined and active_menu == 'settings' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;">⚙️ Settings</a>
+    </div>
+    <a href="{{ path('app_logout') }}" style="text-align:center; margin-top:1rem;">🚪 Logout</a>
+  </div>
+
+  <div class="main-content">
+    {% block admin_content %}{% endblock %}
+  </div>
+</div>
+{% endblock %}
+
+

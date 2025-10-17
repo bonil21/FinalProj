@@ -1,19 +1,13 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/_base.html.twig' %}
+{% set active_menu = 'products' %}
 
 {% block title %}Edit Product - GreenBites{% endblock %}
 
 {% block stylesheets %}
+    {{ parent() }}
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap');
-
-        body {
-            font-family: 'Quicksand', sans-serif;
-            background-size: 420px auto;
-            background-color: #f5e6d3;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
+        /* Avoid overriding admin layout body styles */
 
         .container {
             max-width: 650px;
@@ -126,7 +120,7 @@
     </style>
 {% endblock %}
 
-{% block body %}
+{% block admin_content %}
     <div class="container">
         <!-- Logo -->
         <div class="logo">
@@ -142,6 +136,6 @@
 
         {{ include('products/_delete_form.html.twig', {'button_label': 'Delete'}) }}
 
-        <a href="{{ path('app_products_index') }}" class="back-link" data-turbo="false">Back to list</a>
+        <a href="{{ path('admin_products') }}" class="back-link" data-turbo="false">Back to list</a>
     </div>
 {% endblock %}

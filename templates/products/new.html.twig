@@ -1,18 +1,13 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/_base.html.twig' %}
+{% set active_menu = 'products' %}
 
 {% block title %}Create New Product - GreenBites{% endblock %}
 
 {% block stylesheets %}
+    {{ parent() }}
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap');
-
-        body {
-            font-family: 'Quicksand', sans-serif;
-            background: #f5e6d3;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
+        /* Avoid overriding admin layout body styles */
 
         .container {
             max-width: 650px;
@@ -116,7 +111,7 @@
     </style>
 {% endblock %}
 
-{% block body %}
+{% block admin_content %}
     <div class="container">
         <!-- Logo + Name -->
         <div class="logo">
@@ -130,6 +125,6 @@
 
         {{ include('products/_form.html.twig', { button_label: 'SAVE PRODUCT?' }) }}
 
-        <a href="{{ path('app_products_index') }}" class="cancel-link" data-turbo="false">CANCEL</a>
+        <a href="{{ path('admin_products') }}" class="cancel-link" data-turbo="false">CANCEL</a>
     </div>
 {% endblock %}

@@ -1,0 +1,157 @@
+{% extends 'admin/_base.html.twig' %}
+{% set active_menu = 'orders' %}
+
+{% block title %}Edit Order - GreenBites{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap');
+        /* Avoid overriding admin layout body styles */
+
+        .container {
+            max-width: 650px;
+            margin: 60px auto;
+            text-align: center;
+        }
+
+        /* Logo + title */
+        .logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .logo img {
+            width: 55px;
+            margin-right: 8px;
+        }
+
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .logo-text span:first-child {
+            color: #2e7d32; /* Green */
+        }
+        .logo-text span:last-child {
+            color: #f9a825; /* Orange */
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin: 25px 0 35px;
+            font-weight: 700;
+            color: #111;
+        }
+
+        /* Form */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            text-align: left;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 20px;
+            background: #fff;
+            font-size: 1rem;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.05);
+            outline: none;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            box-shadow: 0px 0px 8px rgba(249, 168, 37, 0.4);
+        }
+
+        /* Buttons */
+        .btn-submit {
+            background: #f9a825;
+            color: white;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-submit:hover {
+            background: #f57f17;
+        }
+
+        .cancel-link {
+            display: inline-block;
+            margin-top: 15px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #333;
+            text-decoration: underline;
+            transition: 0.3s ease;
+        }
+
+        .cancel-link:hover {
+            color: #000;
+        }
+    </style>
+{% endblock %}
+
+{% block admin_content %}
+    <div class="container">
+        <!-- Logo + Name -->
+        <div class="logo">
+            <img src="{{ asset('imageeee/logo.png') }}" alt="GreenBites Logo">
+            <div class="logo-text">
+                <span>Green</span><span>Bites</span>
+            </div>
+        </div>
+
+        <h2>EDIT ORDER</h2>
+
+        {{ form_start(form, {'attr': {'data-turbo': 'false'}}) }}
+            <div>
+                <label for="{{ form.orderNumber.vars.id }}">Order Number</label>
+                {{ form_widget(form.orderNumber, {'attr': {'placeholder': 'Enter order number'}}) }}
+            </div>
+            
+            <div>
+                <label for="{{ form.totalAmount.vars.id }}">Total Amount</label>
+                {{ form_widget(form.totalAmount, {'attr': {'placeholder': 'Enter total amount'}}) }}
+            </div>
+            
+            <div>
+                <label for="{{ form.status.vars.id }}">Status</label>
+                {{ form_widget(form.status, {'attr': {'placeholder': 'Select order status'}}) }}
+            </div>
+            
+            <div>
+                <label for="{{ form.customer.vars.id }}">Customer</label>
+                {{ form_widget(form.customer, {'attr': {'placeholder': 'Select customer'}}) }}
+            </div>
+            
+            <div>
+                <label for="{{ form.deliveryAddress.vars.id }}">Delivery Address</label>
+                {{ form_widget(form.deliveryAddress, {'attr': {'placeholder': 'Enter delivery address', 'rows': 3}}) }}
+            </div>
+
+            <button type="submit" class="btn-submit">UPDATE ORDER?</button>
+        {{ form_end(form) }}
+
+        <a href="{{ path('admin_orders') }}" class="cancel-link" data-turbo="false">CANCEL</a>
+    </div>
+{% endblock %}

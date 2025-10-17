@@ -1,0 +1,58 @@
+{% extends 'admin/_base.html.twig' %}
+{% set active_menu = 'products' %}
+{% block title %}Products - Admin{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    .actions { display: flex; gap: .5rem; }
+    .btn { display: inline-block; padding: .5rem .8rem; border-radius: 8px; font-weight: 600; font-size: .9rem; text-decoration: none; border: none; cursor: pointer; }
+    .btn-primary { background: #3B6B4A; color: #fff; }
+    .btn-secondary { background: #6BB97F; color: #fff; }
+    .btn-danger { background: #D9534F; color: #fff; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; padding: 1.25rem; background: #F6E6D7; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.05); }
+    .product-tile { background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; transition: transform 0.2s; }
+    .product-tile:hover { transform: translateY(-5px); }
+    .product-image { width: 100%; height: 200px; object-fit: cover; }
+    .product-info { padding: 1rem; }
+    .product-name { font-size: 1.2rem; font-weight: 700; color: #2F5133; margin-bottom: 0.5rem; }
+    .product-category { font-size: 0.9rem; color: #6BB97F; margin-bottom: 0.5rem; }
+    .product-price { font-size: 1.1rem; font-weight: 600; color: #3B6B4A; margin-bottom: 0.5rem; }
+    .product-availability { font-size: 0.9rem; color: #D9534F; margin-bottom: 1rem; }
+    .product-actions { display: flex; justify-content: space-between; }
+    .no-products { text-align: center; padding: 2rem; color: #666; }
+  </style>
+{% endblock %}
+
+{% block admin_content %}
+    <h1 class="page-title"><span class="emoji">🥗</span> Products</h1>
+    <p></p>
+
+    <div style="margin: 1rem 0 1rem auto; text-align:right;">
+      <a href="{{ path('app_products_new') }}" class="btn btn-primary" data-turbo="false">+ Create Product</a>
+    </div>
+
+    <div class="products-grid">
+      {% for product in products %}
+        <div class="product-tile">
+          {% if product.image %}
+            <img src="{{ asset('uploads/images/' ~ product.image) }}" alt="{{ product.name }}" class="product-image">
+          {% else %}
+            <div class="product-image" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;">No Image</div>
+          {% endif %}
+          <div class="product-info">
+            <div class="product-name">{{ product.name }}</div>
+            <div class="product-category">{{ product.category }}</div>
+            <div class="product-price">₱{{ product.price }}</div>
+            <div class="product-availability">{{ product.Availability }}</div>
+            <div class="product-actions">
+              <a href="{{ path('app_products_show', {'id': product.id}) }}" class="btn btn-secondary" data-turbo="false">View</a>
+              <a href="{{ path('app_products_edit', {'id': product.id}) }}" class="btn btn-primary" data-turbo="false">Edit</a>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="no-products">No products found.</div>
+      {% endfor %}
+    </div>
+{% endblock %}

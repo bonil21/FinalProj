@@ -1,0 +1,159 @@
+{% extends 'admin/_base.html.twig' %}
+{% set active_menu = 'payments' %}
+{% block title %}Payments - Admin{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>💳 Payments</h2>
+    <a href="{{ path('app_subscription_index') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Subscriptions
+    </a>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="text-success">{{ payments|filter(p => p.status == 'succeeded')|length }}</h4>
+                <small class="text-muted">Successful</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="text-warning">{{ payments|filter(p => p.status == 'pending')|length }}</h4>
+                <small class="text-muted">Pending</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="text-danger">{{ payments|filter(p => p.status == 'failed')|length }}</h4>
+                <small class="text-muted">Failed</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="text-info">{{ payments|length }}</h4>
+                <small class="text-muted">Total</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">All Payments</h5>
+    </div>
+    <div class="card-body">
+        {% if payments is empty %}
+            <div class="text-center py-5">
+                <i class="fas fa-credit-card fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No payments found</h4>
+                <p class="text-muted">Payments will appear here when customers make purchases.</p>
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Method</th>
+                            <th>Created</th>
+                            <th>Paid</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                            {{ payment.customer.name|first|upper }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">{{ payment.customer.name }}</div>
+                                            <small class="text-muted">{{ payment.customer.email }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold">${{ payment.amount }}</div>
+                                    <small class="text-muted">{{ payment.currency|upper }}</small>
+                                </td>
+                                <td>
+                                    {% set statusClass = {
+                                        'succeeded': 'success',
+                                        'pending': 'warning',
+                                        'failed': 'danger',
+                                        'cancelled': 'secondary'
+                                    } %}
+                                    <span class="badge bg-{{ statusClass[payment.status] ?? 'secondary' }}">
+                                        {{ payment.status|title }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ payment.paymentMethod|title }}</span>
+                                </td>
+                                <td>
+                                    <div>{{ payment.createdAt|date('M d, Y') }}</div>
+                                    <small class="text-muted">{{ payment.createdAt|date('H:i') }}</small>
+                                </td>
+                                <td>
+                                    {% if payment.paidAt %}
+                                        <div>{{ payment.paidAt|date('M d, Y') }}</div>
+                                        <small class="text-muted">{{ payment.paidAt|date('H:i') }}</small>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewPayment({{ payment.id }})">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        {% if payment.status == 'pending' %}
+                                            <button type="button" class="btn btn-sm btn-outline-success" onclick="retryPayment({{ payment.id }})">
+                                                <i class="fas fa-redo"></i>
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function viewPayment(id) {
+    // Add payment details modal logic here
+    alert('Payment details feature coming soon!');
+}
+
+function retryPayment(id) {
+    if (confirm('Are you sure you want to retry this payment?')) {
+        // Add retry payment logic here
+        alert('Payment retry feature coming soon!');
+    }
+}
+</script>
+
+<style>
+.avatar-sm {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+}
+</style>
+{% endblock %}

@@ -1,18 +1,13 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/_base.html.twig' %}
+{% set active_menu = 'products' %}
 
 {% block title %}Products - GreenBites{% endblock %}
 
 {% block stylesheets %}
+{{ parent() }}
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap');
-
-    body {
-        font-family: 'Quicksand', sans-serif;
-        background: #f5e6d3;
-        margin: 0;
-        padding: 40px;
-        color: #333;
-    }
+    /* Avoid overriding admin layout body styles */
 
     .container {
         max-width: 1200px;
@@ -167,7 +162,7 @@
 </style>
 {% endblock %}
 
-{% block body %}
+{% block admin_content %}
 <div class="container">
     <h1>Our Products</h1>
 

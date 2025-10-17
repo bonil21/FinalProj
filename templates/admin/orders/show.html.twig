@@ -1,0 +1,108 @@
+{% extends 'admin/_base.html.twig' %}
+{% set active_menu = 'orders' %}
+{% block title %}Order Details - Admin{% endblock %}
+
+{% block admin_content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="fas fa-shopping-cart"></i> Order Details</h4>
+                <div>
+                    <a href="{{ path('admin_orders_edit', {'id': order.id}) }}" class="btn btn-warning btn-sm">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <a href="{{ path('admin_orders') }}" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Order Information</h5>
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="120">ID:</th>
+                                <td>{{ order.id }}</td>
+                            </tr>
+                            <tr>
+                                <th>Order Number:</th>
+                                <td>{{ order.orderNumber }}</td>
+                            </tr>
+                            <tr>
+                                <th>Total Amount:</th>
+                                <td>${{ order.totalAmount|number_format(2) }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status:</th>
+                                <td>
+                                    {% set statusClass = {
+                                        'pending': 'warning',
+                                        'processing': 'info',
+                                        'shipped': 'primary',
+                                        'delivered': 'success',
+                                        'cancelled': 'danger'
+                                    } %}
+                                    <span class="badge bg-{{ statusClass[order.status] ?? 'secondary' }}">{{ order.status|title }}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Created:</th>
+                                <td>{{ order.createdAt ? order.createdAt|date('M d, Y H:i') : 'N/A' }}</td>
+                            </tr>
+                            {% if order.updatedAt %}
+                                <tr>
+                                    <th>Updated:</th>
+                                    <td>{{ order.updatedAt|date('M d, Y H:i') }}</td>
+                                </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Customer & Delivery</h5>
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="120">Customer:</th>
+                                <td>
+                                    {% if order.customer %}
+                                        <a href="{{ path('admin_customers_show', {'id': order.customer.id}) }}">{{ order.customer.name }}</a>
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Delivery Address:</th>
+                                <td>{{ order.deliveryAddress ?: 'No delivery address' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle"></i> Order Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <h3 class="text-success">${{ order.totalAmount|number_format(2) }}</h3>
+                    <p class="text-muted">Total Amount</p>
+                </div>
+                <hr>
+                <div class="mb-2">
+                    <strong>Status:</strong>
+                    <span class="badge bg-{{ order.status == 'delivered' ? 'success' : 'warning' }} float-end">{{ order.status|title }}</span>
+                </div>
+                <div class="mb-2">
+                    <strong>Order Date:</strong>
+                    <span class="float-end">{{ order.createdAt ? order.createdAt|date('M d, Y') : 'N/A' }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

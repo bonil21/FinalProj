@@ -1,0 +1,175 @@
+{% extends 'admin/_base.html.twig' %}
+{% set active_menu = 'payments' %}
+{% block title %}Transactions - Admin{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>🔄 Transactions</h2>
+    <a href="{{ path('app_subscription_index') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Subscriptions
+    </a>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="text-success">{{ transactions|filter(t => t.status == 'completed')|length }}</h4>
+                <small class="text-muted">Completed</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="text-warning">{{ transactions|filter(t => t.status == 'pending')|length }}</h4>
+                <small class="text-muted">Pending</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="text-danger">{{ transactions|filter(t => t.status == 'failed')|length }}</h4>
+                <small class="text-muted">Failed</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="text-info">{{ transactions|length }}</h4>
+                <small class="text-muted">Total</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">All Transactions</h5>
+    </div>
+    <div class="card-body">
+        {% if transactions is empty %}
+            <div class="text-center py-5">
+                <i class="fas fa-exchange-alt fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No transactions found</h4>
+                <p class="text-muted">Transactions will appear here when customers make purchases or subscriptions are processed.</p>
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Reference</th>
+                            <th>Created</th>
+                            <th>Processed</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in transactions %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                            {{ transaction.customer.name|first|upper }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">{{ transaction.customer.name }}</div>
+                                            <small class="text-muted">{{ transaction.customer.email }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% set typeClass = {
+                                        'payment': 'success',
+                                        'refund': 'warning',
+                                        'subscription': 'info',
+                                        'adjustment': 'secondary'
+                                    } %}
+                                    <span class="badge bg-{{ typeClass[transaction.type] ?? 'secondary' }}">
+                                        {{ transaction.type|title }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="fw-bold">${{ transaction.amount }}</div>
+                                    <small class="text-muted">{{ transaction.currency|upper }}</small>
+                                </td>
+                                <td>
+                                    {% set statusClass = {
+                                        'completed': 'success',
+                                        'pending': 'warning',
+                                        'failed': 'danger',
+                                        'cancelled': 'secondary'
+                                    } %}
+                                    <span class="badge bg-{{ statusClass[transaction.status] ?? 'secondary' }}">
+                                        {{ transaction.status|title }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if transaction.reference %}
+                                        <code class="small">{{ transaction.reference }}</code>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div>{{ transaction.createdAt|date('M d, Y') }}</div>
+                                    <small class="text-muted">{{ transaction.createdAt|date('H:i') }}</small>
+                                </td>
+                                <td>
+                                    {% if transaction.processedAt %}
+                                        <div>{{ transaction.processedAt|date('M d, Y') }}</div>
+                                        <small class="text-muted">{{ transaction.processedAt|date('H:i') }}</small>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewTransaction({{ transaction.id }})">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        {% if transaction.status == 'pending' %}
+                                            <button type="button" class="btn btn-sm btn-outline-success" onclick="processTransaction({{ transaction.id }})">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function viewTransaction(id) {
+    // Add transaction details modal logic here
+    alert('Transaction details feature coming soon!');
+}
+
+function processTransaction(id) {
+    if (confirm('Are you sure you want to process this transaction?')) {
+        // Add process transaction logic here
+        alert('Transaction processing feature coming soon!');
+    }
+}
+</script>
+
+<style>
+.avatar-sm {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+}
+</style>
+{% endblock %}

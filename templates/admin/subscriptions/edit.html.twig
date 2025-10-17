@@ -1,0 +1,126 @@
+{% extends 'admin/_base.html.twig' %}
+{% set active_menu = 'subscriptions' %}
+{% block title %}Edit Subscription - Admin{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📋 Edit Subscription</h2>
+    <div>
+        <a href="{{ path('app_subscription_show', {'id': subscription.id}) }}" class="btn btn-outline-primary me-2">
+            <i class="fas fa-eye"></i> View
+        </a>
+        <a href="{{ path('app_subscription_index') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Subscriptions
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Subscription Details</h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form) }}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form_label(form.customer, 'Customer', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.customer, {'attr': {'class': 'form-select'}}) }}
+                            {{ form_errors(form.customer) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form_label(form.plan, 'Subscription Plan', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.plan, {'attr': {'class': 'form-select'}}) }}
+                            {{ form_errors(form.plan) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form_label(form.status, 'Status', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.status, {'attr': {'class': 'form-select'}}) }}
+                            {{ form_errors(form.status) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form_label(form.stripeSubscriptionId, 'Stripe Subscription ID', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.stripeSubscriptionId, {'attr': {'class': 'form-control', 'placeholder': 'Optional'}}) }}
+                            {{ form_errors(form.stripeSubscriptionId) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ form_label(form.startDate, 'Start Date', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.startDate, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.startDate) }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ form_label(form.currentPeriodStart, 'Period Start', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.currentPeriodStart, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.currentPeriodStart) }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ form_label(form.currentPeriodEnd, 'Period End', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.currentPeriodEnd, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.currentPeriodEnd) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check">
+                        {{ form_widget(form.cancelAtPeriodEnd, {'attr': {'class': 'form-check-input'}}) }}
+                        {{ form_label(form.cancelAtPeriodEnd, 'Cancel at Period End', {'label_attr': {'class': 'form-check-label'}}) }}
+                        {{ form_errors(form.cancelAtPeriodEnd) }}
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Update Subscription
+                    </button>
+                    <a href="{{ path('app_subscription_index') }}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Subscription Info</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>ID:</strong> {{ subscription.id }}
+                </div>
+                <div class="mb-3">
+                    <strong>Created:</strong> {{ subscription.createdAt|date('M d, Y H:i') }}
+                </div>
+                {% if subscription.stripeSubscriptionId %}
+                <div class="mb-3">
+                    <strong>Stripe ID:</strong> 
+                    <code class="small">{{ subscription.stripeSubscriptionId }}</code>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

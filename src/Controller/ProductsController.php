@@ -48,7 +48,7 @@ final class ProductsController extends AbstractController
     $entityManager->flush();
 
 
-            return $this->redirectToRoute('app_products_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('admin_products', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('products/new.html.twig', [
@@ -74,7 +74,7 @@ final class ProductsController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_products_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('admin_products', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('products/edit.html.twig', [
@@ -91,6 +91,6 @@ final class ProductsController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_products_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('admin_products', [], Response::HTTP_SEE_OTHER);
     }
 }

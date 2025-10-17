@@ -1,0 +1,84 @@
+{% extends 'admin/_base.html.twig' %}
+{% set active_menu = 'customers' %}
+{% block title %}Customer Details - Admin{% endblock %}
+
+{% block admin_content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="fas fa-user"></i> Customer Details</h4>
+                <div>
+                    <a href="{{ path('admin_customers_edit', {'id': customer.id}) }}" class="btn btn-warning btn-sm">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <a href="{{ path('admin_customers') }}" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Basic Information</h5>
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="120">ID:</th>
+                                <td>{{ customer.id }}</td>
+                            </tr>
+                            <tr>
+                                <th>Name:</th>
+                                <td>{{ customer.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Email:</th>
+                                <td>{{ customer.email }}</td>
+                            </tr>
+                            <tr>
+                                <th>Phone:</th>
+                                <td>{{ customer.phone }}</td>
+                            </tr>
+                            <tr>
+                                <th>Created:</th>
+                                <td>{{ customer.createdAt ? customer.createdAt|date('M d, Y H:i') : 'N/A' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Address</h5>
+                        <p>{{ customer.address ?: 'No address provided' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-shopping-cart"></i> Order Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <h2 class="text-primary">{{ customer.orders|length }}</h2>
+                    <p class="text-muted">Total Orders</p>
+                </div>
+                {% if customer.orders|length > 0 %}
+                    <hr>
+                    <h6>Recent Orders</h6>
+                    <ul class="list-group list-group-flush">
+                        {% for order in customer.orders|slice(0, 5) %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <div>
+                                    <strong>{{ order.orderNumber }}</strong><br>
+                                    <small class="text-muted">{{ order.createdAt ? order.createdAt|date('M d, Y') : 'N/A' }}</small>
+                                </div>
+                                <span class="badge bg-{{ order.status == 'delivered' ? 'success' : 'warning' }}">{{ order.status|title }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
