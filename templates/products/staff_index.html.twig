@@ -1,0 +1,212 @@
+{% extends 'staff/_base.html.twig' %}
+{% set active_menu = 'products' %}
+{% block title %}All Products - GreenBites{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 2rem;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 30px;
+        color: #2e7d32;
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 35px;
+        align-items: stretch;
+    }
+
+    .product-card {
+        background: #fff;
+        padding: 24px;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        min-height: 320px;
+    }
+
+    .product-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    }
+
+    .product-header {
+        margin-bottom: 12px;
+    }
+
+    .product-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #2e7d32;
+        margin: 0 0 6px;
+    }
+
+    .product-category {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #f9a825;
+    }
+
+    .product-description {
+        font-size: 0.9rem;
+        color: #555;
+        margin: 12px 0 18px;
+        line-height: 1.4;
+        flex-grow: 1;
+    }
+
+    .product-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 18px;
+        padding-top: 12px;
+        border-top: 1px solid #eee;
+    }
+
+    .product-details div {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .product-details span {
+        font-size: 0.75rem;
+        color: #888;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .actions {
+        display: flex;
+        gap: 12px;
+        margin-top: auto;
+    }
+
+    .btn-show, .btn-edit {
+        flex: 1;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-show {
+        background: #43b649;
+        color: white;
+    }
+
+    .btn-show:hover {
+        background: #3a9e40;
+    }
+
+    .btn-edit {
+        background: #f9a825;
+        color: white;
+    }
+
+    .btn-edit:hover {
+        background: #e68900;
+    }
+
+    .no-records {
+        text-align: center;
+        padding: 3rem;
+        color: #888;
+        font-size: 1.1rem;
+    }
+
+    .btn-create-container {
+        text-align: center;
+        margin-top: 3rem;
+    }
+
+    .btn-create {
+        display: inline-block;
+        background: #43b649;
+        color: white;
+        padding: 14px 32px;
+        border-radius: 24px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 12px rgba(67, 182, 73, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .btn-create:hover {
+        background: #3a9e40;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(67, 182, 73, 0.4);
+    }
+</style>
+{% endblock %}
+
+{% block staff_content %}
+<div class="container">
+    <h1>All Products</h1>
+
+    {% if products|length > 0 %}
+        <div class="products-grid">
+            {% for product in products %}
+                {% set isOwnProduct = product.createdBy == currentUser %}
+                <div class="product-card" {% if not isOwnProduct %}style="opacity: 0.95; border-left: 4px solid #ccc;"{% endif %}>
+                    <div class="product-header">
+                        <div class="product-title">{{ product.name }}</div>
+                        <div class="product-category">{{ product.category }}</div>
+                        {% if not isOwnProduct %}
+                            <div style="font-size: 0.75rem; color: #888; margin-top: 4px;">
+                                Created by: {{ product.createdBy ? product.createdBy.email : 'Admin' }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="product-description">
+                        {{ product.description }}
+                    </div>
+
+                    <div class="product-details">
+                        <div><span>Price</span>${{ product.price }}</div>
+                        <div><span>Nutritional Info</span>{{ product.NutritionalInfo }}</div>
+                        <div><span>Availability</span>{{ product.Availability }}</div>
+                        <div><span>Subscription</span>{{ product.SubscriptionEligible }}</div>
+                    </div>
+
+                    <div class="actions">
+                        <a href="{{ path('app_products_show', {'id': product.id}) }}" class="btn-show" data-turbo="false">View</a>
+                        {% if isOwnProduct %}
+                            <a href="{{ path('app_products_edit', {'id': product.id}) }}" class="btn-edit" data-turbo="false">Edit</a>
+                        {% else %}
+                            <span class="btn-edit" style="opacity: 0.5; cursor: not-allowed; background: #ccc;">Edit</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-records">
+            <p>No products yet.</p>
+            <p style="margin-top: 1rem;"><a href="{{ path('app_products_new') }}" class="btn-create">Create Your First Product</a></p>
+        </div>
+    {% endif %}
+
+    <div class="btn-create-container">
+        <a href="{{ path('app_products_new') }}" class="btn-create" data-turbo="false">+ Create New Product</a>
+    </div>
+</div>
+{% endblock %}
+

@@ -70,17 +70,19 @@
 {% endblock %}
 
 {% block admin_content %}
-  <div class="header">
+  <div style="margin-bottom: 1.5rem;">
     <h1 class="page-title"><span class="emoji">👋</span> Welcome Back, Admin</h1>
-    <div class="admin-info">
-      <span>Admin Panel - Last updated: {{ "now"|date("M d, Y H:i") }}</span>
+    <div class="admin-info" style="margin-top: 0.5rem;">
+      <span style="color: #6b7280; font-size: 0.9rem;">Admin Panel - Last updated: {{ "now"|date("M d, Y H:i") }}</span>
     </div>
   </div>
 
   <div class="kpis" style="margin-bottom:1.5rem;">
-    <div class="kpi"><div class="icon">🥗</div><div class="meta"><span class="label">Total Products</span><span class="value">{{ totalProducts ?? 0 }}</span><span class="sub">Live items</span></div></div>
-    <div class="kpi"><div class="icon">📋</div><div class="meta"><span class="label">Active Subscriptions</span><span class="value">{{ activeSubscriptions ?? 0 }}</span><span class="sub">Current billing cycle</span></div></div>
-    <div class="kpi"><div class="icon">📦</div><div class="meta"><span class="label">Orders Today</span><span class="value">{{ ordersToday ?? 0 }}</span><span class="sub">Since midnight</span></div></div>
+    <div class="kpi"><div class="icon"><i class="bi bi-basket" style="font-size: 2rem;"></i></div><div class="meta"><span class="label">Total Products</span><span class="value">{{ totalProducts ?? 0 }}</span><span class="sub">Live items</span></div></div>
+    <div class="kpi"><div class="icon"><i class="bi bi-people" style="font-size: 2rem;"></i></div><div class="meta"><span class="label">Total Users</span><span class="value">{{ totalUsers ?? 0 }}</span><span class="sub">All accounts</span></div></div>
+    <div class="kpi"><div class="icon"><i class="bi bi-person" style="font-size: 2rem;"></i></div><div class="meta"><span class="label">Total Staff</span><span class="value">{{ totalStaff ?? 0 }}</span><span class="sub">Staff members</span></div></div>
+    <div class="kpi"><div class="icon"><i class="bi bi-file-earmark-text" style="font-size: 2rem;"></i></div><div class="meta"><span class="label">Active Subscriptions</span><span class="value">{{ activeSubscriptions ?? 0 }}</span><span class="sub">Current billing cycle</span></div></div>
+    <div class="kpi"><div class="icon"><i class="bi bi-box-seam" style="font-size: 2rem;"></i></div><div class="meta"><span class="label">Orders Today</span><span class="value">{{ ordersToday ?? 0 }}</span><span class="sub">Since midnight</span></div></div>
     <div class="kpi"><div class="icon">₱</div><div class="meta"><span class="label">Revenue</span><span class="value">₱{{ (todayRevenue ?? 0)|number_format(0, '.', ',') }}</span><span class="sub">Gross today</span></div></div>
   </div>
 
@@ -184,6 +186,24 @@
         {% else %}
           <div class="muted">No recent orders.</div>
         {% endfor %}
+      </div>
+
+      <h3 style="margin-top: 1.5rem;">Recent Activity</h3>
+      <div class="last-orders">
+        {% for log in recentLogs|slice(0, 5) %}
+          <div class="last-item">
+            <div class="dot" style="background: {% if log.action == 'CREATE' %}#6BB97F{% elseif log.action == 'UPDATE' %}#ffb300{% elseif log.action == 'DELETE' %}#ef5350{% elseif log.action == 'LOGIN' %}#42a5f5{% else %}#6b7280{% endif %}; color: white;">{{ log.action|slice(0,1) }}</div>
+            <div>
+              <div style="font-weight:700; color:#2F5133;">{{ log.userEmail }}</div>
+              <div class="muted">{{ log.action }} {{ log.entity ?? 'N/A' }} • {{ log.createdAt|date('M d, H:i') }}</div>
+            </div>
+          </div>
+        {% else %}
+          <div class="muted">No recent activity.</div>
+        {% endfor %}
+      </div>
+      <div style="margin-top: 1rem;">
+        <a href="{{ path('admin_logs_index') }}" class="btn-ghost" style="width: 100%; text-align: center; display: block;">View All Logs →</a>
       </div>
     </div>
   </div>

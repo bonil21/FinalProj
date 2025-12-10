@@ -12,6 +12,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 
 class OrderType extends AbstractType
 {
@@ -23,9 +25,21 @@ class OrderType extends AbstractType
                 'attr' => ['placeholder' => 'Enter unique order number'],
             ])
             ->add('totalAmount', NumberType::class, [
-                'label' => 'Total Amount',
+                'label' => 'Total Amount (₱)',
                 'scale' => 2,
-                'attr' => ['placeholder' => 'Enter total amount'],
+                'html5' => true,
+                'attr' => [
+                    'step' => '0.01',
+                    'min' => '0',
+                    'placeholder' => '0.00'
+                ],
+                'constraints' => [
+                    new NotBlank(['message' => 'Total amount is required.']),
+                    new GreaterThanOrEqual([
+                        'value' => 0,
+                        'message' => 'Total amount must be 0 or greater.',
+                    ]),
+                ],
             ])
             ->add('status', ChoiceType::class, [
                 'label' => 'Status',

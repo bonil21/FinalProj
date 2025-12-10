@@ -8,3 +8,10 @@ import './bootstrap.js';
 
 // any CSS you import will output into a single css file (app.css in this case)
 import './styles/app.css';
+
+// Add to cart functionality
+window.addToCart = function(productId) {
+    // TODO: Implement actual cart functionality
+    alert('Product added to cart! (Product ID: ' + productId + ')');
+    console.log('Add to cart:', productId);
+};

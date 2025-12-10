@@ -11,18 +11,26 @@
     <div>
       <img src="{{ asset('imageeee/logo.png') }}" alt="GreenBites Logo 2025" style="width:80px; margin-bottom:1.5rem;">
       <h2>GreenBites</h2>
-      <a href="{{ path('admin_dashboard') }}" class="{% if active_menu is defined and active_menu == 'dashboard' %}active{% endif %}">📊 Dashboard Overview</a>
-      <a href="{{ path('admin_products') }}" class="{% if active_menu is defined and active_menu == 'products' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;">🥗 Products</a>
-      <a href="{{ path('admin_orders') }}" class="{% if active_menu is defined and active_menu == 'orders' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;">📦 Orders</a>
-      <a href="{{ path('app_subscription_index') }}" class="{% if active_menu is defined and active_menu == 'subscriptions' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;">📋 Subscriptions</a>
-      <a href="{{ path('admin_customers') }}" class="{% if active_menu is defined and active_menu == 'customers' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;">👥 Customers</a>
-      <a href="{{ path('app_payment_index') }}" class="{% if active_menu is defined and active_menu == 'payments' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;">💳 Payments & Transactions</a>
+      <a href="{{ path('app_landing_page') }}" class="{% if active_menu is defined and active_menu == 'home' %}active{% endif %}"><i class="bi bi-house-door"></i> Home</a>
+      <a href="{{ path('admin_dashboard') }}" class="{% if active_menu is defined and active_menu == 'dashboard' %}active{% endif %}"><i class="bi bi-speedometer2"></i> Dashboard Overview</a>
+      <a href="{{ path('admin_products') }}" class="{% if active_menu is defined and active_menu == 'products' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-basket"></i> Products</a>
+      <a href="{{ path('admin_orders') }}" class="{% if active_menu is defined and active_menu == 'orders' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-box-seam"></i> Orders</a>
+      <a href="{{ path('app_subscription_index') }}" class="{% if active_menu is defined and active_menu == 'subscriptions' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-file-earmark-text"></i> Subscriptions</a>
+      <a href="{{ path('admin_customers') }}" class="{% if active_menu is defined and active_menu == 'customers' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-people"></i> Customers</a>
+      <a href="{{ path('app_payment_index') }}" class="{% if active_menu is defined and active_menu == 'payments' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-credit-card"></i> Payments & Transactions</a>
       <hr>
-      <a href="{{ path('admin_feedback') }}" class="{% if active_menu is defined and active_menu == 'feedback' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;">⭐ Feedback / Reviews</a>
-      <a href="{{ path('admin_promotions') }}" class="{% if active_menu is defined and active_menu == 'promotions' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;">🎉 Promotions</a>
-      <a href="{{ path('admin_settings') }}" class="{% if active_menu is defined and active_menu == 'settings' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;">⚙️ Settings</a>
+      <a href="{{ path('admin_feedback') }}" class="{% if active_menu is defined and active_menu == 'feedback' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-star"></i> Feedback / Reviews</a>
+      <a href="{{ path('admin_promotions') }}" class="{% if active_menu is defined and active_menu == 'promotions' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-megaphone"></i> Promotions</a>
+      <a href="{{ path('admin_settings') }}" class="{% if active_menu is defined and active_menu == 'settings' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-gear"></i> Settings</a>
+      <hr>
+      {% if is_granted('ROLE_ADMIN') %}
+      <a href="{{ path('admin_users_index') }}" class="{% if active_menu is defined and active_menu == 'users' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-person"></i> User Management</a>
+      <a href="{{ path('admin_logs_index') }}" class="{% if active_menu is defined and active_menu == 'logs' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-journal-text"></i> Activity Logs</a>
+      <a href="{{ path('admin_profile') }}" class="{% if active_menu is defined and active_menu == 'profile' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-person-circle"></i> My Profile</a>
+      {% endif %}
+      <hr>
+      <a href="{{ path('app_logout') }}" style="text-align:center; margin-top:1rem; color: #E7F0DC;"><i class="bi bi-box-arrow-right"></i> Logout</a>
     </div>
-    <a href="{{ path('app_logout') }}" style="text-align:center; margin-top:1rem;">🚪 Logout</a>
   </div>
 
   <div class="main-content">

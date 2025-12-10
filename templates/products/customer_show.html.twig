@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ product.name }} - GreenBites{% endblock %}
+
+{% block body %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 48px 24px;">
+    <a href="{{ path('app_products_index') }}" style="display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; color: #2F5133; text-decoration: none; font-weight: 600; transition: all 0.3s ease; padding: 0.5rem 1rem; border-radius: 8px; background: rgba(231, 240, 220, 0.5);" onmouseover="this.style.background='rgba(231, 240, 220, 0.8)'; this.style.transform='translateX(-4px)';" onmouseout="this.style.background='rgba(231, 240, 220, 0.5)'; this.style.transform='translateX(0)';">
+        ← Back to Products
+    </a>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; background: #FFFFFF; border-radius: 24px; box-shadow: 0 8px 32px rgba(47,81,51,0.12); padding: 48px; margin-bottom: 32px;">
+        <!-- Product Image -->
+        <div>
+            {% if product.image %}
+                <img src="{{ asset('uploads/images/' ~ product.image) }}" alt="{{ product.name }}" style="width: 100%; height: auto; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+            {% else %}
+                <div style="width: 100%; height: 400px; background: linear-gradient(135deg, #E7F0DC, #6BB97F); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 6rem;">🥬</div>
+            {% endif %}
+        </div>
+
+        <!-- Product Details -->
+        <div>
+            {% if product.category %}
+                <div style="margin-bottom: 16px;">
+                    <span style="background: #E7F0DC; color: #2F5133; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700;">{{ product.category.name }}</span>
+                </div>
+            {% endif %}
+            
+            <h1 style="font-size: 2.5rem; font-weight: 900; color: #2F5133; margin-bottom: 16px; line-height: 1.2;">{{ product.name }}</h1>
+            
+            <div style="font-size: 2.5rem; color: #43b649; font-weight: 900; margin-bottom: 24px;">₱{{ product.price|number_format(2, '.', ',') }}</div>
+            
+            <p style="color: #6b7280; font-size: 1.1rem; line-height: 1.7; margin-bottom: 32px;">{{ product.description }}</p>
+
+            {% if product.NutritionalInfo %}
+                <div style="background: #F6E6D7; padding: 20px; border-radius: 12px; margin-bottom: 32px;">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: #2F5133; margin-bottom: 12px;">Nutritional Information</h3>
+                    <p style="color: #444; line-height: 1.6;">{{ product.NutritionalInfo }}</p>
+                </div>
+            {% endif %}
+
+            <div style="display: flex; gap: 16px; margin-top: 32px;">
+                <form method="POST" action="{{ path('app_cart_add_product', {id: product.id}) }}" style="flex: 1; margin: 0;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('add_product_' ~ product.id) }}">
+                    <button type="submit" style="width: 100%; padding: 16px 32px; background: linear-gradient(120deg, #43b649 0%, #6BB97F 100%); color: white; border: none; border-radius: 14px; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(67,182,73,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(67,182,73,0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(67,182,73,0.3)';">Add to Cart</button>
+                </form>
+            </div>
+
+            {% if product.Availability %}
+                <div style="margin-top: 24px; padding: 16px; background: #E7F0DC; border-radius: 12px;">
+                    <strong style="color: #2F5133;">Availability:</strong> <span style="color: #43b649; font-weight: 700;">{{ product.Availability }}</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

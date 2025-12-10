@@ -3,44 +3,66 @@ security:
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
         Symfony\Component\Security\Core\User\InMemoryUser: 'plaintext'
+    
+    # Role hierarchy - ensures admins have all permissions
+    role_hierarchy:
+        ROLE_ADMIN: [ROLE_STAFF, ROLE_USER]
+        ROLE_STAFF: [ROLE_USER]
+    
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+    #1 Define the user provider:
     providers:
-        admin_user_provider:
+        app_user_provider:
             entity:
-                class: App\Entity\AdminUser
-                property: username
+                class: App\Entity\User
+                property: email
+    
+    #2 Configure firewalls:
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        
         main:
             lazy: true
-            provider: admin_user_provider
-
-            form_login:
-                login_path: app_login
-                check_path: app_login
-                enable_csrf: true
-                default_target_path: admin_dashboard
-                username_parameter: _username
-                password_parameter: _password
-
+            provider: app_user_provider
+            custom_authenticator: App\Security\LoginFormAuthenticator
             logout:
                 path: app_logout
-                target: app_login
-
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
+    
+    #3 Access control rules:
     access_control:
+        # Public auth endpoints
         - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/logout, roles: PUBLIC_ACCESS }
+        - { path: ^/$, roles: PUBLIC_ACCESS }
+
+        # Public catalog browse
+        - { path: ^/products$, roles: PUBLIC_ACCESS }
+        - { path: ^/products/\d+$, roles: PUBLIC_ACCESS }
+
+        # Admin-only zone (strict - staff cannot access)
         - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/admin/users, roles: ROLE_ADMIN }
+        - { path: ^/admin/logs, roles: ROLE_ADMIN }
+        - { path: ^/logs, roles: ROLE_ADMIN }
+        - { path: ^/users, roles: ROLE_ADMIN }
+
+        # Staff dashboard (staff and admin can access)
+        - { path: ^/staff, roles: [ROLE_STAFF, ROLE_ADMIN] }
+
+        # Authenticated users (includes staff and admins)
+        - { path: ^/subscriptions, roles: [ROLE_USER, ROLE_STAFF, ROLE_ADMIN] }
+        - { path: ^/orders, roles: [ROLE_USER, ROLE_STAFF, ROLE_ADMIN] }
+        - { path: ^/payments, roles: [ROLE_USER, ROLE_STAFF, ROLE_ADMIN] }
+        - { path: ^/checkout, roles: [ROLE_USER, ROLE_STAFF, ROLE_ADMIN] }
+        - { path: ^/payment, roles: [ROLE_USER, ROLE_STAFF, ROLE_ADMIN] }
+        - { path: ^/order, roles: [ROLE_USER, ROLE_STAFF, ROLE_ADMIN] }
+        - { path: ^/customer, roles: [ROLE_USER, ROLE_STAFF, ROLE_ADMIN] }
+
+        # Fallback: require auth
+        - { path: ^/, roles: ROLE_USER }
 
 when@test:
     security:

@@ -1,0 +1,45 @@
+{% extends 'admin/_base.html.twig' %}
+{% set active_menu = 'users' %}
+{% block title %}GreenBites | User Details{% endblock %}
+
+{% block admin_content %}
+<div class="header">
+  <h1 class="page-title">User Details: {{ user.email }}</h1>
+  <div style="display: flex; gap: 1rem;">
+    <a href="{{ path('admin_users_edit', {id: user.id}) }}" class="btn btn-primary">Edit</a>
+    <a href="{{ path('admin_users_index') }}" class="btn btn-secondary">← Back to Users</a>
+  </div>
+</div>
+
+<div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 600px;">
+  <table style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <td style="padding: 0.75rem; font-weight: 700; color: #2F5133;">Name:</td>
+      <td style="padding: 0.75rem;">{{ user.name ?? 'N/A' }}</td>
+    </tr>
+    <tr>
+      <td style="padding: 0.75rem; font-weight: 700; color: #2F5133;">Email:</td>
+      <td style="padding: 0.75rem;">{{ user.email }}</td>
+    </tr>
+    <tr>
+      <td style="padding: 0.75rem; font-weight: 700; color: #2F5133;">Roles:</td>
+      <td style="padding: 0.75rem;">
+        {% for role in user.roles %}
+          <span style="background: #E7F0DC; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; margin-right: 0.25rem;">{{ role }}</span>
+        {% endfor %}
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 0.75rem; font-weight: 700; color: #2F5133;">Status:</td>
+      <td style="padding: 0.75rem;">
+        <span style="background: {% if user.status == 'active' %}#6BB97F{% elseif user.status == 'disabled' %}#ef5350{% else %}#6b7280{% endif %}; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 700;">{{ user.status|upper }}</span>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 0.75rem; font-weight: 700; color: #2F5133;">Created:</td>
+      <td style="padding: 0.75rem;">{{ user.createdAt ? user.createdAt|date('Y-m-d H:i:s') : 'N/A' }}</td>
+    </tr>
+  </table>
+</div>
+{% endblock %}
+

@@ -1,0 +1,75 @@
+{% extends 'staff/_base.html.twig' %}
+{% set active_menu = 'subscriptions' %}
+{% block title %}GreenBites | Create Subscription{% endblock %}
+
+{% block staff_content %}
+<div style="max-width: 900px; margin: 0 auto;">
+  <h1 class="page-title"><i class="bi bi-file-earmark-text"></i> Create New Subscription</h1>
+  
+  {{ form_start(form) }}
+  
+  <div class="card">
+    <div class="card-body">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          {{ form_label(form.customer) }}
+          {{ form_widget(form.customer, {'attr': {'class': 'form-control'}}) }}
+          {{ form_errors(form.customer) }}
+        </div>
+        <div>
+          {{ form_label(form.plan) }}
+          {{ form_widget(form.plan, {'attr': {'class': 'form-control'}}) }}
+          {{ form_errors(form.plan) }}
+        </div>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          {{ form_label(form.status) }}
+          {{ form_widget(form.status, {'attr': {'class': 'form-control'}}) }}
+          {{ form_errors(form.status) }}
+        </div>
+        <div>
+          {{ form_label(form.stripeSubscriptionId) }}
+          {{ form_widget(form.stripeSubscriptionId, {'attr': {'class': 'form-control', 'placeholder': 'Optional'}}) }}
+          {{ form_errors(form.stripeSubscriptionId) }}
+        </div>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          {{ form_label(form.startDate) }}
+          {{ form_widget(form.startDate, {'attr': {'class': 'form-control'}}) }}
+          {{ form_errors(form.startDate) }}
+        </div>
+        <div>
+          {{ form_label(form.currentPeriodStart) }}
+          {{ form_widget(form.currentPeriodStart, {'attr': {'class': 'form-control'}}) }}
+          {{ form_errors(form.currentPeriodStart) }}
+        </div>
+        <div>
+          {{ form_label(form.currentPeriodEnd) }}
+          {{ form_widget(form.currentPeriodEnd, {'attr': {'class': 'form-control'}}) }}
+          {{ form_errors(form.currentPeriodEnd) }}
+        </div>
+      </div>
+      
+      <div style="margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          {{ form_widget(form.cancelAtPeriodEnd, {'attr': {'class': 'form-control'}}) }}
+          {{ form_label(form.cancelAtPeriodEnd) }}
+          {{ form_errors(form.cancelAtPeriodEnd) }}
+        </div>
+      </div>
+      
+      <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+        <button type="submit" class="btn btn-primary">Create Subscription</button>
+        <a href="{{ path('staff_subscription_index') }}" class="btn btn-secondary">Cancel</a>
+      </div>
+    </div>
+  </div>
+  
+  {{ form_end(form) }}
+</div>
+{% endblock %}
+

@@ -1,0 +1,90 @@
+{% extends 'staff/_base.html.twig' %}
+{% set active_menu = 'subscriptions' %}
+{% block title %}GreenBites | Subscription Details{% endblock %}
+
+{% block staff_content %}
+<div style="max-width: 800px; margin: 0 auto;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1 class="page-title"><i class="bi bi-file-earmark-text"></i> Subscription #{{ subscription.id }}</h1>
+    <div style="display: flex; gap: 1rem;">
+      <a href="{{ path('staff_subscription_edit', {id: subscription.id}) }}" class="btn btn-outline-warning">Edit</a>
+      <a href="{{ path('staff_subscription_index') }}" class="btn btn-secondary">Back to List</a>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-body">
+      <div style="display: grid; gap: 1.5rem;">
+        <div>
+          <h3 style="color: #2F5133; margin-bottom: 0.5rem;">Customer</h3>
+          {% if subscription.customer %}
+            <p style="color: #6b7280; line-height: 1.6;">
+              <strong>{{ subscription.customer.name }}</strong><br>
+              {{ subscription.customer.email }}
+            </p>
+          {% else %}
+            <p style="color: #6b7280;">—</p>
+          {% endif %}
+        </div>
+        
+        <div>
+          <h3 style="color: #2F5133; margin-bottom: 0.5rem;">Plan</h3>
+          {% if subscription.plan %}
+            <p style="color: #6b7280; line-height: 1.6;">
+              <strong>{{ subscription.plan.name }}</strong><br>
+              {{ subscription.plan.mealsIncluded }} meals • {{ subscription.plan.billingInterval }}
+            </p>
+          {% else %}
+            <p style="color: #6b7280;">—</p>
+          {% endif %}
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+          <div style="background: #E7F0DC; padding: 1rem; border-radius: 8px;">
+            <div style="font-size: 0.9rem; color: #6b7280;">Status</div>
+            {% set statusClass = {
+                'active': 'bg-success',
+                'inactive': 'bg-secondary',
+                'cancelled': 'bg-danger',
+                'past_due': 'bg-warning',
+                'trialing': 'bg-info'
+            } %}
+            <span class="badge {{ statusClass[subscription.status] ?? 'bg-secondary' }}" style="margin-top: 0.5rem; display: inline-block;">
+              {{ subscription.status|title }}
+            </span>
+          </div>
+          
+          {% if subscription.startDate %}
+          <div style="background: #F6E6D7; padding: 1rem; border-radius: 8px;">
+            <div style="font-size: 0.9rem; color: #6b7280;">Start Date</div>
+            <div style="font-size: 1.1rem; font-weight: 600; color: #2F5133; margin-top: 0.5rem;">{{ subscription.startDate|date('M d, Y') }}</div>
+          </div>
+          {% endif %}
+          
+          {% if subscription.currentPeriodStart and subscription.currentPeriodEnd %}
+          <div style="background: #E7F0DC; padding: 1rem; border-radius: 8px;">
+            <div style="font-size: 0.9rem; color: #6b7280;">Current Period</div>
+            <div style="font-size: 0.95rem; font-weight: 600; color: #2F5133; margin-top: 0.5rem;">
+              {{ subscription.currentPeriodStart|date('M d') }} - {{ subscription.currentPeriodEnd|date('M d, Y') }}
+            </div>
+          </div>
+          {% endif %}
+        </div>
+        
+        {% if subscription.stripeSubscriptionId %}
+        <div>
+          <h3 style="color: #2F5133; margin-bottom: 0.5rem;">Stripe Subscription ID</h3>
+          <p style="color: #6b7280; font-family: monospace;">{{ subscription.stripeSubscriptionId }}</p>
+        </div>
+        {% endif %}
+        
+        <div>
+          <h3 style="color: #2F5133; margin-bottom: 0.5rem;">Cancel at Period End</h3>
+          <p style="color: #6b7280;">{{ subscription.cancelAtPeriodEnd ? 'Yes' : 'No' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

@@ -148,9 +148,9 @@
 
 {% block admin_content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>📋 Subscriptions</h2>
+    <h2><i class="bi bi-file-earmark-text"></i> Subscriptions</h2>
     <a href="{{ path('app_subscription_new') }}" class="btn btn-primary">
-        <i class="fas fa-plus"></i> New Subscription
+        <i class="bi bi-plus-circle"></i> New Subscription
     </a>
 </div>
 
@@ -161,13 +161,13 @@
                 <h5 class="card-title">Quick Actions</h5>
                 <div class="d-grid gap-2">
                     <a href="{{ path('app_subscription_plan_index') }}" class="btn btn-outline-primary">
-                        <i class="fas fa-cog"></i> Manage Plans
+                        <i class="bi bi-gear"></i> Manage Plans
                     </a>
                     <a href="{{ path('app_payment_index') }}" class="btn btn-outline-success">
-                        <i class="fas fa-credit-card"></i> View Payments
+                        <i class="bi bi-credit-card"></i> View Payments
                     </a>
                     <a href="{{ path('app_transaction_index') }}" class="btn btn-outline-info">
-                        <i class="fas fa-exchange-alt"></i> View Transactions
+                        <i class="bi bi-arrow-left-right"></i> View Transactions
                     </a>
                 </div>
             </div>
@@ -203,11 +203,11 @@
     <div class="card-body">
         {% if subscriptions is empty %}
             <div class="text-center py-5">
-                <i class="fas fa-subscription fa-3x text-muted mb-3"></i>
+                <i class="bi bi-file-earmark-text" style="font-size: 3rem;"></i>
                 <h4 class="text-muted">No subscriptions found</h4>
                 <p class="text-muted">Create your first subscription to get started.</p>
                 <a href="{{ path('app_subscription_new') }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Create Subscription
+                    <i class="bi bi-plus-circle"></i> Create Subscription
                 </a>
             </div>
         {% else %}
@@ -276,15 +276,15 @@
                                 <td class="text-center">
                                     <div class="action-buttons">
                                         <a href="{{ path('app_subscription_show', {'id': subscription.id}) }}" class="btn btn-outline-info btn-sm" data-bs-toggle="tooltip" title="View subscription details">
-                                            <i class="fas fa-eye"></i> View
+                                            <i class="bi bi-eye"></i> View
                                         </a>
                                         <a href="{{ path('app_subscription_edit', {'id': subscription.id}) }}" class="btn btn-outline-warning btn-sm" data-bs-toggle="tooltip" title="Edit subscription information">
-                                            <i class="fas fa-edit"></i> Edit
+                                            <i class="bi bi-pencil"></i> Edit
                                         </a>
                                         <form method="post" action="{{ path('app_subscription_delete', {'id': subscription.id}) }}" class="d-inline">
                                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ subscription.id) }}">
                                             <button type="submit" class="btn btn-outline-danger btn-sm" data-bs-toggle="tooltip" title="Delete subscription">
-                                                <i class="fas fa-trash"></i> Delete
+                                                <i class="bi bi-trash"></i> Delete
                                             </button>
                                         </form>
                                     </div>

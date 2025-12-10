@@ -25,18 +25,37 @@
 {% endblock %}
 
 {% block admin_content %}
-    <h1 class="page-title"><span class="emoji">🥗</span> Products</h1>
-    <p></p>
-
-    <div style="margin: 1rem 0 1rem auto; text-align:right;">
-      <a href="{{ path('app_products_new') }}" class="btn btn-primary" data-turbo="false">+ Create Product</a>
+    <h1 class="page-title"><i class="bi bi-basket"></i> Products</h1>
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+      <div style="flex: 1; min-width: 300px;">
+        <form method="get" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <input type="text" name="search" placeholder="Search products..." value="{{ search }}" 
+                 style="flex: 1; min-width: 200px; padding: 0.5rem 1rem; border: 1px solid #E4CFBF; border-radius: 8px;">
+          <select name="category" style="padding: 0.5rem 1rem; border: 1px solid #E4CFBF; border-radius: 8px;">
+            <option value="">All Categories</option>
+            {% for cat in categories %}
+              <option value="{{ cat }}" {% if categoryFilter == cat %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" style="background: #43b649; color: white; padding: 0.5rem 1rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+            <i class="bi bi-search"></i> Filter
+          </button>
+          {% if search or categoryFilter %}
+            <a href="{{ path('admin_products') }}" style="background: #6b7280; color: white; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600;">
+              <i class="bi bi-x-circle"></i> Clear
+            </a>
+          {% endif %}
+        </form>
+      </div>
+      <a href="{{ path('app_products_new') }}" class="btn btn-primary" data-turbo="false"><i class="bi bi-plus-circle"></i> Create Product</a>
     </div>
 
     <div class="products-grid">
       {% for product in products %}
         <div class="product-tile">
           {% if product.image %}
-            <img src="{{ asset('uploads/images/' ~ product.image) }}" alt="{{ product.name }}" class="product-image">
+            <img src="{{ asset('uploads/images/' ~ product.image) }}" alt="{{ product.name }}" class="product-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'product-image\' style=\'background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;\'>Image Not Found<br><small>{{ product.image }}</small></div>';">
           {% else %}
             <div class="product-image" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;">No Image</div>
           {% endif %}

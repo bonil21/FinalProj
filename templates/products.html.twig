@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}All Products - GreenBites{% endblock %}
+
+{% block body %}
+<div class="products-page" style="max-width: 1400px; margin: 0 auto; padding: 48px 24px;">
+    <h1 style="font-size: 2.2rem; font-weight: 800; color: #2F5133; text-align: center; margin-bottom: 2.5rem;">All Products</h1>
+    <div class="products-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 32px;">
+        {% for product in products %}
+            <div class="product-card" style="background: #fff; border-radius: 16px; box-shadow: 0 4px 24px rgba(47,81,51,0.08); padding: 2rem; text-align: center;">
+                <img src="/uploads/images/{{ product.image }}" alt="{{ product.name }}" style="max-width: 180px; width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 1rem;" />
+                <h3 style="font-size: 1.15rem; color: #2F5133; font-weight: 700; margin-bottom: 0.5rem;">{{ product.name }}</h3>
+                <p style="color: #43b649; font-weight: 700; margin-bottom: 0.5rem;">₱{{ product.price }}</p>
+                <p style="color: #444; margin-bottom: 1.2rem;">{{ product.description }}</p>
+                <form method="POST" action="{{ path('app_cart_add_product', {id: product.id}) }}" style="margin: 0;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('add_product_' ~ product.id) }}">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px 28px; background: linear-gradient(120deg, #43b649 0%, #6BB97F 100%); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(67,182,73,0.3);">Add to Cart</button>
+                </form>
+            </div>
+        {% else %}
+            <div style="grid-column: 1 / -1; text-align: center; color: #888;">No products found.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

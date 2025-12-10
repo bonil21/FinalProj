@@ -1,0 +1,131 @@
+{% extends 'staff/_base.html.twig' %}
+{% set active_menu = 'subscriptions' %}
+{% block title %}GreenBites | Subscriptions Management{% endblock %}
+
+{% block staff_content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+  <h1 class="page-title"><i class="bi bi-file-earmark-text"></i> Subscriptions</h1>
+  <a href="{{ path('staff_subscription_new') }}" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Create New Subscription</a>
+</div>
+
+{% for message in app.flashes('success') %}
+    <div style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+        {{ message }}
+    </div>
+{% endfor %}
+
+{% for message in app.flashes('error') %}
+    <div style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+        {{ message }}
+    </div>
+{% endfor %}
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+    <div style="background: #E7F0DC; padding: 1.5rem; border-radius: 12px; text-align: center;">
+        <h3 style="color: #43b649; margin: 0; font-size: 2rem;">{{ subscriptions|filter(s => s.status == 'active')|length }}</h3>
+        <p style="color: #2F5133; margin: 0.5rem 0 0 0; font-weight: 600;">Active</p>
+    </div>
+    <div style="background: #F6E6D7; padding: 1.5rem; border-radius: 12px; text-align: center;">
+        <h3 style="color: #ffc107; margin: 0; font-size: 2rem;">{{ subscriptions|filter(s => s.status == 'trialing')|length }}</h3>
+        <p style="color: #2F5133; margin: 0.5rem 0 0 0; font-weight: 600;">Trialing</p>
+    </div>
+    <div style="background: #fee2e2; padding: 1.5rem; border-radius: 12px; text-align: center;">
+        <h3 style="color: #dc3545; margin: 0; font-size: 2rem;">{{ subscriptions|filter(s => s.status == 'cancelled')|length }}</h3>
+        <p style="color: #2F5133; margin: 0.5rem 0 0 0; font-weight: 600;">Cancelled</p>
+    </div>
+</div>
+
+<div style="margin-bottom: 1.5rem;">
+    <a href="{{ path('staff_subscription_plan_index') }}" class="btn btn-outline-primary" style="margin-right: 0.5rem;"><i class="bi bi-gear"></i> Manage Plans</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer</th>
+                        <th>Plan</th>
+                        <th>Status</th>
+                        <th>Start Date</th>
+                        <th>Current Period</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subscription in subscriptions %}
+                    <tr>
+                        <td style="font-weight: 600;">#{{ subscription.id }}</td>
+                        <td>
+                            {% if subscription.customer %}
+                                <div>
+                                    <div style="font-weight: 600; color: #2F5133;">{{ subscription.customer.name }}</div>
+                                    <small style="color: #6b7280;">{{ subscription.customer.email }}</small>
+                                </div>
+                            {% else %}
+                                <span style="color: #6b7280;">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if subscription.plan %}
+                                <div>
+                                    <div style="font-weight: 600; color: #2F5133;">{{ subscription.plan.name }}</div>
+                                    <small style="color: #6b7280;">{{ subscription.plan.mealsIncluded }} meals</small>
+                                </div>
+                            {% else %}
+                                <span style="color: #6b7280;">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% set statusClass = {
+                                'active': 'bg-success',
+                                'inactive': 'bg-secondary',
+                                'cancelled': 'bg-danger',
+                                'past_due': 'bg-warning',
+                                'trialing': 'bg-info'
+                            } %}
+                            <span class="badge {{ statusClass[subscription.status] ?? 'bg-secondary' }}">
+                                {{ subscription.status|title }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if subscription.startDate %}
+                                {{ subscription.startDate|date('M d, Y') }}
+                            {% else %}
+                                <span style="color: #6b7280;">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if subscription.currentPeriodStart and subscription.currentPeriodEnd %}
+                                <small>{{ subscription.currentPeriodStart|date('M d') }} - {{ subscription.currentPeriodEnd|date('M d, Y') }}</small>
+                            {% else %}
+                                <span style="color: #6b7280;">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{{ path('staff_subscription_show', {id: subscription.id}) }}" class="btn btn-outline-info btn-sm">View</a>
+                                <a href="{{ path('staff_subscription_edit', {id: subscription.id}) }}" class="btn btn-outline-warning btn-sm">Edit</a>
+                                <form method="post" action="{{ path('staff_subscription_delete', {id: subscription.id}) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this subscription?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ subscription.id) }}">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: #6b7280;">
+                            No subscriptions found. <a href="{{ path('staff_subscription_new') }}">Create your first subscription</a>!
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

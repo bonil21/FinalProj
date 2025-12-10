@@ -1,0 +1,70 @@
+{% extends 'staff/_base.html.twig' %}
+{% set active_menu = 'subscriptions' %}
+{% block title %}GreenBites | Create Subscription Plan{% endblock %}
+
+{% block staff_content %}
+<div style="max-width: 800px; margin: 0 auto;">
+  <h1 class="page-title"><i class="bi bi-gear"></i> Create New Subscription Plan</h1>
+  
+  {{ form_start(form) }}
+  
+  <div class="card">
+    <div class="card-body">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          {{ form_label(form.code) }}
+          {{ form_widget(form.code, {'attr': {'class': 'form-control', 'placeholder': 'e.g., BASIC_MONTHLY'}}) }}
+          {{ form_errors(form.code) }}
+          <small style="color: #6b7280;">Unique identifier (uppercase, underscores)</small>
+        </div>
+        <div>
+          {{ form_label(form.name) }}
+          {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'e.g., Basic Monthly Plan'}}) }}
+          {{ form_errors(form.name) }}
+        </div>
+      </div>
+      
+      <div style="margin-bottom: 1.5rem;">
+        {{ form_label(form.description) }}
+        {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 4, 'placeholder': 'Describe what this plan includes...'}}) }}
+        {{ form_errors(form.description) }}
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          {{ form_label(form.price) }}
+          {{ form_widget(form.price, {'attr': {'class': 'form-control'}}) }}
+          {{ form_errors(form.price) }}
+        </div>
+        <div>
+          {{ form_label(form.billingInterval) }}
+          {{ form_widget(form.billingInterval, {'attr': {'class': 'form-control'}}) }}
+          {{ form_errors(form.billingInterval) }}
+        </div>
+        <div>
+          {{ form_label(form.mealsIncluded) }}
+          {{ form_widget(form.mealsIncluded, {'attr': {'class': 'form-control', 'min': 1}}) }}
+          {{ form_errors(form.mealsIncluded) }}
+        </div>
+      </div>
+      
+      <div style="margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          {{ form_widget(form.active, {'attr': {'class': 'form-control'}}) }}
+          {{ form_label(form.active) }}
+          {{ form_errors(form.active) }}
+        </div>
+        <small style="color: #6b7280;">Only active plans can be selected for new subscriptions</small>
+      </div>
+      
+      <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+        <button type="submit" class="btn btn-primary">Create Plan</button>
+        <a href="{{ path('staff_subscription_plan_index') }}" class="btn btn-secondary">Cancel</a>
+      </div>
+    </div>
+  </div>
+  
+  {{ form_end(form) }}
+</div>
+{% endblock %}
+

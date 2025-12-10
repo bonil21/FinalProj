@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Order Confirmed - GreenBites{% endblock %}
+
+{% block body %}
+<div style="max-width: 800px; margin: 0 auto; padding: 48px 24px; text-align: center;">
+    <div style="background: #FFFFFF; border-radius: 20px; box-shadow: 0 8px 32px rgba(47,81,51,0.12); padding: 48px;">
+        <div style="font-size: 5rem; margin-bottom: 24px;">✅</div>
+        <h1 style="font-size: 2.5rem; font-weight: 800; color: #43b649; margin-bottom: 16px;">Order Confirmed!</h1>
+        <p style="font-size: 1.2rem; color: #6b7280; margin-bottom: 32px;">Thank you for your order. We've received your payment and will process it shortly.</p>
+
+        <div style="background: #F6E6D7; padding: 24px; border-radius: 12px; margin-bottom: 32px; text-align: left;">
+            <h2 style="font-size: 1.3rem; color: #2F5133; font-weight: 700; margin-bottom: 16px;">Order Details</h2>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="color: #6b7280;"><strong>Order Number:</strong></span>
+                <span style="color: #2F5133; font-weight: 700;">{{ order.orderNumber }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="color: #6b7280;"><strong>Total Amount:</strong></span>
+                <span style="color: #43b649; font-weight: 900; font-size: 1.3rem;">₱{{ order.totalAmount|number_format(2, '.', ',') }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="color: #6b7280;"><strong>Status:</strong></span>
+                <span style="background: #6BB97F; color: white; padding: 4px 12px; border-radius: 6px; font-weight: 700; font-size: 0.9rem;">{{ order.status|upper }}</span>
+            </div>
+            {% if order.deliveryAddress %}
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #E4CFBF;">
+                <span style="color: #6b7280;"><strong>Delivery Address:</strong></span>
+                <div style="color: #2F5133; margin-top: 4px;">{{ order.deliveryAddress }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+            <a href="{{ path('app_products_index') }}" style="padding: 14px 32px; background: linear-gradient(120deg, #43b649 0%, #6BB97F 100%); color: white; border-radius: 12px; text-decoration: none; font-weight: 700; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(67,182,73,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(67,182,73,0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(67,182,73,0.3)';">Continue Shopping</a>
+            <a href="/" style="padding: 14px 32px; background: #F6E6D7; color: #2F5133; border: 2px solid #E4CFBF; border-radius: 12px; text-decoration: none; font-weight: 700; transition: all 0.2s ease;" onmouseover="this.style.background='#E7F0DC'; this.style.borderColor='#6BB97F';" onmouseout="this.style.background='#F6E6D7'; this.style.borderColor='#E4CFBF';">Back to Home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

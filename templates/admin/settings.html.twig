@@ -297,7 +297,7 @@
 
 {% block admin_content %}
 <div class="settings-header">
-  <h1 class="page-title"><span class="emoji">⚙️</span> Settings</h1>
+  <h1 class="page-title"><i class="bi bi-gear"></i> Settings</h1>
   <p>Adjust system configurations, admin credentials, and preferences here.</p>
   
 </div>
@@ -307,29 +307,16 @@
   <div class="settings-card">
     <div class="settings-card-header">
       <h3>
-        <i class="fas fa-user"></i>
+        <i class="bi bi-person-circle"></i>
         Admin Profile
       </h3>
     </div>
     <div class="settings-card-body">
-      <form id="profileForm">
-        <div class="form-group">
-          <label for="adminName" class="form-label">Full Name</label>
-          <input type="text" id="adminName" class="form-control" value="Nathaniel Gilbero" placeholder="Enter your full name">
-          <div class="form-help">This will be displayed in the admin dashboard</div>
-        </div>
-        
-        <div class="form-group">
-          <label for="adminEmail" class="form-label">Email Address</label>
-          <input type="email" id="adminEmail" class="form-control" value="admin@greenbites.com" placeholder="Enter your email address">
-          <div class="form-help">Used for system notifications and login</div>
-        </div>
-        
-        <button type="submit" class="btn-save">
-          <i class="fas fa-save"></i>
-          Save Changes
-        </button>
-      </form>
+      <p style="color: #6b7280; margin-bottom: 1.5rem;">View and manage your profile information.</p>
+      <a href="{{ path('admin_profile') }}" class="btn-save" style="text-decoration: none; display: inline-flex; justify-content: center;">
+        <i class="bi bi-person-circle"></i>
+        View My Profile
+      </a>
     </div>
   </div>
 
@@ -337,39 +324,16 @@
   <div class="settings-card">
     <div class="settings-card-header">
       <h3>
-        <i class="fas fa-lock"></i>
+        <i class="bi bi-lock"></i>
         Change Password
       </h3>
     </div>
     <div class="settings-card-body">
-      <form id="passwordForm">
-        <div class="form-group">
-          <label for="oldPass" class="form-label">Current Password</label>
-          <input type="password" id="oldPass" class="form-control" placeholder="Enter current password">
-        </div>
-        
-        <div class="form-group">
-          <label for="newPass" class="form-label">New Password</label>
-          <input type="password" id="newPass" class="form-control" placeholder="Enter new password">
-          <div class="password-strength">
-            <div class="strength-bar">
-              <div class="strength-fill" id="strengthFill"></div>
-            </div>
-            <span id="strengthText">Password strength</span>
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="confirmPass" class="form-label">Confirm New Password</label>
-          <input type="password" id="confirmPass" class="form-control" placeholder="Confirm new password">
-          <div class="form-help">Must match the new password above</div>
-        </div>
-        
-        <button type="submit" class="btn-save">
-          <i class="fas fa-key"></i>
-          Update Password
-        </button>
-      </form>
+      <p style="color: #6b7280; margin-bottom: 1.5rem;">To change your password, please use the <a href="{{ path('admin_profile_change_password') }}" style="color: #43b649; font-weight: 600;">Change Password</a> page in your profile.</p>
+      <a href="{{ path('admin_profile_change_password') }}" class="btn-save" style="text-decoration: none; display: inline-flex; justify-content: center;">
+        <i class="bi bi-key"></i>
+        Go to Change Password
+      </a>
     </div>
   </div>
 
@@ -531,18 +495,7 @@ document.getElementById('profileForm').addEventListener('submit', function(e) {
   }, 1500);
 });
 
-document.getElementById('passwordForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const btn = this.querySelector('.btn-save');
-  btn.classList.add('loading');
-  
-  setTimeout(() => {
-    btn.classList.remove('loading');
-    // Show success message
-    showAlert('Password updated successfully!', 'success');
-    this.reset();
-  }, 1500);
-});
+// Password form removed - redirects to profile page
 
 document.getElementById('preferencesForm').addEventListener('submit', function(e) {
   e.preventDefault();

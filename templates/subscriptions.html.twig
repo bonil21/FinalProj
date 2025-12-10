@@ -1,0 +1,31 @@
+
+{% extends 'base.html.twig' %}
+
+{% block title %}All Subscription Plans - GreenBites{% endblock %}
+
+{% block body %}
+<div class="subscriptions-page" style="max-width: 1000px; margin: 0 auto; padding: 48px 24px;">
+    <h1 style="font-size: 2.2rem; font-weight: 800; color: #2F5133; text-align: center; margin-bottom: 2.5rem;">All Subscription Plans</h1>
+    <div class="plans-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 32px;">
+        {% for plan in plans %}
+        <div class="plan-card" style="background: linear-gradient(135deg, #E7F0DC, #fff); border-radius: 18px; box-shadow: 0 4px 24px rgba(47,81,51,0.08); padding: 2.5rem 2rem; min-width: 260px; max-width: 340px; margin: 0 auto; display: flex; flex-direction: column; align-items: flex-start;">
+            <h3 style="font-size: 1.3rem; color: #2F5133; font-weight: 700; margin-bottom: 0.5rem;">{{ plan.name }}</h3>
+            <p style="font-size: 1.1rem; color: #43b649; font-weight: 700; margin-bottom: 0.5rem;">
+                ₱{{ plan.price|number_format(2) }} / {{ plan.billingInterval|capitalize }}<br>
+                <span style="color: #6b7280; font-size: 0.98rem;">{{ plan.mealsCount }} meals</span>
+            </p>
+            <p style="color: #444; margin-bottom: 1.2rem;">{{ plan.description }}</p>
+            {% if app.user %}
+            <form method="post" action="{{ path('customer_subscribe', {'id': plan.id}) }}">
+                <button type="submit" class="btn btn-primary" style="align-self: stretch; text-align: center;">Subscribe Now</button>
+            </form>
+            {% else %}
+            <a href="{{ path('app_login') }}" class="btn btn-primary" style="align-self: stretch; text-align: center;">Login to Subscribe</a>
+            {% endif %}
+        </div>
+        {% else %}
+        <div style="grid-column: 1 / -1; text-align: center; color: #888;">No subscription plans available at the moment.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

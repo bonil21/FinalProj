@@ -1,0 +1,140 @@
+{% extends 'staff/_base.html.twig' %}
+{% set active_menu = 'products' %}
+
+{% block title %}Edit Product - GreenBites{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .container {
+            max-width: 650px;
+            margin: 60px auto;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        /* Logo */
+        .logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .logo img {
+            width: 55px;
+            margin-right: 8px;
+        }
+
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .logo-text span:first-child {
+            color: #2e7d32;
+        }
+        .logo-text span:last-child {
+            color: #f9a825;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin: 25px 0 35px;
+            font-weight: 700;
+            color: #111;
+        }
+
+        /* Form */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            text-align: left;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 20px;
+            background: #fff;
+            font-size: 1rem;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.05);
+            outline: none;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            box-shadow: 0px 0px 8px rgba(249, 168, 37, 0.4);
+        }
+
+        /* Buttons */
+        .btn-submit {
+            background: #2e7d32;
+            color: white;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-submit:hover {
+            background: #1b5e20;
+        }
+
+        .btn-delete {
+            background: #e53935;
+            color: white;
+            padding: 12px;
+            font-size: 0.95rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background: #b71c1c;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 15px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #333;
+            text-decoration: underline;
+            transition: 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #000;
+        }
+    </style>
+{% endblock %}
+
+{% block staff_content %}
+    <div class="container">
+        <!-- Logo -->
+        <div class="logo">
+            <img src="{{ asset('imageeee/logo.png') }}" alt="GreenBites Logo">
+            <div class="logo-text">
+                <span>Green</span><span>Bites</span>
+            </div>
+        </div>
+
+        <h2>EDIT PRODUCT</h2>
+
+        {{ include('products/_form.html.twig', {'button_label': 'Update'}) }}
+
+        {{ include('products/_delete_form.html.twig', {'button_label': 'Delete'}) }}
+
+        <a href="{{ path('app_products_index') }}" class="back-link" data-turbo="false">Back to list</a>
+    </div>
+{% endblock %}
+

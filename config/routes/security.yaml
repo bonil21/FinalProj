@@ -1,3 +1,4 @@
-_security_logout:
-    resource: security.route_loader.logout
-    type: service
+# Logout route removed - using custom authentication method
+# _security_logout:
+#     resource: security.route_loader.logout
+#     type: service

@@ -1,0 +1,90 @@
+{% extends 'admin/_base.html.twig' %}
+{% set active_menu = 'logs' %}
+{% block title %}GreenBites | Activity Logs{% endblock %}
+
+{% block admin_content %}
+<div class="header">
+  <h1 class="page-title"><i class="bi bi-journal-text"></i> Activity Logs</h1>
+  <p style="color: #6b7280; margin-top: 0.5rem;">Read-only audit trail of all system activities</p>
+</div>
+
+<div class="filters" style="background: #F6E6D7; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+  <form method="get" style="display: flex; gap: 1rem; flex-wrap: wrap; flex: 1;">
+    <input type="text" name="user" placeholder="Filter by user email..." value="{{ userFilter }}" style="flex: 1; min-width: 200px; padding: 0.5rem; border: 1px solid #E4CFBF; border-radius: 8px;">
+    <select name="role" style="padding: 0.5rem; border: 1px solid #E4CFBF; border-radius: 8px;">
+      <option value="">All Roles</option>
+      <option value="ROLE_USER" {% if roleFilter == 'ROLE_USER' %}selected{% endif %}>User</option>
+      <option value="ROLE_STAFF" {% if roleFilter == 'ROLE_STAFF' %}selected{% endif %}>Staff</option>
+      <option value="ROLE_ADMIN" {% if roleFilter == 'ROLE_ADMIN' %}selected{% endif %}>Admin</option>
+    </select>
+    <select name="action" style="padding: 0.5rem; border: 1px solid #E4CFBF; border-radius: 8px;">
+      <option value="">All Actions</option>
+      <option value="LOGIN" {% if actionFilter == 'LOGIN' %}selected{% endif %}>Login</option>
+      <option value="LOGOUT" {% if actionFilter == 'LOGOUT' %}selected{% endif %}>Logout</option>
+      <option value="CREATE" {% if actionFilter == 'CREATE' %}selected{% endif %}>Create</option>
+      <option value="UPDATE" {% if actionFilter == 'UPDATE' %}selected{% endif %}>Update</option>
+      <option value="DELETE" {% if actionFilter == 'DELETE' %}selected{% endif %}>Delete</option>
+    </select>
+    <input type="date" name="date_from" value="{{ dateFrom }}" style="padding: 0.5rem; border: 1px solid #E4CFBF; border-radius: 8px;">
+    <input type="date" name="date_to" value="{{ dateTo }}" style="padding: 0.5rem; border: 1px solid #E4CFBF; border-radius: 8px;">
+    <button type="submit" style="padding: 0.5rem 1.5rem; background: #3B6B4A; color: white; border: none; border-radius: 8px; cursor: pointer;">Filter</button>
+    <a href="{{ path('admin_logs_index') }}" style="padding: 0.5rem 1.5rem; background: #6b7280; color: white; border: none; border-radius: 8px; text-decoration: none; display: inline-block;">Clear</a>
+  </form>
+</div>
+
+<table style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <thead>
+    <tr style="background: #2F5133; color: white;">
+      <th style="padding: 1rem; text-align: left;">Date & Time</th>
+      <th style="padding: 1rem; text-align: left;">User ID</th>
+      <th style="padding: 1rem; text-align: left;">Username</th>
+      <th style="padding: 1rem; text-align: left;">Email</th>
+      <th style="padding: 1rem; text-align: left;">Role</th>
+      <th style="padding: 1rem; text-align: left;">Action</th>
+      <th style="padding: 1rem; text-align: left;">Target Data</th>
+      <th style="padding: 1rem; text-align: left;">Details</th>
+      <th style="padding: 1rem; text-align: left;">IP Address</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for log in logs %}
+    <tr style="border-bottom: 1px solid #E4CFBF;">
+      <td style="padding: 1rem; font-size: 0.9rem;">{{ log.createdAt|date('Y-m-d H:i:s') }}</td>
+      <td style="padding: 1rem; font-size: 0.9rem; font-weight: 600;">{{ log.userId ?? 'N/A' }}</td>
+      <td style="padding: 1rem;">{{ log.username ?? log.userEmail }}</td>
+      <td style="padding: 1rem;">{{ log.userEmail }}</td>
+      <td style="padding: 1rem;">
+        <span style="background: #E7F0DC; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">{{ log.userRole }}</span>
+      </td>
+      <td style="padding: 1rem;">
+        <span style="background: {% if log.action == 'CREATE' %}#6BB97F{% elseif log.action == 'UPDATE' %}#ffb300{% elseif log.action == 'DELETE' %}#ef5350{% elseif log.action == 'LOGIN' %}#42a5f5{% elseif log.action == 'LOGOUT' %}#9e9e9e{% else %}#6b7280{% endif %}; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 700;">{{ log.action }}</span>
+      </td>
+      <td style="padding: 1rem;">
+        {% if log.entity and log.entityId %}
+          {{ log.entity }}: {{ log.details.name ?? log.details.email ?? 'ID: ' ~ log.entityId }}
+        {% else %}
+          N/A
+        {% endif %}
+      </td>
+      <td style="padding: 1rem; font-size: 0.85rem; color: #6b7280;">
+        {% if log.details %}
+          {% for key, value in log.details %}
+            {% if key != 'name' and key != 'email' %}
+              <div><strong>{{ key }}:</strong> {{ value }}</div>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          —
+        {% endif %}
+      </td>
+      <td style="padding: 1rem; font-size: 0.85rem; color: #6b7280;">{{ log.ipAddress ?? 'N/A' }}</td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="9" style="padding: 2rem; text-align: center; color: #6b7280;">No activity logs found.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+
