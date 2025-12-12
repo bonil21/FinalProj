@@ -50,6 +50,8 @@ class SubscriptionController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Set the creator to the current admin user
+            $subscription->setCreatedBy($this->getUser());
             // createdAt is already set in the entity constructor
             $this->entityManager->persist($subscription);
             $this->entityManager->flush();
@@ -74,6 +76,15 @@ class SubscriptionController extends AbstractController
     #[Route('/{id<\d+>}/edit', name: 'app_subscription_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Subscription $subscription): Response
     {
+        // Only allow admin to edit subscriptions they created
+        // If createdBy is null (legacy subscription), allow admin to edit
+        $currentUser = $this->getUser();
+        $createdBy = $subscription->getCreatedBy();
+        if ($createdBy !== null && $createdBy !== $currentUser) {
+            $this->addFlash('error', 'You can only edit subscriptions that you created.');
+            return $this->redirectToRoute('app_subscription_index');
+        }
+
         $form = $this->createForm(SubscriptionType::class, $subscription);
         $form->handleRequest($request);
 
@@ -92,6 +103,15 @@ class SubscriptionController extends AbstractController
     #[Route('/{id<\d+>}/delete', name: 'app_subscription_delete', methods: ['POST'])]
     public function delete(Request $request, Subscription $subscription): Response
     {
+        // Only allow admin to delete subscriptions they created
+        // If createdBy is null (legacy subscription), allow admin to delete
+        $currentUser = $this->getUser();
+        $createdBy = $subscription->getCreatedBy();
+        if ($createdBy !== null && $createdBy !== $currentUser) {
+            $this->addFlash('error', 'You can only delete subscriptions that you created.');
+            return $this->redirectToRoute('app_subscription_index');
+        }
+
         if ($this->isCsrfTokenValid('delete'.$subscription->getId(), $request->request->get('_token'))) {
             $this->entityManager->remove($subscription);
             $this->entityManager->flush();
@@ -118,6 +138,8 @@ class SubscriptionController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Set the creator to the current admin user
+            $plan->setCreatedBy($this->getUser());
             $this->entityManager->persist($plan);
             $this->entityManager->flush();
 
@@ -133,6 +155,15 @@ class SubscriptionController extends AbstractController
     #[Route('/plans/{id<\d+>}/edit', name: 'app_subscription_plan_edit', methods: ['GET', 'POST'])]
     public function planEdit(Request $request, SubscriptionPlan $plan): Response
     {
+        // Only allow admin to edit subscription plans they created
+        // If createdBy is null (legacy plan), allow admin to edit
+        $currentUser = $this->getUser();
+        $createdBy = $plan->getCreatedBy();
+        if ($createdBy !== null && $createdBy !== $currentUser) {
+            $this->addFlash('error', 'You can only edit subscription plans that you created.');
+            return $this->redirectToRoute('app_subscription_plan_index');
+        }
+
         $form = $this->createForm(SubscriptionPlanType::class, $plan);
         $form->handleRequest($request);
 
@@ -151,6 +182,15 @@ class SubscriptionController extends AbstractController
     #[Route('/plans/{id<\d+>}', name: 'app_subscription_plan_delete', methods: ['POST'])]
     public function planDelete(Request $request, SubscriptionPlan $plan): Response
     {
+        // Only allow admin to delete subscription plans they created
+        // If createdBy is null (legacy plan), allow admin to delete
+        $currentUser = $this->getUser();
+        $createdBy = $plan->getCreatedBy();
+        if ($createdBy !== null && $createdBy !== $currentUser) {
+            $this->addFlash('error', 'You can only delete subscription plans that you created.');
+            return $this->redirectToRoute('app_subscription_plan_index');
+        }
+
         if ($this->isCsrfTokenValid('delete'.$plan->getId(), $request->request->get('_token'))) {
             $this->entityManager->remove($plan);
             $this->entityManager->flush();

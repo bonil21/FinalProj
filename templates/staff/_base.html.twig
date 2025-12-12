@@ -15,6 +15,7 @@
       <a href="{{ path('staff_dashboard') }}" class="{% if active_menu is defined and active_menu == 'dashboard' %}active{% endif %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
       <a href="{{ path('app_products_index') }}" class="{% if active_menu is defined and active_menu == 'products' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-basket"></i> Products</a>
       <a href="{{ path('app_products_new') }}" class="{% if active_menu is defined and active_menu == 'products_new' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-plus-circle"></i> Create Product</a>
+      <a href="{{ path('staff_orders_index') }}" class="{% if active_menu is defined and active_menu == 'orders' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-file-earmark-text"></i> Records</a>
       <hr>
       <a href="{{ path('staff_subscription_index') }}" class="{% if active_menu is defined and active_menu == 'subscriptions' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-file-earmark-text"></i> Subscriptions</a>
       <hr>

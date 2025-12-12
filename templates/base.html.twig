@@ -49,5 +49,83 @@
             </div>
         </nav>
         {% block body %}{% endblock %}
+        <script>
+            // Toggle navbar visibility based on dashboard-container presence
+            // Works with Turbo Drive by using turbo:load and turbo:render events
+            (function() {
+                // Prevent duplicate execution
+                if (window.navbarInitialized) return;
+                window.navbarInitialized = true;
+                
+                function toggleNavbar() {
+                    const dashboardContainer = document.querySelector('.dashboard-container');
+                    const navbar = document.querySelector('.navbar');
+                    const body = document.body;
+                    
+                    if (!navbar) return;
+                    
+                    // Always remove inline styles first to prevent conflicts
+                    navbar.style.removeProperty('display');
+                    navbar.style.removeProperty('visibility');
+                    navbar.style.removeProperty('opacity');
+                    navbar.style.removeProperty('height');
+                    navbar.style.removeProperty('padding');
+                    navbar.style.removeProperty('margin');
+                    navbar.style.removeProperty('overflow');
+                    
+                    if (dashboardContainer) {
+                        // Hide navbar on dashboard pages - use multiple methods for reliability
+                        body.classList.add('dashboard-page');
+                        navbar.classList.add('hidden');
+                        // Force hide with inline style as backup
+                        navbar.style.setProperty('display', 'none', 'important');
+                        navbar.style.setProperty('visibility', 'hidden', 'important');
+                    } else {
+                        // Show navbar on regular pages
+                        body.classList.remove('dashboard-page');
+                        navbar.classList.remove('hidden');
+                        // Ensure it's visible
+                        navbar.style.removeProperty('display');
+                        navbar.style.removeProperty('visibility');
+                    }
+                }
+                
+                // Initialize navbar visibility - runs on every page load/navigation
+                function initNavbar() {
+                    toggleNavbar();
+                }
+                
+                // Turbo events - these fire on every Turbo navigation
+                // turbo:load fires after Turbo loads a new page
+                document.addEventListener('turbo:load', initNavbar);
+                // turbo:render fires after Turbo renders the page
+                document.addEventListener('turbo:render', initNavbar);
+                // turbo:before-cache fires before Turbo caches the page (cleanup)
+                document.addEventListener('turbo:before-cache', function() {
+                    // Clean up classes before page is cached
+                    const navbar = document.querySelector('.navbar');
+                    const body = document.body;
+                    if (navbar) {
+                        navbar.classList.remove('hidden');
+                        navbar.style.removeProperty('display');
+                        navbar.style.removeProperty('visibility');
+                    }
+                    if (body) {
+                        body.classList.remove('dashboard-page');
+                    }
+                });
+                
+                // Fallback for initial page load (when Turbo hasn't loaded yet)
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', initNavbar);
+                } else {
+                    initNavbar();
+                }
+                
+                // Fallback for full page load (non-Turbo navigation)
+                window.addEventListener('load', initNavbar);
+            })();
+        </script>
     </body>
 </html>
+

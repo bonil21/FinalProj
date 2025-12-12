@@ -125,6 +125,39 @@ class CheckoutController extends AbstractController
         // Get or create customer
         $customer = $this->getOrCreateCustomer();
 
+        // Determine order creator based on product creators
+        $productCreators = [];
+        foreach ($items as $item) {
+            if ($item['type'] === 'product') {
+                $product = $this->productsRepository->find($item['id']);
+                if ($product && $product->getCreatedBy()) {
+                    $creator = $product->getCreatedBy();
+                    // Only count staff members (not admins) as creators
+                    if (in_array('ROLE_STAFF', $creator->getRoles())) {
+                        $creatorId = $creator->getId();
+                        if (!isset($productCreators[$creatorId])) {
+                            $productCreators[$creatorId] = [
+                                'user' => $creator,
+                                'count' => 0
+                            ];
+                        }
+                        $productCreators[$creatorId]['count'] += ($item['quantity'] ?? 1);
+                    }
+                }
+            }
+        }
+
+        // Set order creator: use the staff member with the most products, or first one found
+        $orderCreator = null;
+        if (!empty($productCreators)) {
+            // Sort by count (descending) to get the staff member with most products
+            uasort($productCreators, function($a, $b) {
+                return $b['count'] <=> $a['count'];
+            });
+            // Get the first (highest count) staff member
+            $orderCreator = reset($productCreators)['user'];
+        }
+
         // Create order
         $order = new Order();
         $order->setOrderNumber('ORD-' . strtoupper(uniqid()));
@@ -133,6 +166,11 @@ class CheckoutController extends AbstractController
         $order->setDeliveryAddress($deliveryAddress);
         $order->setCustomer($customer);
         $order->setCreatedAt(new \DateTimeImmutable());
+        
+        // Set the creator if we found a staff member who created products in this order
+        if ($orderCreator) {
+            $order->setCreatedBy($orderCreator);
+        }
 
         $this->entityManager->persist($order);
         $this->entityManager->flush();

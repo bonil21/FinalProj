@@ -7,7 +7,9 @@
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
     <h1 class="page-title"><i class="bi bi-file-earmark-text"></i> Subscription #{{ subscription.id }}</h1>
     <div style="display: flex; gap: 1rem;">
-      <a href="{{ path('staff_subscription_edit', {id: subscription.id}) }}" class="btn btn-outline-warning">Edit</a>
+      {% if subscription.createdBy == app.user %}
+        <a href="{{ path('staff_subscription_edit', {id: subscription.id}) }}" class="btn btn-outline-warning">Edit</a>
+      {% endif %}
       <a href="{{ path('staff_subscription_index') }}" class="btn btn-secondary">Back to List</a>
     </div>
   </div>

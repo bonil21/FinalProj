@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\SubscriptionPlanRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\User;
 
 #[ORM\Entity(repositoryClass: SubscriptionPlanRepository::class)]
 class SubscriptionPlan
@@ -34,6 +35,10 @@ class SubscriptionPlan
 
     #[ORM\Column]
     private ?bool $active = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $createdBy = null;
 
     public function getId(): ?int
     {
@@ -120,6 +125,18 @@ class SubscriptionPlan
     public function setActive(bool $active): static
     {
         $this->active = $active;
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): static
+    {
+        $this->createdBy = $createdBy;
 
         return $this;
     }

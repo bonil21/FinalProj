@@ -239,6 +239,8 @@ class AdminController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Set the creator to the current admin user
+            $order->setCreatedBy($this->getUser());
             $order->setCreatedAt(new \DateTimeImmutable());
             $entityManager->persist($order);
             $entityManager->flush();
@@ -255,6 +257,7 @@ class AdminController extends AbstractController
     #[Route('/orders/{id}/edit', name: 'admin_orders_edit')]
     public function editOrder(Request $request, Order $order, EntityManagerInterface $entityManager): Response
     {
+        // Admin can edit all orders (including those with null createdBy or created by staff)
         $form = $this->createForm(OrderType::class, $order);
         $form->handleRequest($request);
 
@@ -282,6 +285,7 @@ class AdminController extends AbstractController
     #[Route('/orders/{id}/delete', name: 'admin_orders_delete', methods: ['POST'])]
     public function deleteOrder(Request $request, Order $order, EntityManagerInterface $entityManager): Response
     {
+        // Admin can delete all orders (including those with null createdBy or created by staff)
         if ($this->isCsrfTokenValid('delete'.$order->getId(), $request->request->get('_token'))) {
             $entityManager->remove($order);
             $entityManager->flush();

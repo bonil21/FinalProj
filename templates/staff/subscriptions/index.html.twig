@@ -107,11 +107,15 @@
                         <td>
                             <div class="action-buttons">
                                 <a href="{{ path('staff_subscription_show', {id: subscription.id}) }}" class="btn btn-outline-info btn-sm">View</a>
-                                <a href="{{ path('staff_subscription_edit', {id: subscription.id}) }}" class="btn btn-outline-warning btn-sm">Edit</a>
-                                <form method="post" action="{{ path('staff_subscription_delete', {id: subscription.id}) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this subscription?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ subscription.id) }}">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
-                                </form>
+                                {% if subscription.createdBy == app.user %}
+                                    <a href="{{ path('staff_subscription_edit', {id: subscription.id}) }}" class="btn btn-outline-warning btn-sm">Edit</a>
+                                    <form method="post" action="{{ path('staff_subscription_delete', {id: subscription.id}) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this subscription?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ subscription.id) }}">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                                    </form>
+                                {% else %}
+                                    <span style="color: #6b7280; font-size: 0.85rem;">Created by {{ subscription.createdBy ? subscription.createdBy.email : 'Admin' }}</span>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
