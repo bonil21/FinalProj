@@ -3,10 +3,26 @@ framework:
     secret: '%env(APP_SECRET)%'
 
     # Note that the session will be started ONLY if you read or write from it.
-    session: true
+    session:
+        cookie_samesite: 'none'
+        cookie_secure: true
+        # Allow cookies to work with ngrok and other proxy domains
+        cookie_httponly: true
+        # Don't set a specific domain to allow cookies to work across domains
+        cookie_domain: null
 
     #esi: true
     #fragments: true
+
+when@dev:
+    framework:
+        session:
+            # Use 'none' for SameSite when using ngrok to allow cross-site cookies
+            cookie_samesite: 'none'
+            # Set secure to true when using ngrok (which uses HTTPS)
+            cookie_secure: true
+            cookie_httponly: true
+            cookie_domain: null
 
 when@test:
     framework:

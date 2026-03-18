@@ -60,7 +60,10 @@ class OrderType extends AbstractType
                 'class' => Customer::class,
                 'choice_label' => 'name',
                 'placeholder' => 'Select a customer',
-                'required' => false,
+                'required' => true,
+                'constraints' => [
+                    new NotBlank(['message' => 'Please select a customer for this order.']),
+                ],
             ])
         ;
     }

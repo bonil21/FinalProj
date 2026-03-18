@@ -141,7 +141,154 @@
     isolation: isolate;
 }
 
-/* hero and landing specific styles were removed to restore the original inline-styled homepage */
+/* Landing hero (Figma-inspired) */
+.gb-hero {
+    position: relative;
+    padding: 72px 0 58px;
+    background: linear-gradient(135deg, #f6e6d7 0%, #fbf9f6 45%, #e7f0dc 100%);
+    overflow: hidden;
+}
+
+.gb-hero--bg::before {
+    content: "";
+    position: absolute;
+    inset: -120px -160px -140px -120px;
+    background:
+        radial-gradient(900px 520px at 85% 45%, rgba(67, 182, 73, 0.14), transparent 60%),
+        radial-gradient(720px 420px at 15% 30%, rgba(255, 193, 7, 0.14), transparent 55%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.gb-hero__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    align-items: center;
+    gap: 44px;
+}
+
+.gb-hero__brand {
+    margin: 0 0 6px 0;
+}
+
+.gb-hero__brand-mark {
+    font-weight: 900;
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--green-600);
+}
+
+.gb-hero__title {
+    margin: 10px 0 12px 0;
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+    font-size: clamp(2.1rem, 5vw, 3.35rem);
+}
+
+.gb-hero__title-green {
+    color: var(--green-800);
+    display: block;
+    font-weight: 900;
+}
+
+.gb-hero__title-gold {
+    color: #ffa62b;
+    display: block;
+    font-weight: 900;
+}
+
+.gb-hero__subtitle {
+    margin: 0;
+    color: #2a3c31;
+    font-weight: 700;
+    opacity: 0.95;
+}
+
+.gb-hero__cta {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+}
+
+.gb-hero__visual {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.gb-hero__image-card {
+    width: min(520px, 100%);
+    border-radius: 26px;
+    background: rgba(255, 255, 255, 0.66);
+    padding: 12px;
+    box-shadow: 0 22px 48px rgba(31, 47, 36, 0.14);
+    border: 1px solid rgba(31, 47, 36, 0.08);
+}
+
+.gb-hero__image-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 18px;
+    object-fit: cover;
+}
+
+/* Action row buttons */
+.gb-actions {
+    background: #ffffff;
+    border-top: 1px solid rgba(31, 47, 36, 0.06);
+    border-bottom: 1px solid rgba(31, 47, 36, 0.06);
+}
+
+.gb-actions__row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    padding: 18px 0;
+}
+
+.gb-action {
+    background: #3b6b4a;
+    color: #fff;
+    text-decoration: none;
+    padding: 14px 14px;
+    border-radius: 14px;
+    font-weight: 800;
+    text-align: center;
+    box-shadow: 0 10px 22px rgba(31, 47, 36, 0.14);
+    transition: transform 0.18s ease, filter 0.18s ease;
+}
+
+.gb-action:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+    color: #fff;
+}
+
+/* About block */
+.gb-about__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 34px;
+}
+
+.gb-about__media img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 22px;
+    box-shadow: 0 18px 40px rgba(31, 47, 36, 0.12);
+    border: 1px solid rgba(31, 47, 36, 0.06);
+}
+
+.plan-card--soft-gold {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.12), #ffffff);
+    border-color: rgba(255, 193, 7, 0.28);
+}
 
 .features {
     padding: 40px 0 60px;
@@ -593,16 +740,20 @@
 }
 
 @media (max-width: 1024px) {
-    .hero__grid {
+    .gb-hero__inner {
         grid-template-columns: 1fr;
     }
 
-    .hero-title {
-        font-size: 2.4rem;
+    .gb-hero__visual {
+        justify-content: flex-start;
     }
 
-    .hero__visual {
-        justify-content: flex-start;
+    .gb-actions__row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .gb-about__grid {
+        grid-template-columns: 1fr;
     }
 
     .highlight-shell {
@@ -631,12 +782,8 @@
 }
 
 @media (max-width: 520px) {
-    .hero-title {
-        font-size: 1.9rem;
-    }
-
-    .hero-form {
-        flex-direction: column;
+    .gb-actions__row {
+        grid-template-columns: 1fr;
     }
 
     .cta-banner__inner {

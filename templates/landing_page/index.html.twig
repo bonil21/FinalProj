@@ -1,352 +1,214 @@
-
 {% extends 'base.html.twig' %}
 
 {% block title %}GreenBites - Fresh Organic Vegetables{% endblock %}
 
 {% block body %}
-<div class="homepage" style="max-width: 2000px; margin: 0 auto; background: #fff; box-shadow: 0 2px 24px rgba(0,0,0,0.04); border-radius: 18px;">
-    <!-- HERO SECTION -->
-    <section class="hero" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 60px; padding: 60px 40px; max-width: 1400px; margin: 0 auto;">
-        <div class="hero-content" style="flex: 1; min-width: 320px; max-width: 600px; text-align: center; padding: 0 40px;">
-            <h1 class="hero-title" style="font-size: 2.8rem; font-weight: 800; margin-bottom: 1.5rem; color: #43b649; line-height: 1.2;">Freshness in every <span class="highlight" style="color: #ffc107;">bite</span></h1>
-            <p class="hero-desc" style="font-size: 1.25rem; color: #444; margin-bottom: 2rem; line-height: 1.6;">Save up to 50% off on your first order</p>
-            <form class="hero-form" method="post" action="/subscribe" style="display: flex; gap: 12px; margin-top: 1.5rem; max-width: 500px; margin-left: auto; margin-right: auto;">
-                <input type="email" name="email" placeholder="Your email address" required style="flex: 1; padding: 14px 20px; border-radius: 28px; border: 2px solid #E4CFBF; font-size: 1rem; min-width: 200px; background: #fff; outline: none; transition: border-color 0.3s ease;" onfocus="this.style.borderColor='#6BB97F';" onblur="this.style.borderColor='#E4CFBF';">
-                <button type="submit" style="background: linear-gradient(120deg, #ffc107 0%, #ffb300 100%); color: #222; border: none; border-radius: 28px; padding: 14px 36px; font-weight: 700; font-size: 1.05rem; cursor: pointer; box-shadow: 0 4px 12px rgba(255,193,7,0.3); transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(255,193,7,0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(255,193,7,0.3)';">Subscribe</button>
-            </form>
-        </div>
-        <div class="hero-image" style="flex: 1; min-width: 300px; max-width: 600px; text-align: center; padding: 0 20px;">
-            <img src="/imageeee/bg.jpg" alt="Fresh Vegetables" style="max-width: 100%; height: auto; object-fit: contain; border-radius: 20px; box-shadow: 0 8px 32px rgba(47,81,51,0.15);" />
+<div class="homepage page-shell">
+    <section class="gb-hero gb-hero--bg">
+        <div class="container gb-hero__inner">
+            <div class="gb-hero__copy">
+                <p class="gb-hero__brand">
+                    <span class="gb-hero__brand-mark">Greenbites</span>
+                </p>
+                <h1 class="gb-hero__title">
+                    <span class="gb-hero__title-green">Freshness in every</span>
+                    <span class="gb-hero__title-gold">bite</span>
+                </h1>
+                <p class="gb-hero__subtitle">Save up to 50% off on your first order</p>
+
+                <div class="gb-hero__cta">
+                    <a class="btn btn-primary" href="{{ path('app_products_index') }}">Shop now</a>
+                    {% if not app.user %}
+                        <a class="btn btn-ghost" href="{{ path('app_register') }}">Create account</a>
+                    {% else %}
+                        <a class="btn btn-ghost" href="{{ path('app_cart') }}">View cart</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="gb-hero__visual" aria-hidden="true">
+                <div class="gb-hero__image-card">
+                    <img src="{{ asset('imageeee/bg.jpg') }}" alt="">
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- FEATURE BOXES SECTION -->
-    <section class="features" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; background: #fff; padding: 40px 0;">
-        <div class="feature" style="background: #e7f0dc; color: #2f5133; border-radius: 12px; padding: 2rem; min-width: 180px; text-align: center; font-size: 1.08rem; font-weight: 500;">
-            <strong style="display: block; margin-bottom: 6px;">Pesticide-Free</strong>
-            <span style="font-size: 0.98rem; color: #6b7280;">100% organic cultivation</span>
-        </div>
-        <div class="feature" style="background: #fee2e2; color: #d63031; border-radius: 12px; padding: 2rem; min-width: 180px; text-align: center; font-size: 1.08rem; font-weight: 500;">
-            <strong style="display: block; margin-bottom: 6px;">Farm Direct</strong>
-            <span style="font-size: 0.98rem; color: #6b7280;">Delivered fresh daily</span>
-        </div>
-        <div class="feature" style="background: #f6e6d7; color: #3b6b4a; border-radius: 12px; padding: 2rem; min-width: 180px; text-align: center; font-size: 1.08rem; font-weight: 500;">
-            <strong style="display: block; margin-bottom: 6px;">Sustainable</strong>
-            <span style="font-size: 0.98rem; color: #6b7280;">Eco-friendly practices</span>
-        </div>
-        <div class="feature" style="background: #ecd5c4; color: #8d6742; border-radius: 12px; padding: 2rem; min-width: 180px; text-align: center; font-size: 1.08rem; font-weight: 500;">
-            <strong style="display: block; margin-bottom: 6px;">Local Support</strong>
-            <span style="font-size: 0.98rem; color: #6b7280;">Supporting local farmers</span>
+    <section class="gb-actions">
+        <div class="container gb-actions__row">
+            <a class="gb-action" href="#plans">Subscription plan</a>
+            <a class="gb-action" href="{{ path('app_products_index') }}">Our healthy product</a>
+            <a class="gb-action" href="#about">About the Green Bites</a>
+            <a class="gb-action" href="#contact">Contact us</a>
         </div>
     </section>
 
-    <!-- SUBSCRIPTION PLANS SECTION -->
-    <section class="plans-section" style="position: relative; padding: 100px 60px; background: linear-gradient(135deg, #E7F0DC 0%, #F6E6D7 50%, #FFFFFF 100%); margin: 80px 0; border-radius: 0; overflow: hidden;">
-        <!-- Decorative Background Elements -->
-        <div style="position: absolute; top: -100px; right: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(67,182,73,0.12) 0%, transparent 70%); border-radius: 50%; z-index: 1;"></div>
-        <div style="position: absolute; bottom: -150px; left: -150px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(107,185,127,0.1) 0%, transparent 70%); border-radius: 50%; z-index: 1;"></div>
-        
-        <div style="position: relative; z-index: 2; max-width: 1400px; margin: 0 auto;">
-            <!-- Section Header -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4rem; flex-wrap: wrap; gap: 2rem;">
+    <section class="feature-band section section--padded">
+        <div class="container">
+            <div class="section-lead"><div class="section-pill"></div></div>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-card__icon"><i class="bi bi-shield-check"></i></div>
+                    <strong>Pesticide-Free</strong>
+                    <span>100% organic cultivation</span>
+                </div>
+                <div class="feature-card feature-card--accent-red">
+                    <div class="feature-card__icon"><i class="bi bi-truck"></i></div>
+                    <strong>Farm Direct</strong>
+                    <span>Delivered fresh daily</span>
+                </div>
+                <div class="feature-card feature-card--accent-gold">
+                    <div class="feature-card__icon"><i class="bi bi-recycle"></i></div>
+                    <strong>Sustainable</strong>
+                    <span>Eco-friendly practices</span>
+                </div>
+                <div class="feature-card feature-card--accent-brown">
+                    <div class="feature-card__icon"><i class="bi bi-people"></i></div>
+                    <strong>Local Support</strong>
+                    <span>Supporting local farmers</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="plans" class="plans-section section">
+        <div class="container">
+            <div class="section__header">
                 <div>
-                    <h2 class="section-title" style="margin: 0 0 1rem 0; font-size: 3rem; color: #2F5133; font-weight: 900; letter-spacing: -1px; text-shadow: 0 2px 8px rgba(231,240,220,0.5);">Subscription Plans</h2>
-                    <p style="font-size: 1.2rem; color: #3b6b4a; margin: 0; max-width: 600px; line-height: 1.6;">Choose the perfect plan for your lifestyle. Fresh, organic meals delivered to your door.</p>
+                    <p class="eyebrow">Subscription plan</p>
+                    <h2>Choose a plan that fits you</h2>
+                    <p class="muted">Fresh, organic meals delivered to your door.</p>
                 </div>
-                <a href="/subscriptions" class="btn btn-primary" style="font-size: 1.1rem; padding: 16px 40px; border-radius: 28px; background: linear-gradient(120deg, #43b649 0%, #ffc107 100%); color: #fff; font-weight: 700; box-shadow: 0 6px 24px rgba(67,182,73,0.3); transition: transform 0.3s ease, box-shadow 0.3s ease; text-decoration: none; white-space: nowrap;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 32px rgba(67,182,73,0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 6px 24px rgba(67,182,73,0.3)';">View All Plans</a>
+                <a class="btn btn-primary" href="{{ path('app_subscription_index') }}">View plans</a>
             </div>
-            
-            <!-- Plans Grid -->
-            <div class="plans-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; justify-items: center; margin-top: 3rem;">
+
+            <div class="card-grid card-grid--plans">
                 {% for plan in plans %}
-                {% set colorSchemes = [
-                    {bg: 'linear-gradient(135deg, #E7F0DC, #fff)', border: 'rgba(67,182,73,0.1)', text: '#2F5133', price: '#43b649', btn: 'linear-gradient(120deg, #43b649 0%, #6BB97F 100%)', shadow: 'rgba(47,81,51,0.15)'},
-                    {bg: 'linear-gradient(135deg, #fee2e2, #fff)', border: 'rgba(214,48,49,0.1)', text: '#d63031', price: '#d63031', btn: 'linear-gradient(120deg, #d63031 0%, #e74c3c 100%)', shadow: 'rgba(214,48,49,0.15)'},
-                    {bg: 'linear-gradient(135deg, #f6e6d7, #fff)', border: 'rgba(59,107,74,0.1)', text: '#3b6b4a', price: '#3b6b4a', btn: 'linear-gradient(120deg, #3b6b4a 0%, #43b649 100%)', shadow: 'rgba(59,107,74,0.15)'},
-                    {bg: 'linear-gradient(135deg, #ecd5c4, #fff)', border: 'rgba(141,103,66,0.1)', text: '#8d6742', price: '#8d6742', btn: 'linear-gradient(120deg, #8d6742 0%, #a67c52 100%)', shadow: 'rgba(141,103,66,0.15)'},
-                    {bg: 'linear-gradient(135deg, #E7F0DC, #fff)', border: 'rgba(67,182,73,0.1)', text: '#2F5133', price: '#43b649', btn: 'linear-gradient(120deg, #43b649 0%, #6BB97F 100%)', shadow: 'rgba(47,81,51,0.15)'}
-                ] %}
-                {% set scheme = colorSchemes[loop.index0 % colorSchemes|length] %}
-                <div class="plan-card" style="background: {{ scheme.bg }}; border-radius: 24px; box-shadow: 0 8px 32px {{ scheme.shadow }}; padding: 3rem 2.5rem; min-width: 280px; max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; align-items: flex-start; transition: transform 0.3s ease, box-shadow 0.3s ease; border: 2px solid {{ scheme.border }};" onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 48px {{ scheme.shadow|replace({'0.15': '0.25'}) }}';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px {{ scheme.shadow }}';">
-                    <h3 style="font-size: 1.5rem; color: {{ scheme.text }}; font-weight: 800; margin-bottom: 1rem; line-height: 1.3;">{{ plan.name }}</h3>
-                    <p style="font-size: 1.3rem; color: {{ scheme.price }}; font-weight: 800; margin-bottom: 0.8rem; line-height: 1.4;">₱{{ plan.price|number_format(2, '.', ',') }} / {{ plan.billingInterval|title }}<br><span style="color: #6b7280; font-size: 1rem; font-weight: 500;">{{ plan.mealsIncluded }} meals</span></p>
-                    <p style="color: #444; margin-bottom: 2rem; line-height: 1.7; font-size: 1.05rem;">{{ plan.description }}</p>
-                    <form method="POST" action="{{ path('customer_subscribe', {id: plan.id}) }}" style="width: 100%; margin: 0;">
-                        <input type="hidden" name="_token" value="{{ csrf_token('subscribe_' ~ plan.id) }}">
-                        <button type="submit" style="width: 100%; padding: 14px 24px; border-radius: 16px; background: {{ scheme.btn }}; color: white; font-weight: 700; border: none; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px {{ scheme.shadow }}; font-size: 1rem;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px {{ scheme.shadow|replace({'0.15': '0.4', '0.3': '0.4'}) }}';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px {{ scheme.shadow }}';">Subscribe Now</button>
-                    </form>
-                </div>
+                    {% set planSkin = ['plan-card--soft-green','plan-card--soft-gold','plan-card--soft-olive','plan-card--soft-brown'][loop.index0 % 4] %}
+                    <article class="plan-card {{ planSkin }}">
+                        <div>
+                            <h3 style="margin:0;">{{ plan.name }}</h3>
+                            <p class="plan-card__price">
+                                ₱{{ plan.price|number_format(2, '.', ',') }}
+                                <span>/ {{ plan.billingInterval|title }}</span>
+                            </p>
+                            <p class="plan-card__meta">
+                                <span class="badge">Meals: {{ plan.mealsIncluded }}</span>
+                                {% if plan.active %}<span class="badge badge--soft">Active</span>{% endif %}
+                            </p>
+                        </div>
+                        <p class="muted" style="font-weight:600;">{{ plan.description }}</p>
+                        <form method="POST" action="{{ path('customer_subscribe', {id: plan.id}) }}" style="margin:0;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('subscribe_' ~ plan.id) }}">
+                            <button class="btn btn-primary" type="submit" style="width:100%;">Subscribe</button>
+                        </form>
+                    </article>
                 {% else %}
-                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #FFFFFF; border-radius: 24px; box-shadow: 0 8px 32px rgba(47,81,51,0.12);">
-                    <div style="font-size: 4rem; margin-bottom: 20px;">📋</div>
-                    <h3 style="font-size: 1.8rem; color: #2F5133; font-weight: 700; margin-bottom: 12px;">No Subscription Plans Available</h3>
-                    <p style="color: #6b7280; font-size: 1.1rem; margin-bottom: 24px;">Check back soon for subscription plans!</p>
-                </div>
+                    <div class="empty-state">No subscription plans available yet.</div>
                 {% endfor %}
             </div>
         </div>
     </section>
 
-    <!-- FEATURED PRODUCTS SECTION -->
-    <section class="featured-products-section" style="position: relative; padding: 100px 32px; background: linear-gradient(135deg, #E7F0DC 0%, #F6E6D7 50%, #FFFFFF 100%); overflow: hidden;">
-        <!-- Decorative Background Elements -->
-        <div style="position: absolute; top: -50px; right: -50px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(107,185,127,0.15) 0%, transparent 70%); border-radius: 50%; z-index: 1;"></div>
-        <div style="position: absolute; bottom: -100px; left: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(67,182,73,0.1) 0%, transparent 70%); border-radius: 50%; z-index: 1;"></div>
-        
-        <div style="position: relative; z-index: 2; max-width: 1400px; margin: 0 auto;">
-            <!-- Section Header -->
-            <div style="text-align: center; margin-bottom: 60px;">
-                <h2 style="font-size: 3.2rem; font-weight: 900; color: #2F5133; margin-bottom: 20px; letter-spacing: -1px; text-shadow: 0 2px 8px rgba(231,240,220,0.5);">100% Organic Vegetables Always Fresh</h2>
-                <p style="font-size: 1.3rem; color: #3b6b4a; max-width: 800px; margin: 0 auto 40px auto; line-height: 1.8;">Our farm-fresh vegetables are hand-picked daily and delivered within hours of harvest. We work exclusively with certified organic farms that follow sustainable practices.</p>
-                <a href="{{ path('app_products_index') }}" class="btn btn-primary" style="display: inline-block; font-size: 1.15rem; padding: 18px 48px; border-radius: 28px; box-shadow: 0 6px 28px rgba(67,182,73,0.25); background: linear-gradient(120deg, #43b649 0%, #ffc107 100%); color: #fff; font-weight: 700; text-decoration: none; transition: transform 0.3s ease, box-shadow 0.3s ease;">View All Products</a>
+    <section class="highlight-section section">
+        <div class="container highlight-shell">
+            <div class="highlight-copy">
+                <p class="eyebrow">Our healthy product</p>
+                <h2>100% organic vegetables always fresh</h2>
+                <p>Our farm-fresh vegetables are hand-picked daily and delivered within hours of harvest.</p>
+                <a class="btn btn-primary" href="{{ path('app_products_index') }}">View all products</a>
+
+                {% if categories is defined and categories|length > 0 %}
+                    <div style="margin-top:16px;">
+                        <p class="muted" style="font-weight:700; margin-bottom:10px;">Categories</p>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            {% for category in categories|slice(0, 8) %}
+                                <span class="badge">{{ category.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
             </div>
 
-            <!-- Featured Products Grid -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px; margin-top: 60px;">
-                {% for product in products|slice(0, 6) %}
-                <div class="featured-product-card" style="background: #FFFFFF; border-radius: 24px; box-shadow: 0 8px 32px rgba(47,81,51,0.12); padding: 0; overflow: hidden; position: relative; transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 48px rgba(47,81,51,0.2)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(47,81,51,0.12)';">
-                    <!-- Product Image -->
-                    <div style="width: 100%; height: 240px; background: linear-gradient(135deg, #E7F0DC, #6BB97F); position: relative; overflow: hidden;">
+            <div class="highlight-products">
+                {% for product in featuredProducts|default(products|slice(0, 6))|slice(0, 6) %}
+                    <div class="mini-card">
                         {% if product.image %}
-                            <img src="{{ asset('uploads/images/' ~ product.image) }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';">
+                            <img src="{{ asset('imageeee/' ~ product.image) }}" alt="{{ product.name }}">
                         {% else %}
-                            <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: #6BB97F;">🥬</div>
+                            <img src="{{ asset('imageeee/bg.jpg') }}" alt="">
                         {% endif %}
-                        <!-- Category Badge -->
-                        {% if product.category %}
-                        <div style="position: absolute; top: 16px; left: 16px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; color: #2F5133; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                            {{ product.category.name }}
-                        </div>
-                        {% endif %}
-                    </div>
-                    
-                    <!-- Product Info -->
-                    <div style="padding: 24px;">
-                        <h3 style="font-size: 1.4rem; color: #2F5133; font-weight: 800; margin-bottom: 10px; line-height: 1.3;">{{ product.name }}</h3>
-                        <p style="color: #6b7280; font-size: 0.95rem; margin-bottom: 16px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{{ product.description|slice(0, 100) }}{% if product.description|length > 100 %}...{% endif %}</p>
-                        
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <div>
-                                <span style="font-size: 1.8rem; color: #43b649; font-weight: 900;">₱{{ product.price|number_format(2, '.', ',') }}</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <span style="font-size: 0.85rem; color: #6b7280; background: #F6E6D7; padding: 4px 10px; border-radius: 12px;">⭐ Fresh</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Action Buttons -->
-                        <div style="display: flex; gap: 10px;">
-                            <form method="POST" action="{{ path('app_cart_add_product', {id: product.id}) }}" style="flex: 1; margin: 0;">
+                        <h4>{{ product.name }}</h4>
+                        <p class="price">₱{{ product.price|number_format(2, '.', ',') }}</p>
+                        <div style="display:flex; gap:10px; margin-top:10px; justify-content:center;">
+                            <form method="POST" action="{{ path('app_cart_add_product', {id: product.id}) }}" style="margin:0;">
                                 <input type="hidden" name="_token" value="{{ csrf_token('add_product_' ~ product.id) }}">
-                                <button type="submit" style="width: 100%; padding: 14px; background: linear-gradient(120deg, #43b649 0%, #6BB97F 100%); color: white; border: none; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(67,182,73,0.3);">Add to Cart</button>
+                                <button class="btn btn-primary" type="submit" style="padding:10px 14px;">Order</button>
                             </form>
-                            <a href="{{ path('app_products_show', {id: product.id}) }}" style="padding: 14px 20px; background: #F6E6D7; color: #2F5133; border: 2px solid #E4CFBF; border-radius: 14px; font-weight: 700; font-size: 1rem; text-decoration: none; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;" onmouseover="this.style.background='#E7F0DC'; this.style.borderColor='#6BB97F';" onmouseout="this.style.background='#F6E6D7'; this.style.borderColor='#E4CFBF';">View</a>
+                            <a class="btn btn-ghost" href="{{ path('app_products_show', {id: product.id}) }}" style="padding:10px 14px;">View</a>
                         </div>
                     </div>
-                </div>
                 {% else %}
-                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #FFFFFF; border-radius: 24px; box-shadow: 0 8px 32px rgba(47,81,51,0.12);">
-                    <div style="font-size: 4rem; margin-bottom: 20px;">🥬</div>
-                    <h3 style="font-size: 1.8rem; color: #2F5133; font-weight: 700; margin-bottom: 12px;">No Products Available Yet</h3>
-                    <p style="color: #6b7280; font-size: 1.1rem; margin-bottom: 24px;">Check back soon for fresh organic products!</p>
-                    <a href="{{ path('app_products_index') }}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(120deg, #43b649 0%, #ffc107 100%); color: white; border-radius: 24px; font-weight: 700; text-decoration: none;">Browse All Products</a>
-                </div>
+                    <div class="empty-state">No products available yet.</div>
                 {% endfor %}
             </div>
         </div>
+        <div class="section-divider"></div>
     </section>
 
-    <!-- ABOUT US SECTION -->
-    <section class="about-us-section" style="padding: 100px 32px; background: linear-gradient(135deg, #E7F0DC 0%, #F6E6D7 50%, #FFFFFF 100%); position: relative; overflow: hidden;">
-        <!-- Decorative Background Elements -->
-        <div style="position: absolute; top: -100px; right: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(67,182,73,0.1) 0%, transparent 70%); border-radius: 50%; z-index: 1;"></div>
-        <div style="position: absolute; bottom: -150px; left: -150px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(107,185,127,0.08) 0%, transparent 70%); border-radius: 50%; z-index: 1;"></div>
-        
-        <div style="position: relative; z-index: 2; max-width: 1400px; margin: 0 auto;">
-            <!-- Section Header -->
-            <div style="text-align: center; margin-bottom: 60px;">
-                <h2 style="font-size: 3.2rem; font-weight: 900; color: #2F5133; margin-bottom: 20px; letter-spacing: -1px; text-shadow: 0 2px 8px rgba(231,240,220,0.5);">
-                    <i class="bi bi-heart-fill" style="color: #43b649; margin-right: 12px;"></i>About GreenBites
-                </h2>
-                <p style="font-size: 1.3rem; color: #3b6b4a; max-width: 800px; margin: 0 auto; line-height: 1.8;">Your trusted source for fresh, organic vegetables delivered straight from local farms to your doorstep.</p>
+    <section id="about" class="gb-about section section--muted">
+        <div class="container gb-about__grid">
+            <div class="gb-about__copy">
+                <p class="eyebrow">About</p>
+                <h2>THE GREEN BITES</h2>
+                <p class="lead">Fresh, healthy meals delivered to your door. Eat clean, feel great.</p>
+                <p class="muted">GreenBites connects you with local farms and prepares nourishing meals and produce bundles with quality you can taste.</p>
             </div>
-
-            <!-- About Content Grid -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-bottom: 60px;">
-                <!-- Mission Card -->
-                <div class="about-card" style="background: #FFFFFF; border-radius: 24px; box-shadow: 0 8px 32px rgba(47,81,51,0.12); padding: 40px; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 48px rgba(47,81,51,0.2)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(47,81,51,0.12)';">
-                    <div style="font-size: 4rem; margin-bottom: 24px; color: #43b649;">
-                        <i class="bi bi-bullseye"></i>
-                    </div>
-                    <h3 style="font-size: 1.8rem; color: #2F5133; font-weight: 800; margin-bottom: 16px;">Our Mission</h3>
-                    <p style="color: #6b7280; line-height: 1.7; font-size: 1.05rem;">To make fresh, organic vegetables accessible to everyone while supporting local farmers and promoting sustainable agriculture practices. We believe in the power of healthy eating to transform lives.</p>
-                </div>
-
-                <!-- Values Card -->
-                <div class="about-card" style="background: #FFFFFF; border-radius: 24px; box-shadow: 0 8px 32px rgba(47,81,51,0.12); padding: 40px; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 48px rgba(47,81,51,0.2)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(47,81,51,0.12)';">
-                    <div style="font-size: 4rem; margin-bottom: 24px; color: #43b649;">
-                        <i class="bi bi-star-fill"></i>
-                    </div>
-                    <h3 style="font-size: 1.8rem; color: #2F5133; font-weight: 800; margin-bottom: 16px;">Our Values</h3>
-                    <p style="color: #6b7280; line-height: 1.7; font-size: 1.05rem;">Quality, sustainability, and community are at the heart of everything we do. We partner with certified organic farms, prioritize eco-friendly practices, and ensure fair compensation for our farming partners.</p>
-                </div>
-
-                <!-- Story Card -->
-                <div class="about-card" style="background: #FFFFFF; border-radius: 24px; box-shadow: 0 8px 32px rgba(47,81,51,0.12); padding: 40px; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 48px rgba(47,81,51,0.2)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(47,81,51,0.12)';">
-                    <div style="font-size: 4rem; margin-bottom: 24px; color: #43b649;">
-                        <i class="bi bi-book-fill"></i>
-                    </div>
-                    <h3 style="font-size: 1.8rem; color: #2F5133; font-weight: 800; margin-bottom: 16px;">Our Story</h3>
-                    <p style="color: #6b7280; line-height: 1.7; font-size: 1.05rem;">Founded with a passion for healthy living, GreenBites started as a small initiative to connect urban families with fresh farm produce. Today, we're proud to serve thousands of customers while maintaining our commitment to quality and sustainability.</p>
-                </div>
-            </div>
-
-            <!-- Key Features -->
-            <div style="background: #FFFFFF; border-radius: 24px; box-shadow: 0 8px 32px rgba(47,81,51,0.12); padding: 48px; border-left: 4px solid #43b649;">
-                <h3 style="font-size: 2rem; color: #2F5133; font-weight: 800; margin-bottom: 32px; text-align: center;">Why Choose GreenBites?</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 32px;">
-                    <div style="display: flex; align-items: start; gap: 16px;">
-                        <div style="font-size: 2rem; color: #43b649; flex-shrink: 0;">
-                            <i class="bi bi-check-circle-fill"></i>
-                        </div>
-                        <div>
-                            <h4 style="font-size: 1.2rem; color: #2F5133; font-weight: 700; margin-bottom: 8px;">100% Organic</h4>
-                            <p style="color: #6b7280; line-height: 1.6;">Certified organic produce with no pesticides or harmful chemicals.</p>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: start; gap: 16px;">
-                        <div style="font-size: 2rem; color: #43b649; flex-shrink: 0;">
-                            <i class="bi bi-truck"></i>
-                        </div>
-                        <div>
-                            <h4 style="font-size: 1.2rem; color: #2F5133; font-weight: 700; margin-bottom: 8px;">Fresh Daily Delivery</h4>
-                            <p style="color: #6b7280; line-height: 1.6;">Hand-picked and delivered within 24 hours of harvest.</p>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: start; gap: 16px;">
-                        <div style="font-size: 2rem; color: #43b649; flex-shrink: 0;">
-                            <i class="bi bi-people-fill"></i>
-                        </div>
-                        <div>
-                            <h4 style="font-size: 1.2rem; color: #2F5133; font-weight: 700; margin-bottom: 8px;">Support Local Farmers</h4>
-                            <p style="color: #6b7280; line-height: 1.6;">Direct partnerships with local farms ensuring fair trade.</p>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: start; gap: 16px;">
-                        <div style="font-size: 2rem; color: #43b649; flex-shrink: 0;">
-                            <i class="bi bi-shield-check"></i>
-                        </div>
-                        <div>
-                            <h4 style="font-size: 1.2rem; color: #2F5133; font-weight: 700; margin-bottom: 8px;">Quality Guaranteed</h4>
-                            <p style="color: #6b7280; line-height: 1.6;">Satisfaction guaranteed or your money back.</p>
-                        </div>
-                    </div>
-                </div>
+            <div class="gb-about__media">
+                <img src="{{ asset('imageeee/bg.jpg') }}" alt="Green Bites">
             </div>
         </div>
     </section>
 
-    <!-- CUSTOMER FEEDBACK SECTION -->
-    <section class="customer-feedback-section" style="padding: 100px 32px; background: linear-gradient(135deg, #F6E6D7 0%, #E7F0DC 100%); position: relative; overflow: hidden;">
-        <!-- Decorative Background Elements -->
-        <div style="position: absolute; top: -50px; left: -50px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(67,182,73,0.12) 0%, transparent 70%); border-radius: 50%; z-index: 1;"></div>
-        <div style="position: absolute; bottom: -100px; right: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(107,185,127,0.1) 0%, transparent 70%); border-radius: 50%; z-index: 1;"></div>
-        
-        <div style="position: relative; z-index: 2; max-width: 1400px; margin: 0 auto;">
-            <!-- Section Header -->
-            <div style="text-align: center; margin-bottom: 60px;">
-                <h2 style="font-size: 3.2rem; font-weight: 900; color: #2F5133; margin-bottom: 20px; letter-spacing: -1px; text-shadow: 0 2px 8px rgba(231,240,220,0.5);">
-                    <i class="bi bi-chat-quote-fill" style="color: #43b649; margin-right: 12px;"></i>What Our Customers Say
-                </h2>
-                <p style="font-size: 1.3rem; color: #3b6b4a; max-width: 800px; margin: 0 auto; line-height: 1.8;">Real feedback from real customers who love fresh, organic vegetables.</p>
-            </div>
-
-            <!-- Testimonials Grid -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px;">
-                <!-- Testimonial 1 -->
-                <div class="testimonial-card" style="background: #FFFFFF; border-radius: 24px; box-shadow: 0 8px 32px rgba(47,81,51,0.12); padding: 32px; position: relative; transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 48px rgba(47,81,51,0.2)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(47,81,51,0.12)';">
-                    <div style="font-size: 3rem; color: #ffc107; margin-bottom: 16px;">★★★★★</div>
-                    <p style="color: #6b7280; line-height: 1.8; font-size: 1.05rem; margin-bottom: 24px; font-style: italic;">"GreenBites has completely transformed how I shop for vegetables. The quality is outstanding, and I love knowing that I'm supporting local farmers. The delivery is always on time and the produce is incredibly fresh!"</p>
-                    <div style="display: flex; align-items: center; gap: 16px; padding-top: 20px; border-top: 2px solid #E4CFBF;">
-                        <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #43b649, #6BB97F); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: 700;">SM</div>
-                        <div>
-                            <h4 style="font-size: 1.1rem; color: #2F5133; font-weight: 700; margin-bottom: 4px;">Sarah Martinez</h4>
-                            <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">Regular Customer</p>
-                        </div>
-                    </div>
+    <footer id="contact" class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4>Contact us</h4>
+                    <p class="muted">Phone: 0912-345-6789</p>
+                    <p class="muted">Email: <a href="mailto:support@greenbites.com">support@greenbites.com</a></p>
                 </div>
-
-                <!-- Testimonial 2 -->
-                <div class="testimonial-card" style="background: #FFFFFF; border-radius: 24px; box-shadow: 0 8px 32px rgba(47,81,51,0.12); padding: 32px; position: relative; transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 48px rgba(47,81,51,0.2)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(47,81,51,0.12)';">
-                    <div style="font-size: 3rem; color: #ffc107; margin-bottom: 16px;">★★★★★</div>
-                    <p style="color: #6b7280; line-height: 1.8; font-size: 1.05rem; margin-bottom: 24px; font-style: italic;">"As a busy professional, the subscription service has been a game-changer. I get fresh, organic vegetables delivered weekly without any hassle. The variety is amazing and everything tastes so much better than store-bought!"</p>
-                    <div style="display: flex; align-items: center; gap: 16px; padding-top: 20px; border-top: 2px solid #E4CFBF;">
-                        <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #d63031, #e74c3c); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: 700;">JC</div>
-                        <div>
-                            <h4 style="font-size: 1.1rem; color: #2F5133; font-weight: 700; margin-bottom: 4px;">John Chen</h4>
-                            <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">Subscription Member</p>
-                        </div>
-                    </div>
+                <div>
+                    <h4>Our socials</h4>
+                    <ul>
+                        <li><a href="#" rel="nofollow">Facebook</a></li>
+                        <li><a href="#" rel="nofollow">Instagram</a></li>
+                        <li><a href="#" rel="nofollow">Email</a></li>
+                    </ul>
                 </div>
-
-                <!-- Testimonial 3 -->
-                <div class="testimonial-card" style="background: #FFFFFF; border-radius: 24px; box-shadow: 0 8px 32px rgba(47,81,51,0.12); padding: 32px; position: relative; transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 48px rgba(47,81,51,0.2)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(47,81,51,0.12)';">
-                    <div style="font-size: 3rem; color: #ffc107; margin-bottom: 16px;">★★★★★</div>
-                    <p style="color: #6b7280; line-height: 1.8; font-size: 1.05rem; margin-bottom: 24px; font-style: italic;">"The customer service is exceptional, and the vegetables are always top quality. My family has been eating healthier since we started ordering from GreenBites. Highly recommend to anyone looking for fresh, organic produce!"</p>
-                    <div style="display: flex; align-items: center; gap: 16px; padding-top: 20px; border-top: 2px solid #E4CFBF;">
-                        <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #3b6b4a, #43b649); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: 700;">MR</div>
-                        <div>
-                            <h4 style="font-size: 1.1rem; color: #2F5133; font-weight: 700; margin-bottom: 4px;">Maria Rodriguez</h4>
-                            <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">Loyal Customer</p>
-                        </div>
-                    </div>
+                <div>
+                    <h4>Explore</h4>
+                    <ul>
+                        <li><a href="{{ path('app_landing_page') }}">Home</a></li>
+                        <li><a href="{{ path('app_products_index') }}">Products</a></li>
+                        <li><a href="{{ path('app_subscription_index') }}">Subscription plans</a></li>
+                        {% if app.user %}
+                            <li><a href="{{ path('app_cart') }}">Cart</a></li>
+                        {% else %}
+                            <li><a href="{{ path('app_login') }}">Login</a></li>
+                        {% endif %}
+                    </ul>
                 </div>
             </div>
 
-            <!-- Call to Action -->
-            <div style="text-align: center; margin-top: 60px;">
-                <p style="font-size: 1.2rem; color: #3b6b4a; margin-bottom: 24px;">Join thousands of satisfied customers today!</p>
-                <a href="{{ path('app_products_index') }}" style="display: inline-block; padding: 18px 48px; background: linear-gradient(120deg, #43b649 0%, #ffc107 100%); color: white; border-radius: 28px; font-weight: 700; font-size: 1.1rem; text-decoration: none; box-shadow: 0 6px 24px rgba(67,182,73,0.3); transition: transform 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 32px rgba(67,182,73,0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 6px 24px rgba(67,182,73,0.3)';">Start Shopping Now</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- FOOTER SECTION -->
-    <footer class="footer" style="background: linear-gradient(135deg, #2F5133, #1a3320); color: #E7F0DC; padding: 60px 0 20px; margin-top: 60px;">
-        <div class="footer-columns" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; max-width: 1400px; margin: 0 auto 40px auto;">
-            <div class="footer-col" style="text-align: left;">
-                <h4 style="color: #FFFFFF; font-weight: 700; margin-bottom: 16px; font-size: 1.2rem;">Explore</h4>
-                <ul style="list-style: none; padding: 0; margin: 0;">
-                    <li><a href="/" style="color: #E7F0DC; text-decoration: none;">Home</a></li>
-                    <li><a href="/shop" style="color: #E7F0DC; text-decoration: none;">Shop</a></li>
-                    <li><a href="/about" style="color: #E7F0DC; text-decoration: none;">About Us</a></li>
-                    <li><a href="/plans" style="color: #E7F0DC; text-decoration: none;">Subscription Plans</a></li>
+            <div class="footer-bottom">
+                <div>© {{ "now"|date("Y") }} GreenBites</div>
+                <ul class="footer-links">
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#contact">Contact</a></li>
                 </ul>
             </div>
-            <div class="footer-col" style="text-align: left;">
-                <h4 style="color: #FFFFFF; font-weight: 700; margin-bottom: 16px; font-size: 1.2rem;">Support</h4>
-                <ul style="list-style: none; padding: 0; margin: 0;">
-                    <li><a href="/delivery" style="color: #E7F0DC; text-decoration: none;">Delivery Options</a></li>
-                    <li><a href="/shipping" style="color: #E7F0DC; text-decoration: none;">Shipping Rates</a></li>
-                    <li><a href="/tracking" style="color: #E7F0DC; text-decoration: none;">Order Tracking</a></li>
-                    <li><a href="/returns" style="color: #E7F0DC; text-decoration: none;">Returns Policy</a></li>
-                </ul>
-            </div>
-            <div class="footer-col" style="text-align: left;">
-                <h4 style="color: #FFFFFF; font-weight: 700; margin-bottom: 16px; font-size: 1.2rem;">Contact</h4>
-                <ul style="list-style: none; padding: 0; margin: 0;">
-                    <li style="margin-bottom: 10px;">Phone: 0912-345-6789</li>
-                    <li>Email: <a href="mailto:support@greenbites.com" style="color: #E7F0DC; text-decoration: none;">support@greenbites.com</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom" style="border-top: 1px solid rgba(107,185,127,0.2); padding-top: 20px; text-align: center; color: #E7F0DC; opacity: 0.8; max-width: 1400px; margin: 0 auto;">
-            <span class="footer-tagline" style="display: block; margin-bottom: 12px; font-size: 1.1rem;">Fresh, healthy meals delivered to your door. Eat clean, feel great.</span>
-            <ul class="footer-links" style="display: flex; justify-content: center; gap: 32px; list-style: none; padding: 0; margin: 0;">
-                <li><a href="/privacy" style="color: #E7F0DC; text-decoration: none;">Privacy Policy</a></li>
-                <li><a href="/terms" style="color: #E7F0DC; text-decoration: none;">Terms of Service</a></li>
-                <li><a href="/contact" style="color: #E7F0DC; text-decoration: none;">Contact Us</a></li>
-            </ul>
         </div>
     </footer>
 </div>

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Customer;
 use App\Entity\Order;
 use App\Entity\Payment;
+use App\Entity\Transaction;
 use App\Entity\Subscription;
 use App\Repository\CustomerRepository;
 use App\Repository\OrderRepository;
@@ -97,6 +98,8 @@ class PaymentController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $paymentMethod = $request->request->get('payment_method');
+        $isCashOnDelivery = $paymentMethod === 'cash';
+        $isOnlinePayment = in_array($paymentMethod, ['gcash', 'atm'], true);
         $orderId = $request->request->get('order_id');
         $subscriptionId = $request->request->get('subscription_id');
 
@@ -123,20 +126,52 @@ class PaymentController extends AbstractController
             $payment->setAmount((string)$order->getTotalAmount());
             $payment->setCurrency('PHP');
             $payment->setPaymentMethod($paymentMethod);
-            $payment->setStatus('completed');
+            $payment->setStatus($isCashOnDelivery ? 'pending' : 'completed');
             $payment->setDescription('Payment for Order #' . $order->getOrderNumber());
             $payment->setCreatedAt(new \DateTimeImmutable());
-            $payment->setPaidAt(new \DateTimeImmutable());
+            $payment->setPaidAt($isCashOnDelivery ? null : new \DateTimeImmutable());
 
             $this->entityManager->persist($payment);
 
+            // Create transaction record
+            $transaction = new Transaction();
+            $transaction->setCustomer($customer);
+            $transaction->setPayment($payment);
+            $transaction->setType('payment');
+            $transaction->setAmount((string)$order->getTotalAmount());
+            $transaction->setCurrency('PHP');
+            $transaction->setStatus($isCashOnDelivery ? 'pending' : 'completed');
+            $transaction->setReference($order->getOrderNumber());
+            $transaction->setDescription(sprintf(
+                'Order #%s via %s',
+                $order->getOrderNumber(),
+                strtoupper($paymentMethod)
+            ));
+            $transaction->setCreatedAt(new \DateTimeImmutable());
+            $transaction->setProcessedAt($isCashOnDelivery ? null : new \DateTimeImmutable());
+            $transaction->setMetadata([
+                'orderId' => $order->getId(),
+                'paymentMethod' => $paymentMethod,
+            ]);
+
+            $this->entityManager->persist($transaction);
+
             // Update order status
-            $order->setStatus('paid');
+            if ($isOnlinePayment) {
+                $order->setStatus('paid');
+            } else {
+                $order->setStatus('pending');
+            }
             $order->setUpdatedAt(new \DateTimeImmutable());
 
             $this->entityManager->flush();
 
-            $this->addFlash('success', 'Payment successful! Your order has been confirmed.');
+            $this->addFlash(
+                'success',
+                $isCashOnDelivery
+                    ? 'Order placed with Cash on Delivery. Please pay upon delivery.'
+                    : 'Payment successful! Your order has been confirmed.'
+            );
             return $this->redirectToRoute('app_order_success', ['id' => $order->getId()]);
 
         } elseif ($subscriptionId) {
@@ -158,19 +193,51 @@ class PaymentController extends AbstractController
             $payment->setAmount((string)$amount);
             $payment->setCurrency('PHP');
             $payment->setPaymentMethod($paymentMethod);
-            $payment->setStatus('completed');
+            $payment->setStatus($isCashOnDelivery ? 'pending' : 'completed');
             $payment->setDescription('Payment for Subscription: ' . ($plan ? $plan->getName() : 'N/A'));
             $payment->setCreatedAt(new \DateTimeImmutable());
-            $payment->setPaidAt(new \DateTimeImmutable());
+            $payment->setPaidAt($isCashOnDelivery ? null : new \DateTimeImmutable());
 
             $this->entityManager->persist($payment);
 
+            // Create transaction record
+            $transaction = new Transaction();
+            $transaction->setCustomer($customer);
+            $transaction->setPayment($payment);
+            $transaction->setSubscription($subscription);
+            $transaction->setType('subscription');
+            $transaction->setAmount((string)$amount);
+            $transaction->setCurrency('PHP');
+            $transaction->setStatus($isCashOnDelivery ? 'pending' : 'completed');
+            $transaction->setReference($subscription->getId() ? 'SUB-' . $subscription->getId() : null);
+            $transaction->setDescription(sprintf(
+                'Subscription payment via %s',
+                strtoupper($paymentMethod)
+            ));
+            $transaction->setCreatedAt(new \DateTimeImmutable());
+            $transaction->setProcessedAt($isCashOnDelivery ? null : new \DateTimeImmutable());
+            $transaction->setMetadata([
+                'subscriptionId' => $subscription->getId(),
+                'paymentMethod' => $paymentMethod,
+            ]);
+
+            $this->entityManager->persist($transaction);
+
             // Update subscription status
-            $subscription->setStatus('active');
+            if ($isOnlinePayment) {
+                $subscription->setStatus('active');
+            } else {
+                $subscription->setStatus('pending');
+            }
 
             $this->entityManager->flush();
 
-            $this->addFlash('success', 'Payment successful! Your subscription has been activated.');
+            $this->addFlash(
+                'success',
+                $isCashOnDelivery
+                    ? 'Subscription recorded. Please complete payment upon delivery/collection.'
+                    : 'Payment successful! Your subscription has been activated.'
+            );
             return $this->redirectToRoute('customer_subscriptions');
         }
 

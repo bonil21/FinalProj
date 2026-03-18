@@ -61,18 +61,21 @@ class PaymentRepository extends ServiceEntityRepository
     }
 
     /**
-     * Calculate total revenue for today (successful payments)
+     * Calculate total revenue for today (successful payments for orders created today)
+     * Includes payments with status 'completed' or 'succeeded' for orders created today
      */
     public function getTodayRevenue(): float
     {
-        $today = new \DateTime();
-        $today->setTime(0, 0, 0);
+        $today = new \DateTimeImmutable();
+        $today = $today->setTime(0, 0, 0);
 
         $result = $this->createQueryBuilder('p')
             ->select('SUM(p.amount)')
-            ->andWhere('p.status = :status')
-            ->andWhere('p.createdAt >= :today')
-            ->setParameter('status', 'succeeded')
+            ->innerJoin('p.order', 'o')
+            ->andWhere('p.status IN (:completedStatuses)')
+            ->andWhere('o.createdAt >= :today')
+            ->andWhere('p.order IS NOT NULL')
+            ->setParameter('completedStatuses', ['completed', 'succeeded'])
             ->setParameter('today', $today)
             ->getQuery()
             ->getSingleScalarResult();
@@ -82,13 +85,14 @@ class PaymentRepository extends ServiceEntityRepository
 
     /**
      * Calculate total revenue (all successful payments)
+     * Includes payments with status 'completed' or 'succeeded'
      */
     public function getTotalRevenue(): float
     {
         $result = $this->createQueryBuilder('p')
             ->select('SUM(p.amount)')
-            ->andWhere('p.status = :status')
-            ->setParameter('status', 'succeeded')
+            ->andWhere('p.status IN (:completedStatuses)')
+            ->setParameter('completedStatuses', ['completed', 'succeeded'])
             ->getQuery()
             ->getSingleScalarResult();
 
@@ -97,6 +101,7 @@ class PaymentRepository extends ServiceEntityRepository
 
     /**
      * Calculate total revenue for current month (successful payments)
+     * Includes payments with status 'completed' or 'succeeded' created in current month
      */
     public function getMonthlyRevenue(): float
     {
@@ -105,9 +110,9 @@ class PaymentRepository extends ServiceEntityRepository
 
         $result = $this->createQueryBuilder('p')
             ->select('SUM(p.amount)')
-            ->andWhere('p.status = :status')
+            ->andWhere('p.status IN (:completedStatuses)')
             ->andWhere('p.createdAt >= :startOfMonth')
-            ->setParameter('status', 'succeeded')
+            ->setParameter('completedStatuses', ['completed', 'succeeded'])
             ->setParameter('startOfMonth', $startOfMonth)
             ->getQuery()
             ->getSingleScalarResult();

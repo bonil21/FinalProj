@@ -87,6 +87,26 @@ class StaffOrderController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Staff must assign a customer to create an order on their behalf
+            if ($order->getCustomer() === null) {
+                $this->addFlash('error', 'Please select a customer for this order.');
+                return $this->render('staff/orders/new.html.twig', [
+                    'order' => $order,
+                    'form' => $form,
+                    'active_menu' => 'orders',
+                ]);
+            }
+
+            // Generate an order number if not provided
+            if (empty($order->getOrderNumber())) {
+                $order->setOrderNumber('ORD-' . strtoupper(uniqid()));
+            }
+
+            // Default status to pending when not set
+            if (empty($order->getStatus())) {
+                $order->setStatus('pending');
+            }
+
             // Set the creator to the current staff user
             $order->setCreatedBy($this->getUser());
             $order->setCreatedAt(new \DateTimeImmutable());

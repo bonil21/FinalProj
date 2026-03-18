@@ -50,19 +50,28 @@ class OrderRepository extends ServiceEntityRepository
     }
 
     /**
-     * Count orders created today
+     * Count completed orders for today (orders created today with successful payments)
+     * Counts orders created today that have at least one payment with status 'completed' or 'succeeded'
      */
     public function countOrdersToday(): int
     {
-        $today = new \DateTime();
-        $today->setTime(0, 0, 0);
+        $today = new \DateTimeImmutable();
+        $today = $today->setTime(0, 0, 0);
         
-        return $this->createQueryBuilder('o')
-            ->select('COUNT(o.id)')
-            ->andWhere('o.createdAt >= :today')
+        // Count distinct orders created today that have completed payments
+        $em = $this->getEntityManager();
+        $result = $em->createQueryBuilder()
+            ->select('COUNT(DISTINCT o.id)')
+            ->from('App\Entity\Order', 'o')
+            ->innerJoin('App\Entity\Payment', 'p', 'WITH', 'p.order = o.id')
+            ->where('o.createdAt >= :today')
+            ->andWhere('p.status IN (:completedStatuses)')
+            ->setParameter('completedStatuses', ['completed', 'succeeded'])
             ->setParameter('today', $today)
             ->getQuery()
             ->getSingleScalarResult();
+            
+        return (int) $result;
     }
 
     /**
