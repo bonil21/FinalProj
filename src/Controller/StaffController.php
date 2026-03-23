@@ -18,8 +18,21 @@ class StaffController extends AbstractController
         ProductsRepository $productsRepository,
         OrderRepository $orderRepository
     ): Response {
-        // Staff can only see their own products and orders
         $user = $this->getUser();
+        if (!$user) {
+            throw $this->createAccessDeniedException('Authentication required.');
+        }
+
+        $roles = $user->getRoles();
+        $isAdmin = in_array('ROLE_ADMIN', $roles, true);
+        $isStaff = in_array('ROLE_STAFF', $roles, true);
+
+        // Enforce dashboard separation: admins use /admin, staff use /staff.
+        if ($isAdmin || !$isStaff) {
+            throw $this->createAccessDeniedException('You are not allowed to access the staff dashboard.');
+        }
+
+        // Staff can only see their own products and orders
         $myProducts = $productsRepository->findBy(['createdBy' => $user]);
         $myOrders = $orderRepository->findBy(['createdBy' => $user], ['createdAt' => 'DESC']);
 

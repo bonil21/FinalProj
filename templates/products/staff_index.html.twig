@@ -160,6 +160,25 @@
 <div class="container">
     <h1>All Products</h1>
 
+    {% if is_granted('ROLE_STAFF') %}
+    <div style="margin-bottom: 1.5rem;">
+        <form method="get" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <input type="text" name="search" placeholder="Search products..." value="{{ search|default('') }}"
+                   style="flex: 1; min-width: 200px; padding: 0.5rem 1rem; border: 1px solid #E4CFBF; border-radius: 8px;">
+            <select name="category" style="padding: 0.5rem 1rem; border: 1px solid #E4CFBF; border-radius: 8px;">
+                <option value="">All Categories</option>
+                {% for cat in categories|default([]) %}
+                    <option value="{{ cat.id }}" {% if categoryFilter|default('') == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" style="background: #43b649; color: white; padding: 0.5rem 1rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Filter</button>
+            {% if search or categoryFilter %}
+                <a href="{{ path('app_products_index') }}" style="background: #6b7280; color: white; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600;">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+    {% endif %}
+
     {% if products|length > 0 %}
         <div class="products-grid">
             {% for product in products %}
@@ -167,7 +186,7 @@
                 <div class="product-card" {% if not isOwnProduct %}style="opacity: 0.95; border-left: 4px solid #ccc;"{% endif %}>
                     <div class="product-header">
                         <div class="product-title">{{ product.name }}</div>
-                        <div class="product-category">{{ product.category }}</div>
+                        <div class="product-category">{{ product.category ? product.category.name : '—' }}</div>
                         {% if not isOwnProduct %}
                             <div style="font-size: 0.75rem; color: #888; margin-top: 4px;">
                                 Created by: {{ product.createdBy ? product.createdBy.email : 'Admin' }}

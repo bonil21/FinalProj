@@ -30,8 +30,11 @@ class SearchController extends AbstractController
         // If staff, filter to only their products
         if ($this->isGranted('ROLE_STAFF') && !$this->isGranted('ROLE_ADMIN')) {
             $user = $this->getUser();
-            $products = array_filter($products, function($product) use ($user) {
-                return $product->getCreatedBy() === $user;
+            $userId = $user->getId();
+            $products = array_filter($products, function ($product) use ($userId) {
+                $creator = $product->getCreatedBy();
+
+                return $creator && $creator->getId() === $userId;
             });
         }
 

@@ -6,6 +6,7 @@ use App\Entity\Customer;
 use App\Entity\Subscription;
 use App\Entity\SubscriptionPlan;
 use App\Repository\CustomerRepository;
+use App\Repository\ProductsRepository;
 use App\Repository\SubscriptionPlanRepository;
 use App\Repository\SubscriptionRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,6 +26,7 @@ class CustomerSubscriptionController extends AbstractController
         private SubscriptionPlanRepository $planRepository,
         private SubscriptionRepository $subscriptionRepository,
         private CustomerRepository $customerRepository,
+        private ProductsRepository $productsRepository,
     ) {
     }
 
@@ -36,17 +38,28 @@ class CustomerSubscriptionController extends AbstractController
         $customer = $this->getOrCreateCustomerForUser();
         $plans = $this->planRepository->findBy(['active' => true]);
         $subscriptions = $this->subscriptionRepository->findBy(['customer' => $customer]);
+        $selectableProducts = $this->productsRepository->findAvailableForSubscription();
 
         return $this->render('subscriptions/index.html.twig', [
             'plans' => $plans,
             'subscriptions' => $subscriptions,
+            'selectableProducts' => $selectableProducts,
         ]);
     }
 
     #[Route('/subscribe/{id}', name: 'customer_subscribe', requirements: ['id' => '\d+'], methods: ['POST'])]
-    public function subscribe(SubscriptionPlan $plan): RedirectResponse
+    public function subscribe(Request $request, SubscriptionPlan $plan): RedirectResponse
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $token = $request->request->getString('_token');
+        $validToken = $this->isCsrfTokenValid('subscribe_'.$plan->getId(), $token)
+            || $this->isCsrfTokenValid('subscribe'.$plan->getId(), $token);
+        if (!$validToken) {
+            $this->addFlash('error', 'Invalid security token. Please try again.');
+
+            return $this->redirectToRoute('customer_subscriptions');
+        }
 
         if (!$plan->isActive()) {
             $this->addFlash('error', 'This subscription plan is not available.');
@@ -62,7 +75,68 @@ class CustomerSubscriptionController extends AbstractController
         ]);
 
         if ($existing) {
-            $this->addFlash('info', 'You already have an active subscription for this plan.');
+            $this->addFlash('info', 'You already have an active subscription for this plan. You can manage it below.');
+            return $this->redirectToRoute('customer_subscriptions');
+        }
+
+        $requiredMeals = max(0, (int) ($plan->getMealsIncluded() ?? 0));
+        $availableProducts = $this->productsRepository->findAvailableForSubscription();
+        $availableById = [];
+        foreach ($availableProducts as $availableProduct) {
+            $productId = $availableProduct->getId();
+            if ($productId !== null) {
+                $availableById[$productId] = $availableProduct;
+            }
+        }
+
+        if ($requiredMeals > 0 && empty($availableById)) {
+            $this->addFlash('error', 'No meals are currently available for subscription selection. Please try again later.');
+
+            return $this->redirectToRoute('customer_subscriptions');
+        }
+
+        $selectedMeals = [];
+        $selectedMealQty = $request->request->all('meal_qty');
+        $selectedTotal = 0;
+        foreach ($selectedMealQty as $productIdRaw => $quantityRaw) {
+            $productId = (int) $productIdRaw;
+            $quantity = (int) $quantityRaw;
+            if ($productId <= 0 || $quantity <= 0) {
+                continue;
+            }
+
+            if (!isset($availableById[$productId])) {
+                $this->addFlash('error', 'One or more selected meals are no longer available. Please review your selection.');
+
+                return $this->redirectToRoute('customer_subscriptions');
+            }
+
+            $product = $availableById[$productId];
+            $selectedMeals[] = [
+                'productId' => $productId,
+                'name' => (string) $product->getName(),
+                'quantity' => $quantity,
+            ];
+            $selectedTotal += $quantity;
+        }
+
+        if ($selectedTotal !== $requiredMeals) {
+            $this->addFlash(
+                'error',
+                sprintf(
+                    'Please select exactly %d meals for the %s plan. You selected %d.',
+                    $requiredMeals,
+                    (string) $plan->getName(),
+                    $selectedTotal
+                )
+            );
+
+            return $this->redirectToRoute('customer_subscriptions');
+        }
+
+        if ($requiredMeals > 0 && count($selectedMeals) === 0) {
+            $this->addFlash('error', 'Please choose your meals before continuing.');
+
             return $this->redirectToRoute('customer_subscriptions');
         }
 
@@ -74,6 +148,7 @@ class CustomerSubscriptionController extends AbstractController
         $subscription->setCurrentPeriodStart(new \DateTime());
         $subscription->setCurrentPeriodEnd($this->calculatePeriodEnd($plan->getBillingInterval()));
         $subscription->setCancelAtPeriodEnd(false);
+        $subscription->setSelectedMeals($selectedMeals);
 
         $this->em->persist($subscription);
         $this->em->flush();

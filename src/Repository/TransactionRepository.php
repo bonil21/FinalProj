@@ -72,4 +72,72 @@ class TransactionRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @return Transaction[]
+     */
+    public function findPaginatedWithFilters(int $page, int $limit, ?string $status = null, ?string $search = null): array
+    {
+        $page = max(1, $page);
+        $limit = max(1, min(100, $limit));
+
+        $qb = $this->createQueryBuilder('t')
+            ->leftJoin('t.customer', 'c')
+            ->addSelect('c')
+            ->orderBy('t.createdAt', 'DESC')
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+
+        if (!empty($status)) {
+            $qb->andWhere('t.status = :status')
+                ->setParameter('status', $status);
+        }
+
+        if (!empty($search)) {
+            $qb->andWhere('c.name LIKE :q OR c.email LIKE :q OR t.reference LIKE :q OR t.type LIKE :q OR t.description LIKE :q')
+                ->setParameter('q', '%'.$search.'%');
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function countWithFilters(?string $status = null, ?string $search = null): int
+    {
+        $qb = $this->createQueryBuilder('t')
+            ->select('COUNT(t.id)')
+            ->leftJoin('t.customer', 'c');
+
+        if (!empty($status)) {
+            $qb->andWhere('t.status = :status')
+                ->setParameter('status', $status);
+        }
+
+        if (!empty($search)) {
+            $qb->andWhere('c.name LIKE :q OR c.email LIKE :q OR t.reference LIKE :q OR t.type LIKE :q OR t.description LIKE :q')
+                ->setParameter('q', '%'.$search.'%');
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function getStatusCounts(?string $search = null): array
+    {
+        $qb = $this->createQueryBuilder('t')
+            ->select('t.status AS status, COUNT(t.id) AS total')
+            ->leftJoin('t.customer', 'c')
+            ->groupBy('t.status');
+
+        if (!empty($search)) {
+            $qb->andWhere('c.name LIKE :q OR c.email LIKE :q OR t.reference LIKE :q OR t.type LIKE :q OR t.description LIKE :q')
+                ->setParameter('q', '%'.$search.'%');
+        }
+
+        $rows = $qb->getQuery()->getArrayResult();
+        $counts = [];
+        foreach ($rows as $row) {
+            $counts[$row['status']] = (int) $row['total'];
+        }
+
+        return $counts;
+    }
 }

@@ -35,7 +35,7 @@
           <select name="category" style="padding: 0.5rem 1rem; border: 1px solid #E4CFBF; border-radius: 8px;">
             <option value="">All Categories</option>
             {% for cat in categories %}
-              <option value="{{ cat }}" {% if categoryFilter == cat %}selected{% endif %}>{{ cat }}</option>
+              <option value="{{ cat.id }}" {% if categoryFilter|default('') == cat.id %}selected{% endif %}>{{ cat.name }}</option>
             {% endfor %}
           </select>
           <button type="submit" style="background: #43b649; color: white; padding: 0.5rem 1rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
@@ -61,7 +61,7 @@
           {% endif %}
           <div class="product-info">
             <div class="product-name">{{ product.name }}</div>
-            <div class="product-category">{{ product.category }}</div>
+            <div class="product-category">{{ product.category ? product.category.name : '—' }}</div>
             <div class="product-price">₱{{ product.price }}</div>
             <div class="product-availability">{{ product.Availability }}</div>
             <div class="product-actions">

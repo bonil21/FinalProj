@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Products;
 use App\Form\ProductsType;
+use App\Repository\CategoryRepository;
 use App\Repository\ProductsRepository;
 use App\Service\ActivityLogger;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,26 +24,44 @@ final class ProductsController extends AbstractController
     ) {
     }
     #[Route(name: 'app_products_index', methods: ['GET'])]
-    public function index(ProductsRepository $productsRepository): Response
+    public function index(Request $request, ProductsRepository $productsRepository, CategoryRepository $categoryRepository): Response
     {
-        // Staff can see all products (admin and other staff's), but can only edit/delete their own
-        // Admins see all products
+        $search = $request->query->get('search', '');
+        $categoryFilter = $request->query->get('category', '');
+
         if ($this->isGranted('ROLE_ADMIN')) {
-            $products = $productsRepository->findAll();
             return $this->redirectToRoute('admin_dashboard');
         }
 
-        // Staff see all products with staff template
-        if ($this->isGranted('ROLE_STAFF') && !$this->isGranted('ROLE_ADMIN')) {
-            $products = $productsRepository->findAll();
+        $products = $productsRepository->findAll();
+
+        if ($search) {
+            $searchLower = mb_strtolower($search);
+            $products = array_filter($products, function ($product) use ($searchLower) {
+                return str_contains(mb_strtolower($product->getName() ?? ''), $searchLower)
+                    || str_contains(mb_strtolower($product->getDescription() ?? ''), $searchLower);
+            });
+        }
+
+        if ($categoryFilter !== '') {
+            $categoryId = (int) $categoryFilter;
+            $products = array_filter($products, function ($product) use ($categoryId) {
+                $cat = $product->getCategory();
+                return $cat && $cat->getId() === $categoryId;
+            });
+        }
+
+        if ($this->isGranted('ROLE_STAFF')) {
+            $categories = $categoryRepository->findBy([], ['name' => 'ASC']);
             return $this->render('products/staff_index.html.twig', [
                 'products' => $products,
                 'currentUser' => $this->getUser(),
+                'search' => $search,
+                'categoryFilter' => $categoryFilter,
+                'categories' => $categories,
             ]);
         }
 
-        // Regular users see all products
-        $products = $productsRepository->findAll();
         return $this->render('products.html.twig', [
             'products' => $products,
         ]);

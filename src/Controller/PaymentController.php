@@ -97,6 +97,15 @@ class PaymentController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
+        if (!$this->isCsrfTokenValid('payment_process', $request->request->getString('_token'))) {
+            $this->addFlash('error', 'Invalid security token. Please try again.');
+            if ($request->request->get('subscription_id')) {
+                return $this->redirectToRoute('customer_subscriptions');
+            }
+
+            return $this->redirectToRoute('app_cart');
+        }
+
         $paymentMethod = $request->request->get('payment_method');
         $isCashOnDelivery = $paymentMethod === 'cash';
         $isOnlinePayment = in_array($paymentMethod, ['gcash', 'atm'], true);

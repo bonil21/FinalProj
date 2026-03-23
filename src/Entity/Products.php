@@ -2,17 +2,36 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\ProductsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Category;
 use App\Entity\User;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ProductsRepository::class)]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Put(),
+        new Delete()
+    ],
+    normalizationContext: ['groups' => ['practice_api:read']],
+    denormalizationContext: ['groups' => ['practice_api:write']]
+)]
 class Products
 {
     #[ORM\ManyToOne(targetEntity: Category::class)]
     #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?Category $category = null;
 
     public function getCategory(): ?Category
@@ -29,36 +48,46 @@ class Products
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['practice_api:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?string $name = null;
 
 
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?string $description = null;
 
     #[ORM\Column]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?float $price = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?string $NutritionalInfo = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?string $Availability = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?string $SubscriptionEligible = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?string $image = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?User $createdBy = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     public function getId(): ?int

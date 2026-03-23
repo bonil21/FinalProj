@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Our Story - GreenBites{% endblock %}
+
+{% block body %}
+<div class="our-story-page">
+    <section class="our-story-hero">
+        <img src="{{ asset('uploads/images/our-story-basket.png') }}" alt="Fresh vegetables from local farms" class="our-story-hero__bg">
+        <div class="container our-story-hero__content">
+            <p class="our-story-kicker">Our Story</p>
+            <h1 class="story-serif">Rooted in Dumaguete</h1>
+            <p class="our-story-lead">Real food. Local roots. GreenBites.</p>
+        </div>
+    </section>
+
+    <section class="our-story-content">
+        <div class="container our-story-grid">
+            <div class="our-story-main">
+                <article class="our-story-block">
+                    <h2 class="story-serif">The Heartbeat of GreenBites</h2>
+                    <p>In the bustling streets of Dumaguete, where the mountain meets the sea, we noticed a gap. Between long university lectures and busy office hours, finding a meal that was both fast and fuel felt like an impossible task.</p>
+                    <p>GreenBites was born from a simple mission: to prove that "fast food" does not have to be "junk food."</p>
+                </article>
+
+                <article class="our-story-block">
+                    <h2 class="story-serif">Farm-to-Table, Every Day</h2>
+                    <p>We believe that the best ingredients are not found in a warehouse - they are found in our backyard. That is why we partner directly with local Negros Oriental farmers, especially from the cool highlands of Valencia.</p>
+                    <div class="our-story-highlights">
+                        <div class="our-story-highlight">
+                            <h3>Freshness First</h3>
+                            <p>Our greens are harvested in Valencia and delivered to our kitchen before the morning dew has even dried.</p>
+                        </div>
+                        <div class="our-story-highlight">
+                            <h3>Community Driven</h3>
+                            <p>By skipping the middleman, farmers receive a fair price while you enjoy crisp, nutrient-dense meals every day.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="our-story-block">
+                    <h2 class="story-serif">Fueling the Gentle People</h2>
+                    <p>Whether you are a student at Silliman or a professional in the downtown core, you deserve food that respects your health and your time.</p>
+                    <p>Every bowl we toss and every wrap we roll is a tribute to Dumaguete's vibrant, healthy lifestyle.</p>
+                    <p class="our-story-manifesto">Real Food. Local Roots. GreenBites.</p>
+                    <a href="{{ path('app_products_index') }}" class="btn btn-primary">Explore Our Menu</a>
+                </article>
+            </div>
+
+            <aside class="our-story-side">
+                <div class="our-story-photo-card">
+                    <img src="{{ asset('uploads/images/our-story-founder.png') }}" alt="Founder of GreenBites holding a fresh salad bowl">
+                    <p class="our-story-photo-caption">Meet the heart behind GreenBites. For our founder, a perfect bowl isn’t just a meal—it’s a celebration of the vibrant produce grown right here in Negros Oriental. That smile comes from knowing exactly where every tomato and leaf of kale was harvested this morning.</p>
+                </div>
+            </aside>
+        </div>
+    </section>
+
+    <section class="our-story-cta">
+        <div class="container our-story-cta__inner">
+            <h2 class="story-serif">Healthy Fast-Food, Dumaguete-Made</h2>
+            <p>Built for students, professionals, and everyone who wants clean food without slowing down.</p>
+            <a href="{{ path('app_landing_page') }}" class="btn btn-ghost">Back to Home</a>
+        </div>
+    </section>
+    
+    <section class="our-story-footer-space">
+        <div class="container">
+            <div class="our-story-mini-grid">
+                <div class="our-story-mini-card">
+                    <h4>Local Ingredients</h4>
+                    <p>Direct from Negros Oriental farms.</p>
+                </div>
+                <div class="our-story-mini-card">
+                    <h4>Fast Service</h4>
+                    <p>Healthy meals for busy schedules.</p>
+                </div>
+                <div class="our-story-mini-card">
+                    <h4>Honest Food</h4>
+                    <p>No shortcuts. Just clean, fresh meals.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

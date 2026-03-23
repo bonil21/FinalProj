@@ -2,106 +2,139 @@
 
 {% block title %}GreenBites - Fresh Organic Vegetables{% endblock %}
 
+{% block navbar %}
+<header class="hero-nav">
+    {% set isAdmin = is_granted('ROLE_ADMIN') %}
+    {% set isStaffOnly = (not isAdmin) and is_granted('ROLE_STAFF') %}
+    {% set showCustomerCart = (not isAdmin) and (not isStaffOnly) %}
+    <a href="{{ path('app_landing_page') }}" class="hero-nav__logo" aria-label="GreenBites home" data-turbo="false">
+        <img src="{{ asset('imageeee/logo.png') }}" alt="" class="hero-nav__logo-img">
+        <span class="hero-nav__logo-text">GreenBites</span>
+    </a>
+    <nav class="hero-nav__actions" aria-label="Primary">
+        {% if app.user %}
+            <span class="hero-nav__user-email" title="{{ app.user.email }}">
+                <i class="bi bi-person-circle"></i>
+                <span>{{ app.user.email }}</span>
+            </span>
+        {% endif %}
+
+        <a href="{{ path('app_products_index') }}" class="hero-nav__icon-link" title="Order now" data-turbo="false"><i class="bi bi-basket"></i><span>Order</span></a>
+        {% if showCustomerCart %}
+            <a href="{{ path('app_cart') }}" class="hero-nav__icon-link" title="Cart" data-turbo="false"><i class="bi bi-cart3"></i><span>Cart</span></a>
+        {% endif %}
+        <a href="{{ path('app_our_story') }}" class="hero-nav__icon-link" title="Our Story" data-turbo="false"><i class="bi bi-journal-bookmark"></i><span>Our Story</span></a>
+
+        {% if isAdmin %}
+            <a href="{{ path('admin_dashboard') }}" class="hero-nav__icon-link hero-nav__icon-link--primary" title="Dashboard" data-turbo="false"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a>
+        {% elseif isStaffOnly %}
+            <a href="{{ path('staff_dashboard') }}" class="hero-nav__icon-link hero-nav__icon-link--primary" title="Dashboard" data-turbo="false"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a>
+        {% endif %}
+
+        {% if app.user %}
+            <a href="{{ path('feedback_new') }}" class="hero-nav__icon-link" title="Feedback" data-turbo="false"><i class="bi bi-chat-left-text"></i><span>Feedback</span></a>
+            <a href="{{ path('app_logout') }}" class="hero-nav__icon-link" title="Logout" data-turbo="false"><i class="bi bi-box-arrow-right"></i><span>Logout</span></a>
+        {% else %}
+            <a href="{{ path('app_login') }}" class="hero-nav__icon-link" title="Login" data-turbo="false"><i class="bi bi-box-arrow-in-right"></i><span>Login</span></a>
+            <a href="{{ path('app_register') }}" class="hero-nav__icon-link" title="Register" data-turbo="false"><i class="bi bi-person-plus"></i><span>Register</span></a>
+        {% endif %}
+    </nav>
+</header>
+{% endblock %}
+
 {% block body %}
-<div class="homepage page-shell">
-    <section class="gb-hero gb-hero--bg">
-        <div class="container gb-hero__inner">
-            <div class="gb-hero__copy">
-                <p class="gb-hero__brand">
-                    <span class="gb-hero__brand-mark">Greenbites</span>
-                </p>
-                <h1 class="gb-hero__title">
-                    <span class="gb-hero__title-green">Freshness in every</span>
-                    <span class="gb-hero__title-gold">bite</span>
-                </h1>
-                <p class="gb-hero__subtitle">Save up to 50% off on your first order</p>
+{% set fallbackFeaturedProducts = [
+    { 'id': null, 'name': 'Chickpea Salad Wraps', 'price': 149.00, 'image': 'Chickpea-Salad-Wraps-with-Lemon-Dressing-69bb75baa50e4.jpg', 'description': 'Fresh chickpeas with lemon dressing in a soft wrap.' },
+    { 'id': null, 'name': 'Avocado Chickpea Wraps', 'price': 169.00, 'image': 'Delicious-Avocado-Chickpea-Summer-Wraps-For-A-Quick-Meal-69bb75efa4b3a.jpg', 'description': 'Creamy avocado and chickpeas for a quick, nutritious meal.' },
+    { 'id': null, 'name': 'Mediterranean Chicken Burrito', 'price': 189.00, 'image': 'Mediterranean-Diet-and-Recipes-For-Beginners-Chicken-Avocado-Ranch-Burritos-Facebook-69bb74a70878f.jpg', 'description': 'Mediterranean-inspired chicken with avocado ranch.' },
+    { 'id': null, 'name': 'Black Bean Burritos', 'price': 159.00, 'image': 'Black-Bean-Burritos-69bb755c28526.jpg', 'description': 'Hearty black beans in a warm tortilla wrap.' },
+    { 'id': null, 'name': 'Vitality Crunch Bowl', 'price': 179.00, 'image': 'VitalityCurnchBowl-69ba43ec38364.jpg', 'description': 'A bowl packed with fresh greens and crunchy toppings.' },
+    { 'id': null, 'name': 'Global Grain Bowl', 'price': 199.00, 'image': 'GlobalGrainBowl-69ba44d3c2521.jpg', 'description': 'Wholesome grains with seasonal vegetables.' },
+] %}
 
-                <div class="gb-hero__cta">
-                    <a class="btn btn-primary" href="{{ path('app_products_index') }}">Shop now</a>
-                    {% if not app.user %}
-                        <a class="btn btn-ghost" href="{{ path('app_register') }}">Create account</a>
-                    {% else %}
-                        <a class="btn btn-ghost" href="{{ path('app_cart') }}">View cart</a>
-                    {% endif %}
+{% set menuItems = (featuredProducts|length > 0) ? featuredProducts : fallbackFeaturedProducts %}
+
+<div class="homepage homepage-modern page-shell">
+    <section class="hp-section hp-hero">
+        <div class="container hp-hero__grid">
+            <div class="hp-hero__branding">
+                <p class="hp-hero__eyebrow">Fresh. Local. Balanced.</p>
+                <h1 class="hp-hero__title"><span>GREEN</span><span>BITES</span></h1>
+                <p class="hp-hero__tagline">Healthy fast-food designed for busy students and professionals.</p>
+                <div class="hp-hero__actions">
+                    <a href="{{ path('app_products_index') }}" class="btn btn-primary">Order now</a>
+                    <a href="{{ path('app_our_story') }}" class="btn btn-ghost">Our Story</a>
                 </div>
             </div>
-
-            <div class="gb-hero__visual" aria-hidden="true">
-                <div class="gb-hero__image-card">
-                    <img src="{{ asset('imageeee/bg.jpg') }}" alt="">
-                </div>
+            <div class="hp-hero__media">
+                <img src="{{ asset('uploads/images/landing-hero-salad-bowl-v3.png') }}" alt="Fresh organic salad" class="hp-hero__image" loading="eager" fetchpriority="high" decoding="async">
             </div>
         </div>
     </section>
 
-    <section class="gb-actions">
-        <div class="container gb-actions__row">
-            <a class="gb-action" href="#plans">Subscription plan</a>
-            <a class="gb-action" href="{{ path('app_products_index') }}">Our healthy product</a>
-            <a class="gb-action" href="#about">About the Green Bites</a>
-            <a class="gb-action" href="#contact">Contact us</a>
-        </div>
-    </section>
-
-    <section class="feature-band section section--padded">
-        <div class="container">
-            <div class="section-lead"><div class="section-pill"></div></div>
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="feature-card__icon"><i class="bi bi-shield-check"></i></div>
-                    <strong>Pesticide-Free</strong>
-                    <span>100% organic cultivation</span>
+    <section id="signature" class="hp-section hp-signature">
+        <div class="container hp-signature__grid">
+            <div class="hp-signature__copy">
+                <p class="hp-signature__kicker">FARM FRESH PICKS</p>
+                <h2>SIGNATURE DISHES</h2>
+                <p id="signature-desc">Our farm-fresh vegetables are hand-picked daily and delivered within hours of harvest.</p>
+                <div class="hp-signature__chips">
+                    <span class="hp-signature__chip">Daily-prepared meals</span>
+                    <span class="hp-signature__chip">Locally sourced produce</span>
+                    <span class="hp-signature__chip">Balanced nutrition</span>
                 </div>
-                <div class="feature-card feature-card--accent-red">
-                    <div class="feature-card__icon"><i class="bi bi-truck"></i></div>
-                    <strong>Farm Direct</strong>
-                    <span>Delivered fresh daily</span>
-                </div>
-                <div class="feature-card feature-card--accent-gold">
-                    <div class="feature-card__icon"><i class="bi bi-recycle"></i></div>
-                    <strong>Sustainable</strong>
-                    <span>Eco-friendly practices</span>
-                </div>
-                <div class="feature-card feature-card--accent-brown">
-                    <div class="feature-card__icon"><i class="bi bi-people"></i></div>
-                    <strong>Local Support</strong>
-                    <span>Supporting local farmers</span>
-                </div>
+                <a href="{{ path('app_products_index') }}" class="btn btn-primary">Order now</a>
             </div>
-        </div>
-    </section>
-
-    <section id="plans" class="plans-section section">
-        <div class="container">
-            <div class="section__header">
-                <div>
-                    <p class="eyebrow">Subscription plan</p>
-                    <h2>Choose a plan that fits you</h2>
-                    <p class="muted">Fresh, organic meals delivered to your door.</p>
-                </div>
-                <a class="btn btn-primary" href="{{ path('app_subscription_index') }}">View plans</a>
-            </div>
-
-            <div class="card-grid card-grid--plans">
-                {% for plan in plans %}
-                    {% set planSkin = ['plan-card--soft-green','plan-card--soft-gold','plan-card--soft-olive','plan-card--soft-brown'][loop.index0 % 4] %}
-                    <article class="plan-card {{ planSkin }}">
-                        <div>
-                            <h3 style="margin:0;">{{ plan.name }}</h3>
-                            <p class="plan-card__price">
-                                ₱{{ plan.price|number_format(2, '.', ',') }}
-                                <span>/ {{ plan.billingInterval|title }}</span>
-                            </p>
-                            <p class="plan-card__meta">
-                                <span class="badge">Meals: {{ plan.mealsIncluded }}</span>
-                                {% if plan.active %}<span class="badge badge--soft">Active</span>{% endif %}
-                            </p>
+            <div class="hp-signature__visual">
+                <div class="hp-signature__image-wrap">
+                    {% for item in menuItems|slice(0, 6) %}
+                        <div class="hp-signature__slide{% if loop.first %} is-active{% endif %}" data-name="{{ item.name }}" data-desc="{{ (item.description|default('Fresh, healthy, and delicious.'))|e('html_attr') }}">
+                            <img src="{{ asset('uploads/images/' ~ (item.image|default('download-8-69bb750475c7b.jpg'))) }}" alt="{{ item.name }}" loading="lazy" decoding="async">
                         </div>
-                        <p class="muted" style="font-weight:600;">{{ plan.description }}</p>
-                        <form method="POST" action="{{ path('customer_subscribe', {id: plan.id}) }}" style="margin:0;">
-                            <input type="hidden" name="_token" value="{{ csrf_token('subscribe_' ~ plan.id) }}">
-                            <button class="btn btn-primary" type="submit" style="width:100%;">Subscribe</button>
-                        </form>
+                    {% endfor %}
+                    <div class="hp-signature__float hp-signature__float--left">100% Fresh</div>
+                    <div class="hp-signature__float hp-signature__float--right">Ready Daily</div>
+                </div>
+                <p class="hp-signature__name" id="signature-name">{{ (menuItems|first).name|default('Chickpea Salad Wraps') }}</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="plans" class="hp-section hp-plans">
+        <div class="container">
+            <header class="hp-plans__header">
+                <p>PROMOS & SUBSCRIPTIONS</p>
+                <h2>To your doorstep</h2>
+                <div class="hp-plans__header-badges">
+                    <span class="hp-plans-badge">Custom meal selection</span>
+                    <span class="hp-plans-badge">Fresh local ingredients</span>
+                    <span class="hp-plans-badge">Flexible billing</span>
+                </div>
+            </header>
+            <div class="card-grid card-grid--plans">
+                {% set featuredPos = (plans|length / 2)|round(0, 'ceil') %}
+                {% for plan in plans %}
+                    {% set isFeaturedPlan = loop.index == featuredPos %}
+                    <article class="plan-card{{ isFeaturedPlan ? ' plan-card--featured' : '' }}">
+                        <span class="plan-card__pill">{{ loop.first ? 'Most Popular' : 'Subscription Plan' }}</span>
+                        {% if isFeaturedPlan %}
+                            <span class="plan-card__featured-tag">Featured</span>
+                        {% endif %}
+                        <h3>{{ plan.name }}</h3>
+                        <p class="plan-card__price">₱{{ plan.price|number_format(2, '.', ',') }} <span>/ {{ plan.billingInterval|title }}</span></p>
+                        <p class="plan-card__meta">
+                            <span class="badge">Meals: {{ plan.mealsIncluded }}</span>
+                            {% if plan.active %}<span class="badge badge--soft">Active</span>{% endif %}
+                        </p>
+                        <p class="muted hp-plan-desc">{{ plan.description }}</p>
+                        {% if app.user %}
+                            <form method="POST" action="{{ path('customer_subscribe', {id: plan.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('subscribe_' ~ plan.id) }}">
+                                <button class="btn btn-primary hp-btn-block" type="submit">Subscribe</button>
+                            </form>
+                        {% else %}
+                            <a class="btn btn-primary hp-btn-block" href="{{ path('app_register') }}">Create account to subscribe</a>
+                        {% endif %}
                     </article>
                 {% else %}
                     <div class="empty-state">No subscription plans available yet.</div>
@@ -110,67 +143,40 @@
         </div>
     </section>
 
-    <section class="highlight-section section">
-        <div class="container highlight-shell">
-            <div class="highlight-copy">
-                <p class="eyebrow">Our healthy product</p>
-                <h2>100% organic vegetables always fresh</h2>
-                <p>Our farm-fresh vegetables are hand-picked daily and delivered within hours of harvest.</p>
-                <a class="btn btn-primary" href="{{ path('app_products_index') }}">View all products</a>
-
-                {% if categories is defined and categories|length > 0 %}
-                    <div style="margin-top:16px;">
-                        <p class="muted" style="font-weight:700; margin-bottom:10px;">Categories</p>
-                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                            {% for category in categories|slice(0, 8) %}
-                                <span class="badge">{{ category.name }}</span>
-                            {% endfor %}
-                        </div>
+    <section id="location" class="hp-section hp-map-spotlight">
+        <div class="container hp-map-spotlight__grid">
+            <div class="hp-map-spotlight__copy">
+                <p class="hp-map-spotlight__kicker">Find Our Store</p>
+                <h2>Visit GreenBites in Dumaguete City</h2>
+                <p class="hp-map-spotlight__lead">
+                    We are right near Silliman University, making it easy for students, professionals, and families to drop by for pickup or request quick local delivery.
+                </p>
+                <div class="hp-map-spotlight__meta">
+                    <div class="hp-map-spotlight__meta-item">
+                        <strong>Address</strong>
+                        <span>Hibbard Avenue, Dumaguete City, Negros Oriental</span>
                     </div>
-                {% endif %}
-            </div>
-
-            <div class="highlight-products">
-                {% for product in featuredProducts|default(products|slice(0, 6))|slice(0, 6) %}
-                    <div class="mini-card">
-                        {% if product.image %}
-                            <img src="{{ asset('imageeee/' ~ product.image) }}" alt="{{ product.name }}">
-                        {% else %}
-                            <img src="{{ asset('imageeee/bg.jpg') }}" alt="">
-                        {% endif %}
-                        <h4>{{ product.name }}</h4>
-                        <p class="price">₱{{ product.price|number_format(2, '.', ',') }}</p>
-                        <div style="display:flex; gap:10px; margin-top:10px; justify-content:center;">
-                            <form method="POST" action="{{ path('app_cart_add_product', {id: product.id}) }}" style="margin:0;">
-                                <input type="hidden" name="_token" value="{{ csrf_token('add_product_' ~ product.id) }}">
-                                <button class="btn btn-primary" type="submit" style="padding:10px 14px;">Order</button>
-                            </form>
-                            <a class="btn btn-ghost" href="{{ path('app_products_show', {id: product.id}) }}" style="padding:10px 14px;">View</a>
-                        </div>
+                    <div class="hp-map-spotlight__meta-item">
+                        <strong>Business Hours</strong>
+                        <span>Mon-Sun, 8:00 AM - 9:00 PM</span>
                     </div>
-                {% else %}
-                    <div class="empty-state">No products available yet.</div>
-                {% endfor %}
+                    <div class="hp-map-spotlight__meta-item">
+                        <strong>Service Area</strong>
+                        <span>Dumaguete City and nearby zones</span>
+                    </div>
+                </div>
+                <div class="hp-map-spotlight__actions">
+                    <a href="https://maps.google.com/?q=Hibbard+Avenue,+Dumaguete+City" target="_blank" rel="noopener" class="btn btn-primary">Open in Google Maps</a>
+                    <a href="{{ path('app_products_index') }}" class="btn btn-ghost">Order for Pickup</a>
+                </div>
             </div>
-        </div>
-        <div class="section-divider"></div>
-    </section>
-
-    <section id="about" class="gb-about section section--muted">
-        <div class="container gb-about__grid">
-            <div class="gb-about__copy">
-                <p class="eyebrow">About</p>
-                <h2>THE GREEN BITES</h2>
-                <p class="lead">Fresh, healthy meals delivered to your door. Eat clean, feel great.</p>
-                <p class="muted">GreenBites connects you with local farms and prepares nourishing meals and produce bundles with quality you can taste.</p>
-            </div>
-            <div class="gb-about__media">
-                <img src="{{ asset('imageeee/bg.jpg') }}" alt="Green Bites">
+            <div class="hp-map-spotlight__visual">
+                <img src="{{ asset('uploads/images/landing-map-dumaguete.png') }}" alt="Map showing GreenBites location in Dumaguete City" class="hp-map-spotlight__image" loading="lazy" decoding="async">
             </div>
         </div>
     </section>
 
-    <footer id="contact" class="footer">
+    <footer id="contact" class="hp-section footer">
         <div class="container">
             <div class="footer-grid">
                 <div>
@@ -183,7 +189,7 @@
                     <ul>
                         <li><a href="#" rel="nofollow">Facebook</a></li>
                         <li><a href="#" rel="nofollow">Instagram</a></li>
-                        <li><a href="#" rel="nofollow">Email</a></li>
+                        <li><a href="mailto:support@greenbites.com" rel="nofollow">Email</a></li>
                     </ul>
                 </div>
                 <div>
@@ -191,16 +197,18 @@
                     <ul>
                         <li><a href="{{ path('app_landing_page') }}">Home</a></li>
                         <li><a href="{{ path('app_products_index') }}">Products</a></li>
-                        <li><a href="{{ path('app_subscription_index') }}">Subscription plans</a></li>
+                        <li><a href="{{ app.user ? path('customer_subscriptions') : path('app_landing_page') ~ '#plans' }}">Subscription plans</a></li>
+                        <li><a href="{{ path('app_our_story') }}">Our Story</a></li>
                         {% if app.user %}
                             <li><a href="{{ path('app_cart') }}">Cart</a></li>
+                            <li><a href="{{ path('feedback_new') }}">Feedback</a></li>
                         {% else %}
                             <li><a href="{{ path('app_login') }}">Login</a></li>
+                            <li><a href="{{ path('app_register') }}">Register</a></li>
                         {% endif %}
                     </ul>
                 </div>
             </div>
-
             <div class="footer-bottom">
                 <div>© {{ "now"|date("Y") }} GreenBites</div>
                 <ul class="footer-links">
@@ -213,4 +221,118 @@
     </footer>
 </div>
 
+<script>
+(function () {
+    let rotationTimer = null;
+    const leafImage = "{{ asset('uploads/images/landing-leaf-single.png') }}";
+
+    function initSignatureRotator() {
+        const slides = Array.from(document.querySelectorAll('.hp-signature__slide'));
+        const nameEl = document.getElementById('signature-name');
+        const descEl = document.getElementById('signature-desc');
+        if (!slides.length || !nameEl || !descEl) return;
+
+        if (rotationTimer) {
+            clearInterval(rotationTimer);
+            rotationTimer = null;
+        }
+
+        let idx = 0;
+        const tick = function () {
+            slides.forEach(function (slide, i) {
+                slide.classList.toggle('is-active', i === idx);
+            });
+            nameEl.textContent = slides[idx].getAttribute('data-name') || '';
+            descEl.textContent = slides[idx].getAttribute('data-desc') || '';
+            idx = (idx + 1) % slides.length;
+        };
+
+        tick();
+        rotationTimer = setInterval(tick, 2000);
+    }
+
+    function initRandomLeafDecor() {
+        const sections = Array.from(document.querySelectorAll('.homepage-modern .hp-section'));
+        if (!sections.length || !leafImage) {
+            return;
+        }
+
+        const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const lowPowerDevice = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
+            || (navigator.deviceMemory && navigator.deviceMemory <= 4);
+
+        sections.forEach((section, sectionIndex) => {
+            section.querySelectorAll('.hp-leaf-decor').forEach((node) => node.remove());
+
+            const decorCount = prefersReducedMotion || lowPowerDevice
+                ? (sectionIndex === 0 ? 1 : 0)
+                : (sectionIndex === 0 ? 2 : (sectionIndex < 3 ? 1 : 0));
+            for (let i = 0; i < decorCount; i += 1) {
+                const img = document.createElement('img');
+                img.className = 'hp-leaf-decor';
+                img.alt = '';
+                img.src = leafImage;
+                img.loading = 'lazy';
+                img.decoding = 'async';
+
+                const placeTop = Math.random() > 0.45;
+                const size = sectionIndex === 0
+                    ? 220 + Math.floor(Math.random() * 150)
+                    : 180 + Math.floor(Math.random() * 130);
+                const offset = -28 + Math.floor(Math.random() * 104);
+                const rotate = -38 + Math.floor(Math.random() * 76);
+                const scale = 0.8 + (Math.random() * 0.85);
+                const opacity = sectionIndex === 0
+                    ? 0.12 + (Math.random() * 0.1)
+                    : 0.11 + (Math.random() * 0.09);
+                const duration = 7 + Math.random() * 7;
+                const delay = Math.random() * 3.5;
+
+                img.style.setProperty('--leaf-size', `${size}px`);
+                img.style.setProperty('--leaf-opacity', opacity.toFixed(2));
+                img.style.setProperty('--leaf-rotation', `${rotate}deg`);
+                img.style.setProperty('--leaf-scale', scale.toFixed(2));
+                img.style.setProperty('--leaf-duration', `${duration.toFixed(2)}s`);
+                img.style.setProperty('--leaf-delay', `${delay.toFixed(2)}s`);
+
+                if (placeTop) {
+                    img.style.top = `${offset}px`;
+                } else {
+                    img.style.bottom = `${offset}px`;
+                }
+
+                if (sectionIndex === 0) {
+                    // Keep hero decor away from left brand-name area.
+                    img.style.right = `${-40 + Math.floor(Math.random() * 180)}px`;
+                } else {
+                    const placeLeft = Math.random() > 0.5;
+                    if (placeLeft) {
+                        img.style.left = `${-42 + Math.floor(Math.random() * 140)}px`;
+                    } else {
+                        img.style.right = `${-42 + Math.floor(Math.random() * 140)}px`;
+                    }
+                }
+
+                section.appendChild(img);
+            }
+        });
+    }
+
+    function initLanding() {
+        initSignatureRotator();
+        if ('requestIdleCallback' in window) {
+            window.requestIdleCallback(initRandomLeafDecor, { timeout: 900 });
+        } else {
+            setTimeout(initRandomLeafDecor, 250);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initLanding);
+    } else {
+        initLanding();
+    }
+    document.addEventListener('turbo:load', initLanding);
+})();
+</script>
 {% endblock %}

@@ -47,7 +47,7 @@ class UserManagementType extends AbstractType
                 'required' => true,
             ])
             ->add('plainPassword', PasswordType::class, [
-                'label' => 'Password (leave blank to keep current)',
+                'label' => 'Password (required for new users; leave blank when editing to keep current)',
                 'mapped' => false,
                 'required' => false,
                 'constraints' => [

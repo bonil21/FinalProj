@@ -66,6 +66,13 @@ class UserManagementController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $plainPassword = $form->get('plainPassword')->getData();
+            if ($user->getId() === null && empty($plainPassword)) {
+                $this->addFlash('error', 'Password is required when creating a new user.');
+                return $this->render('admin/users/new.html.twig', [
+                    'user' => $user,
+                    'form' => $form,
+                ]);
+            }
             if ($plainPassword) {
                 $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
                 $user->setPassword($hashedPassword);
@@ -179,22 +186,18 @@ class UserManagementController extends AbstractController
         $isResettingOwnPassword = $currentUser->getId() === $user->getId();
 
         if ($isResettingOwnPassword) {
-            // If admin resets their own password, log them out and redirect to login
+            // If admin resets their own password, log them out and redirect to login.
+            // Do not include temporary credentials in URL query parameters.
             $this->tokenStorage->setToken(null);
             $request->getSession()->invalidate();
-            
-            // Store the temporary password in session before invalidating (won't work)
-            // Instead, redirect with the password in query parameter (less secure but functional)
-            // Better: show it in a modal or copy to clipboard
+
             return $this->redirectToRoute('app_login', [
                 'password_reset' => '1',
-                'temp_password' => $tempPassword,
-                'email' => $user->getEmail()
             ]);
         } else {
             // If resetting someone else's password, show the temporary password
             $this->addFlash('success', sprintf(
-                'Password reset successfully for %s. Temporary password: <strong style="font-family: monospace; background: #f0f0f0; padding: 0.25rem 0.5rem; border-radius: 4px;">%s</strong> - Please share this with the user securely.',
+                'Password reset successfully for %s. Temporary password: %s. Please share this with the user securely.',
                 $user->getEmail(),
                 $tempPassword
             ));

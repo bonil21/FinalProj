@@ -3,15 +3,17 @@
 namespace App\Controller;
 
 use App\Entity\Customer;
+use App\Entity\Feedback;
 use App\Entity\Order;
 use App\Form\CustomerType;
 use App\Form\OrderType;
 use App\Repository\ActivityLogRepository;
 use App\Repository\CustomerRepository;
+use App\Repository\CategoryRepository;
 use App\Repository\OrderRepository;
 use App\Repository\PaymentRepository;
+use App\Repository\FeedbackRepository;
 use App\Repository\ProductsRepository;
-use App\Repository\CategoryRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,35 +30,28 @@ class AdminController extends AbstractController
     #[Route('/', name: 'admin_dashboard')]
     public function index(
         ProductsRepository $productsRepository,
-        CategoryRepository $categoryRepository,
         OrderRepository $orderRepository,
         PaymentRepository $paymentRepository,
-        CustomerRepository $customerRepository,
         UserRepository $userRepository,
         ActivityLogRepository $activityLogRepository
     ): Response {
         if (!$this->isGranted('ROLE_ADMIN')) {
             throw $this->createAccessDeniedException('You are not allowed to access the admin dashboard.');
         }
-        $products = $productsRepository->findAll();
-        $categories = $categoryRepository->findAll();
         // Get real-time dashboard data
-        $totalProducts = count($products);
+        $totalProducts = $productsRepository->count([]);
         $totalUsers = $userRepository->count([]);
-        $allUsers = $userRepository->findAll();
-        $totalStaff = count(array_filter($allUsers, fn($u) => in_array('ROLE_STAFF', $u->getRoles())));
-        $totalAdmins = count(array_filter($allUsers, fn($u) => in_array('ROLE_ADMIN', $u->getRoles())));
+        $totalStaff = $userRepository->countByRole('ROLE_STAFF');
+        $totalAdmins = $userRepository->countByRole('ROLE_ADMIN');
         $activeSubscriptions = $orderRepository->countActiveSubscriptions();
         $ordersToday = $orderRepository->countOrdersToday();
         $todayRevenue = $paymentRepository->getTodayRevenue();
         $recentOrders = $orderRepository->findRecentOrders(5);
         $recentLogs = $activityLogRepository->findBy([], ['createdAt' => 'DESC'], 10);
+        $products = $productsRepository->findFeatured(6);
 
         return $this->render('admin/index.html.twig', [
-            'products' => $products,
-            'categories' => $categories,
             'totalProducts' => $totalProducts,
-            'totalCategories' => count($categories),
             'totalUsers' => $totalUsers,
             'totalStaff' => $totalStaff,
             'totalAdmins' => $totalAdmins,
@@ -65,35 +60,20 @@ class AdminController extends AbstractController
             'todayRevenue' => $todayRevenue,
             'recentOrders' => $recentOrders,
             'recentLogs' => $recentLogs,
+            'products' => $products,
         ]);
     }
 
     #[Route('/products', name: 'admin_products')]
-    public function products(Request $request, ProductsRepository $productsRepository): Response
+    public function products(Request $request, ProductsRepository $productsRepository, CategoryRepository $categoryRepository): Response
     {
         $search = $request->query->get('search', '');
         $categoryFilter = $request->query->get('category', '');
+
+        $categoryId = $categoryFilter !== '' ? (int) $categoryFilter : null;
+        $products = $productsRepository->findWithFilters($search, $categoryId);
         
-        $products = $productsRepository->findAll();
-        
-        // Apply filters
-        if ($search) {
-            $products = array_filter($products, function($product) use ($search) {
-                return stripos($product->getName(), $search) !== false 
-                    || stripos($product->getDescription(), $search) !== false;
-            });
-        }
-        
-        if ($categoryFilter) {
-            $products = array_filter($products, function($product) use ($categoryFilter) {
-                return $product->getCategory() === $categoryFilter;
-            });
-        }
-        
-        // Get unique categories for filter dropdown
-        $allProducts = $productsRepository->findAll();
-        $categories = array_unique(array_map(fn($p) => $p->getCategory(), $allProducts));
-        sort($categories);
+        $categories = $categoryRepository->findBy([], ['name' => 'ASC']);
         
         return $this->render('admin/products.html.twig', [
             'products' => $products,
@@ -178,7 +158,7 @@ class AdminController extends AbstractController
     }
 
     #[Route('/orders', name: 'admin_orders')]
-    public function orders(Request $request, OrderRepository $orderRepository): Response
+    public function orders(Request $request, OrderRepository $orderRepository, PaymentRepository $paymentRepository, EntityManagerInterface $entityManager): Response
     {
         $search = $request->query->get('search', '');
         $statusFilter = $request->query->get('status', '');
@@ -186,40 +166,27 @@ class AdminController extends AbstractController
         $dateTo = $request->query->get('date_to', '');
         
         $orders = $orderRepository->findAllOrderedByCreatedAt();
-        
-        // Apply filters
-        if ($search) {
-            $orders = array_filter($orders, function($order) use ($search) {
-                return stripos($order->getOrderNumber(), $search) !== false 
-                    || ($order->getCustomer() && stripos($order->getCustomer()->getName(), $search) !== false)
-                    || ($order->getCustomer() && stripos($order->getCustomer()->getEmail(), $search) !== false);
-            });
+
+        // Reconcile legacy/inconsistent records:
+        // if an order has a completed GCash/ATM payment, ensure it is marked as paid.
+        $completedOnlineOrderIds = array_flip($paymentRepository->findCompletedOnlineOrderIds());
+        $hasOrderStatusUpdates = false;
+        foreach ($orders as $order) {
+            $orderId = $order->getId();
+            if ($orderId !== null && isset($completedOnlineOrderIds[$orderId]) && $order->getStatus() !== 'paid') {
+                $order->setStatus('paid');
+                $order->setUpdatedAt(new \DateTimeImmutable());
+                $hasOrderStatusUpdates = true;
+            }
+        }
+        if ($hasOrderStatusUpdates) {
+            $entityManager->flush();
         }
         
-        if ($statusFilter) {
-            $orders = array_filter($orders, function($order) use ($statusFilter) {
-                return $order->getStatus() === $statusFilter;
-            });
-        }
-        
-        if ($dateFrom) {
-            $dateFromObj = new \DateTimeImmutable($dateFrom);
-            $orders = array_filter($orders, function($order) use ($dateFromObj) {
-                return $order->getCreatedAt() && $order->getCreatedAt() >= $dateFromObj;
-            });
-        }
-        
-        if ($dateTo) {
-            $dateToObj = new \DateTimeImmutable($dateTo . ' 23:59:59');
-            $orders = array_filter($orders, function($order) use ($dateToObj) {
-                return $order->getCreatedAt() && $order->getCreatedAt() <= $dateToObj;
-            });
-        }
-        
-        // Get unique statuses for filter dropdown
-        $allOrders = $orderRepository->findAllOrderedByCreatedAt();
-        $statuses = array_unique(array_map(fn($o) => $o->getStatus(), $allOrders));
-        sort($statuses);
+        $fromDate = $dateFrom ? new \DateTimeImmutable($dateFrom) : null;
+        $toDate = $dateTo ? new \DateTimeImmutable($dateTo . ' 23:59:59') : null;
+        $orders = $orderRepository->findWithFilters($search, $statusFilter ?: null, $fromDate, $toDate);
+        $statuses = $orderRepository->findDistinctStatuses();
         
         return $this->render('admin/orders.html.twig', [
             'orders' => $orders,
@@ -297,19 +264,36 @@ class AdminController extends AbstractController
     #[Route('/payments', name: 'admin_payments')]
     public function payments(): Response
     {
-        return $this->render('admin/payments.html.twig');
+        return $this->redirectToRoute('app_payment_index');
     }
 
     #[Route('/feedback', name: 'admin_feedback')]
-    public function feedback(): Response
+    public function feedback(FeedbackRepository $feedbackRepository): Response
     {
-        return $this->render('admin/feedback.html.twig');
+        $feedbacks = $feedbackRepository->findAllOrderedByCreatedAt();
+
+        return $this->render('admin/feedback.html.twig', [
+            'feedbacks' => $feedbacks,
+        ]);
+    }
+
+    #[Route('/feedback/{id}/delete', name: 'admin_feedback_delete', methods: ['POST'])]
+    public function deleteFeedback(Request $request, Feedback $feedback, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete_feedback_'.$feedback->getId(), $request->request->getString('_token'))) {
+            $entityManager->remove($feedback);
+            $entityManager->flush();
+            $this->addFlash('success', 'Feedback deleted.');
+        }
+
+        return $this->redirectToRoute('admin_feedback');
     }
 
     #[Route('/promotions', name: 'admin_promotions')]
     public function promotions(): Response
     {
-        return $this->render('admin/promotions.html.twig');
+        // Promotions feature has been removed; keep route as safe fallback.
+        return $this->redirectToRoute('admin_dashboard');
     }
 
     #[Route('/settings', name: 'admin_settings')]

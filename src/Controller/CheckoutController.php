@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Customer;
 use App\Entity\Order;
+use App\Repository\CartItemRepository;
 use App\Repository\CustomerRepository;
 use App\Repository\ProductsRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,6 +23,7 @@ class CheckoutController extends AbstractController
         private RequestStack $requestStack,
         private ProductsRepository $productsRepository,
         private CustomerRepository $customerRepository,
+        private CartItemRepository $cartItemRepository,
         private EntityManagerInterface $entityManager
     ) {
     }
@@ -31,12 +33,26 @@ class CheckoutController extends AbstractController
         return $this->requestStack->getSession();
     }
 
+    private function getCartForCheckout(): array
+    {
+        $user = $this->getUser();
+        if ($user instanceof \App\Entity\User) {
+            $cartItems = $this->cartItemRepository->findByUser($user);
+            return array_map(fn (\App\Entity\CartItem $c) => [
+                'type' => 'product',
+                'id' => $c->getProduct()->getId(),
+                'quantity' => $c->getQuantity(),
+            ], $cartItems);
+        }
+        return $this->getSession()->get('cart', []);
+    }
+
     #[Route('', name: 'app_checkout', methods: ['GET'])]
     public function index(): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
-        $cart = $this->getSession()->get('cart', []);
+        $cart = $this->getCartForCheckout();
         
         if (empty($cart)) {
             $this->addFlash('error', 'Your cart is empty. Please add items before checkout.');
@@ -83,8 +99,14 @@ class CheckoutController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
-        $cart = $this->getSession()->get('cart', []);
-        
+        if (!$this->isCsrfTokenValid('checkout_create_order', $request->request->getString('_token'))) {
+            $this->addFlash('error', 'Your checkout session expired. Please try again.');
+
+            return $this->redirectToRoute('app_checkout');
+        }
+
+        $cart = $this->getCartForCheckout();
+
         if (empty($cart)) {
             $this->addFlash('error', 'Your cart is empty.');
             return $this->redirectToRoute('app_cart');
@@ -172,14 +194,20 @@ class CheckoutController extends AbstractController
             $order->setCreatedBy($orderCreator);
         }
 
+        $customer->setAddress($deliveryAddress);
+
         $this->entityManager->persist($order);
         $this->entityManager->flush();
 
         // Store order ID in session for payment
         $this->getSession()->set('pending_order_id', $order->getId());
 
-        // Clear cart
+        // Clear cart (session and DB for logged-in users)
         $this->getSession()->set('cart', []);
+        $user = $this->getUser();
+        if ($user instanceof \App\Entity\User) {
+            $this->cartItemRepository->deleteByUser($user);
+        }
 
         // Redirect to payment page
         return $this->redirectToRoute('app_payment', ['orderId' => $order->getId()]);

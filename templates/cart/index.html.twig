@@ -11,6 +11,11 @@
             {{ message }}
         </div>
     {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+            {{ message }}
+        </div>
+    {% endfor %}
 
     {% if items|length > 0 %}
     <div style="background: #FFFFFF; border-radius: 20px; box-shadow: 0 8px 32px rgba(47,81,51,0.12); padding: 32px; margin-bottom: 32px;">
@@ -45,6 +50,7 @@
                     <td style="padding: 16px; text-align: right; color: #43b649; font-weight: 700;">₱{{ (item.price * item.quantity)|number_format(2, '.', ',') }}</td>
                     <td style="padding: 16px; text-align: center;">
                         <form method="post" action="{{ path('app_cart_remove', {type: item.type, id: item.id}) }}" style="display: inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('cart_remove') }}">
                             <button type="submit" style="background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;">Remove</button>
                         </form>
                     </td>
@@ -61,10 +67,15 @@
         </div>
         <div style="display: flex; gap: 16px;">
             <form method="post" action="{{ path('app_cart_clear') }}" style="display: inline;">
+                <input type="hidden" name="_token" value="{{ csrf_token('cart_clear') }}">
                 <button type="submit" style="background: #6b7280; color: white; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-weight: 600;">Clear Cart</button>
             </form>
             <a href="{{ path('app_products_index') }}" style="background: linear-gradient(120deg, #43b649 0%, #6BB97F 100%); color: white; padding: 12px 24px; border-radius: 12px; text-decoration: none; font-weight: 700;">Continue Shopping</a>
+            {% if app.user %}
             <a href="{{ path('app_checkout') }}" style="background: linear-gradient(120deg, #43b649 0%, #ffc107 100%); color: white; padding: 12px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; box-shadow: 0 4px 16px rgba(67, 182, 73, 0.3);">Place Order</a>
+            {% else %}
+            <a href="{{ path('app_checkout') }}" style="background: linear-gradient(120deg, #43b649 0%, #ffc107 100%); color: white; padding: 12px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; box-shadow: 0 4px 16px rgba(67, 182, 73, 0.3);">Log in to checkout</a>
+            {% endif %}
         </div>
     </div>
     {% else %}

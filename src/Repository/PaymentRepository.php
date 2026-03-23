@@ -11,6 +11,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class PaymentRepository extends ServiceEntityRepository
 {
+    private const SUCCESS_STATUSES = ['completed', 'succeeded', 'success', 'paid'];
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Payment::class);
@@ -61,8 +63,8 @@ class PaymentRepository extends ServiceEntityRepository
     }
 
     /**
-     * Calculate total revenue for today (successful payments for orders created today)
-     * Includes payments with status 'completed' or 'succeeded' for orders created today
+     * Calculate total revenue for today from successful payments.
+     * Uses paidAt when available, otherwise falls back to createdAt.
      */
     public function getTodayRevenue(): float
     {
@@ -71,11 +73,9 @@ class PaymentRepository extends ServiceEntityRepository
 
         $result = $this->createQueryBuilder('p')
             ->select('SUM(p.amount)')
-            ->innerJoin('p.order', 'o')
             ->andWhere('p.status IN (:completedStatuses)')
-            ->andWhere('o.createdAt >= :today')
-            ->andWhere('p.order IS NOT NULL')
-            ->setParameter('completedStatuses', ['completed', 'succeeded'])
+            ->andWhere('(p.paidAt >= :today OR (p.paidAt IS NULL AND p.createdAt >= :today))')
+            ->setParameter('completedStatuses', self::SUCCESS_STATUSES)
             ->setParameter('today', $today)
             ->getQuery()
             ->getSingleScalarResult();
@@ -92,7 +92,7 @@ class PaymentRepository extends ServiceEntityRepository
         $result = $this->createQueryBuilder('p')
             ->select('SUM(p.amount)')
             ->andWhere('p.status IN (:completedStatuses)')
-            ->setParameter('completedStatuses', ['completed', 'succeeded'])
+            ->setParameter('completedStatuses', self::SUCCESS_STATUSES)
             ->getQuery()
             ->getSingleScalarResult();
 
@@ -112,11 +112,102 @@ class PaymentRepository extends ServiceEntityRepository
             ->select('SUM(p.amount)')
             ->andWhere('p.status IN (:completedStatuses)')
             ->andWhere('p.createdAt >= :startOfMonth')
-            ->setParameter('completedStatuses', ['completed', 'succeeded'])
+            ->setParameter('completedStatuses', self::SUCCESS_STATUSES)
             ->setParameter('startOfMonth', $startOfMonth)
             ->getQuery()
             ->getSingleScalarResult();
 
         return $result ? (float) $result : 0.0;
+    }
+
+    /**
+     * @return Payment[]
+     */
+    public function findPaginatedWithFilters(int $page, int $limit, ?string $status = null, ?string $search = null): array
+    {
+        $page = max(1, $page);
+        $limit = max(1, min(100, $limit));
+
+        $qb = $this->createQueryBuilder('p')
+            ->leftJoin('p.customer', 'c')
+            ->addSelect('c')
+            ->orderBy('p.createdAt', 'DESC')
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+
+        if (!empty($status)) {
+            $qb->andWhere('p.status = :status')
+                ->setParameter('status', $status);
+        }
+
+        if (!empty($search)) {
+            $qb->andWhere('c.name LIKE :q OR c.email LIKE :q OR p.paymentMethod LIKE :q OR p.description LIKE :q')
+                ->setParameter('q', '%'.$search.'%');
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function countWithFilters(?string $status = null, ?string $search = null): int
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)')
+            ->leftJoin('p.customer', 'c');
+
+        if (!empty($status)) {
+            $qb->andWhere('p.status = :status')
+                ->setParameter('status', $status);
+        }
+
+        if (!empty($search)) {
+            $qb->andWhere('c.name LIKE :q OR c.email LIKE :q OR p.paymentMethod LIKE :q OR p.description LIKE :q')
+                ->setParameter('q', '%'.$search.'%');
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function getStatusCounts(?string $search = null): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('p.status AS status, COUNT(p.id) AS total')
+            ->leftJoin('p.customer', 'c')
+            ->groupBy('p.status');
+
+        if (!empty($search)) {
+            $qb->andWhere('c.name LIKE :q OR c.email LIKE :q OR p.paymentMethod LIKE :q OR p.description LIKE :q')
+                ->setParameter('q', '%'.$search.'%');
+        }
+
+        $rows = $qb->getQuery()->getArrayResult();
+        $counts = [];
+        foreach ($rows as $row) {
+            $counts[$row['status']] = (int) $row['total'];
+        }
+
+        return $counts;
+    }
+
+    /**
+     * Returns order IDs that have a completed online payment (GCash/ATM).
+     *
+     * @return int[]
+     */
+    public function findCompletedOnlineOrderIds(): array
+    {
+        $rows = $this->createQueryBuilder('p')
+            ->select('DISTINCT IDENTITY(p.order) AS orderId')
+            ->andWhere('p.order IS NOT NULL')
+            ->andWhere('p.paymentMethod IN (:methods)')
+            ->andWhere('p.status IN (:completedStatuses)')
+            ->setParameter('methods', ['gcash', 'atm'])
+            ->setParameter('completedStatuses', self::SUCCESS_STATUSES)
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_values(array_filter(array_map(
+            static fn (array $row): ?int => isset($row['orderId']) ? (int) $row['orderId'] : null,
+            $rows
+        )));
     }
 }

@@ -5,7 +5,7 @@
 {% block body %}
 <div class="container" style="padding: 40px 20px;">
   <h1 style="color:#2F5133; font-weight:900; margin-bottom: 12px;">Choose your subscription</h1>
-  <p style="color:#5f6b74; margin-bottom: 24px;">Pick a plan that fits you and start enjoying fresh meals.</p>
+  <p style="color:#5f6b74; margin-bottom: 24px;">Pick a plan, then select your meals. You must match the exact required meal count before subscribing.</p>
 
   {% for message in app.flashes('success') %}
     <div style="padding:12px 16px; border-radius:10px; background:#e8f5e9; color:#2f5133; margin-bottom:16px;">
@@ -27,15 +27,192 @@
         </div>
         <p style="color:#5f6b74; margin:0;">{{ plan.description }}</p>
         <div style="color:#2F5133; font-weight:700;">{{ plan.mealsIncluded }} meals • {{ plan.billingInterval|capitalize }}</div>
-        <form action="{{ path('customer_subscribe', {id: plan.id}) }}" method="post">
-          <input type="hidden" name="_token" value="{{ csrf_token('subscribe' ~ plan.id) }}">
-          <button type="submit" style="width:100%; margin-top:8px; background: linear-gradient(135deg,#2F5133,#3B6B4A); color:#fff; border:0; padding:10px 14px; border-radius:10px; font-weight:700; cursor:pointer;">Subscribe</button>
+        <form class="meal-selection-form" action="{{ path('customer_subscribe', {id: plan.id}) }}" method="post" data-required-meals="{{ plan.mealsIncluded }}">
+          <input type="hidden" name="_token" value="{{ csrf_token('subscribe_' ~ plan.id) }}">
+
+          <div style="border:1px solid #E4CFBF; border-radius:10px; background:#fff; padding:10px; margin-top:6px;">
+            <div style="display:flex; justify-content:space-between; gap:8px; align-items:center; margin-bottom:8px;">
+              <strong style="color:#2F5133; font-size:0.95rem;">Meal Selection</strong>
+              <span class="meal-count-badge" style="font-size:0.85rem; font-weight:700; color:#2F5133; background:#e8f5e9; border-radius:999px; padding:4px 10px;">
+                0 / {{ plan.mealsIncluded }}
+              </span>
+            </div>
+
+            <div style="max-height:300px; overflow:auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:10px; padding-right:2px;">
+              {% for product in selectableProducts %}
+                <label class="meal-option-card" style="display:grid; gap:8px; border:1px solid #f0e4d8; border-radius:10px; padding:8px; background:#fcfaf7; transition:all .15s ease;">
+                  {% if product.image %}
+                    <img
+                      src="{{ asset('uploads/images/' ~ product.image) }}"
+                      alt="{{ product.name }}"
+                      loading="lazy"
+                      style="width:100%; height:110px; object-fit:cover; border-radius:8px; border:1px solid #e7dccf;"
+                    >
+                  {% else %}
+                    <div style="width:100%; height:110px; border-radius:8px; border:1px solid #e7dccf; background:#eef4ea; display:grid; place-items:center; color:#5f6b74; font-size:.85rem;">
+                      No image
+                    </div>
+                  {% endif %}
+
+                  <span style="display:grid; gap:2px;">
+                    <span style="font-weight:700; color:#2F5133; font-size:0.92rem; line-height:1.2;">{{ product.name }}</span>
+                    <span style="color:#5f6b74; font-size:0.8rem;">₱{{ product.price|number_format(2, '.', ',') }}</span>
+                  </span>
+
+                  <span style="display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center;">
+                    <span style="font-size:.78rem; color:#5f6b74;">Qty selected</span>
+                    <input
+                      type="number"
+                      name="meal_qty[{{ product.id }}]"
+                      class="meal-qty-input"
+                      min="0"
+                      step="1"
+                      value="0"
+                      inputmode="numeric"
+                      style="width:78px; border:1px solid #d9c8b7; border-radius:8px; padding:6px 8px; font-weight:700; color:#2F5133; text-align:right;"
+                    >
+                  </span>
+                </label>
+              {% else %}
+                <div style="padding:8px; border-radius:8px; background:#fff4f4; color:#8a1f17; border:1px solid #f4d3d3;">
+                  No subscription meals are currently available.
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <p class="meal-selection-hint" style="margin:8px 0 0; font-size:0.85rem; color:#5f6b74;">
+            Select exactly {{ plan.mealsIncluded }} meals to continue.
+          </p>
+          <button type="submit" class="subscribe-btn" disabled style="width:100%; margin-top:8px; background: linear-gradient(135deg,#2F5133,#3B6B4A); color:#fff; border:0; padding:10px 14px; border-radius:10px; font-weight:700; cursor:not-allowed; opacity:0.6;">Subscribe</button>
         </form>
       </div>
     {% else %}
       <p>No subscription plans available yet.</p>
     {% endfor %}
   </div>
+
+  <div style="margin-top:32px;">
+    <h2 style="color:#2F5133; font-weight:900; margin:0 0 12px;">My Subscriptions</h2>
+    <p style="color:#5f6b74; margin:0 0 16px;">Review your active and pending plans, including your selected meals.</p>
+
+    <div style="display:grid; gap:12px;">
+      {% for subscription in subscriptions %}
+        {% set selectedMeals = subscription.selectedMeals|default([]) %}
+        {% set selectedTotal = 0 %}
+        {% for meal in selectedMeals %}
+          {% set selectedTotal = selectedTotal + (meal.quantity|default(0)) %}
+        {% endfor %}
+
+        <article style="background:#fff; border:1px solid #E4CFBF; border-radius:12px; padding:14px;">
+          <div style="display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+            <div>
+              <h3 style="margin:0; color:#2F5133;">{{ subscription.plan ? subscription.plan.name : 'Subscription Plan' }}</h3>
+              <p style="margin:4px 0 0; color:#5f6b74; font-size:0.9rem;">
+                {{ subscription.plan ? subscription.plan.billingInterval|capitalize : 'N/A' }} •
+                Started {{ subscription.startDate ? subscription.startDate|date('M d, Y') : 'N/A' }}
+              </p>
+            </div>
+            <span style="align-self:start; font-size:0.8rem; font-weight:700; border-radius:999px; padding:4px 10px; background:#eef5ff; color:#1f4d8a;">
+              {{ subscription.status|upper }}
+            </span>
+          </div>
+
+          {% if selectedMeals|length > 0 %}
+            <div style="margin-top:10px; border-top:1px dashed #eadccc; padding-top:10px;">
+              <div style="display:flex; justify-content:space-between; gap:8px; margin-bottom:6px;">
+                <strong style="color:#2F5133; font-size:0.9rem;">Selected Meals</strong>
+                <span style="font-size:0.85rem; color:#2F5133;">
+                  {{ selectedTotal }} / {{ subscription.plan ? subscription.plan.mealsIncluded : selectedTotal }} meals
+                </span>
+              </div>
+              <ul style="margin:0; padding-left:18px; color:#2F5133;">
+                {% for meal in selectedMeals %}
+                  <li>{{ meal.name|default('Meal') }} x {{ meal.quantity|default(0) }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% else %}
+            <p style="margin:10px 0 0; color:#8a1f17; font-size:0.9rem;">No meal selection recorded for this subscription.</p>
+          {% endif %}
+        </article>
+      {% else %}
+        <div style="padding:12px 14px; border-radius:10px; background:#fcfaf7; border:1px dashed #E4CFBF; color:#5f6b74;">
+          You do not have subscriptions yet.
+        </div>
+      {% endfor %}
+    </div>
+  </div>
 </div>
+
+<script>
+(() => {
+  const forms = document.querySelectorAll('.meal-selection-form');
+  forms.forEach((form) => {
+    const requiredMeals = parseInt(form.dataset.requiredMeals || '0', 10);
+    const inputs = Array.from(form.querySelectorAll('.meal-qty-input'));
+    const badge = form.querySelector('.meal-count-badge');
+    const hint = form.querySelector('.meal-selection-hint');
+    const button = form.querySelector('.subscribe-btn');
+    const cards = Array.from(form.querySelectorAll('.meal-option-card'));
+
+    const updateState = () => {
+      const selected = inputs.reduce((sum, input) => {
+        const value = parseInt(input.value || '0', 10);
+        if (!Number.isFinite(value) || value < 0) {
+          input.value = '0';
+          return sum;
+        }
+        return sum + value;
+      }, 0);
+
+      cards.forEach((card) => {
+        const input = card.querySelector('.meal-qty-input');
+        const qty = parseInt((input && input.value) || '0', 10) || 0;
+        if (qty > 0) {
+          card.style.borderColor = '#6BB97F';
+          card.style.boxShadow = '0 0 0 2px rgba(107,185,127,.2)';
+          card.style.background = '#f3fbf4';
+        } else {
+          card.style.borderColor = '#f0e4d8';
+          card.style.boxShadow = 'none';
+          card.style.background = '#fcfaf7';
+        }
+      });
+
+      if (badge) {
+        badge.textContent = `${selected} / ${requiredMeals}`;
+      }
+
+      const isValid = selected === requiredMeals && requiredMeals > 0;
+      if (button) {
+        button.disabled = !isValid;
+        button.style.opacity = isValid ? '1' : '0.6';
+        button.style.cursor = isValid ? 'pointer' : 'not-allowed';
+      }
+
+      if (hint) {
+        if (isValid) {
+          hint.textContent = 'Perfect. Your meal selection matches this plan.';
+          hint.style.color = '#2f7d32';
+        } else if (selected < requiredMeals) {
+          hint.textContent = `Add ${requiredMeals - selected} more meal(s) to continue.`;
+          hint.style.color = '#5f6b74';
+        } else {
+          hint.textContent = `You selected ${selected - requiredMeals} extra meal(s). Please reduce your selection.`;
+          hint.style.color = '#8a1f17';
+        }
+      }
+    };
+
+    inputs.forEach((input) => {
+      input.addEventListener('input', updateState);
+      input.addEventListener('change', updateState);
+    });
+
+    updateState();
+  });
+})();
+</script>
 {% endblock %}
 

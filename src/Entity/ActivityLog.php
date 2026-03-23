@@ -2,47 +2,70 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\ActivityLogRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ActivityLogRepository::class)]
+#[ApiResource(
+    operations: [new Get(), new GetCollection(), new Post(), new Put(), new Delete()],
+    normalizationContext: ['groups' => ['practice_api:read']],
+    denormalizationContext: ['groups' => ['practice_api:write']]
+)]
 class ActivityLog
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['practice_api:read'])]
     private ?int $id = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?int $userId = null;
 
     #[ORM\Column(length: 180)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private string $userEmail;
 
     #[ORM\Column(length: 150, nullable: true)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private string $userRole;
 
     #[ORM\Column(length: 80)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private string $action;
 
     #[ORM\Column(length: 80, nullable: true)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?string $entity = null;
 
     #[ORM\Column(length: 80, nullable: true)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?string $entityId = null;
 
     #[ORM\Column(type: Types::JSON, nullable: true)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?array $details = null;
 
     #[ORM\Column(length: 64, nullable: true)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?string $ipAddress = null;
 
     #[ORM\Column]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private DateTimeImmutable $createdAt;
 
     public function __construct()

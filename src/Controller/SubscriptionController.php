@@ -19,8 +19,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/subscriptions')]
+#[IsGranted('ROLE_ADMIN')]
 class SubscriptionController extends AbstractController
 {
     public function __construct(
@@ -33,12 +35,27 @@ class SubscriptionController extends AbstractController
     ) {}
 
     #[Route('/', name: 'app_subscription_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $subscriptions = $this->subscriptionRepository->findAll();
+        $page = max(1, (int) $request->query->get('page', 1));
+        $limit = max(5, min(100, (int) $request->query->get('limit', 20)));
+        $status = trim((string) $request->query->get('status', ''));
+        $search = trim((string) $request->query->get('q', ''));
+
+        $subscriptions = $this->subscriptionRepository->findPaginatedWithFilters($page, $limit, $status ?: null, $search ?: null);
+        $totalSubscriptions = $this->subscriptionRepository->countWithFilters($status ?: null, $search ?: null);
+        $totalPages = max(1, (int) ceil($totalSubscriptions / $limit));
+        $statusCounts = $this->subscriptionRepository->getStatusCounts($search ?: null);
 
         return $this->render('admin/subscriptions/index.html.twig', [
             'subscriptions' => $subscriptions,
+            'page' => $page,
+            'limit' => $limit,
+            'statusFilter' => $status,
+            'search' => $search,
+            'totalSubscriptions' => $totalSubscriptions,
+            'totalPages' => $totalPages,
+            'statusCounts' => $statusCounts,
         ]);
     }
 
@@ -121,12 +138,27 @@ class SubscriptionController extends AbstractController
     }
 
     #[Route('/plans/', name: 'app_subscription_plan_index', methods: ['GET'])]
-    public function plansIndex(): Response
+    public function plansIndex(Request $request): Response
     {
-        $plans = $this->subscriptionPlanRepository->findAll();
+        $page = max(1, (int) $request->query->get('page', 1));
+        $limit = max(5, min(100, (int) $request->query->get('limit', 12)));
+        $active = trim((string) $request->query->get('active', ''));
+        $search = trim((string) $request->query->get('q', ''));
+
+        $plans = $this->subscriptionPlanRepository->findPaginatedWithFilters($page, $limit, $active, $search ?: null);
+        $totalPlans = $this->subscriptionPlanRepository->countWithFilters($active, $search ?: null);
+        $totalPages = max(1, (int) ceil($totalPlans / $limit));
+        $activeCounts = $this->subscriptionPlanRepository->getActiveCounts($search ?: null);
 
         return $this->render('admin/subscription_plans/index.html.twig', [
             'plans' => $plans,
+            'page' => $page,
+            'limit' => $limit,
+            'activeFilter' => $active,
+            'search' => $search,
+            'totalPlans' => $totalPlans,
+            'totalPages' => $totalPages,
+            'activeCounts' => $activeCounts,
         ]);
     }
 
@@ -200,22 +232,68 @@ class SubscriptionController extends AbstractController
     }
 
     #[Route('/payments/', name: 'app_payment_index', methods: ['GET'])]
-    public function paymentsIndex(): Response
+    public function paymentsIndex(Request $request): Response
     {
-        $payments = $this->paymentRepository->findAll();
+        $page = max(1, (int) $request->query->get('page', 1));
+        $limit = max(5, min(100, (int) $request->query->get('limit', 20)));
+        $status = trim((string) $request->query->get('status', ''));
+        $search = trim((string) $request->query->get('q', ''));
+
+        $payments = $this->paymentRepository->findPaginatedWithFilters($page, $limit, $status ?: null, $search ?: null);
+        $totalPayments = $this->paymentRepository->countWithFilters($status ?: null, $search ?: null);
+        $totalPages = max(1, (int) ceil($totalPayments / $limit));
+        $statusCounts = $this->paymentRepository->getStatusCounts($search ?: null);
 
         return $this->render('admin/payments/index.html.twig', [
             'payments' => $payments,
+            'page' => $page,
+            'limit' => $limit,
+            'statusFilter' => $status,
+            'search' => $search,
+            'totalPayments' => $totalPayments,
+            'totalPages' => $totalPages,
+            'statusCounts' => $statusCounts,
         ]);
     }
 
     #[Route('/transactions/', name: 'app_transaction_index', methods: ['GET'])]
-    public function transactionsIndex(): Response
+    public function transactionsIndex(Request $request): Response
     {
-        $transactions = $this->transactionRepository->findAll();
+        $page = max(1, (int) $request->query->get('page', 1));
+        $limit = max(5, min(100, (int) $request->query->get('limit', 20)));
+        $status = trim((string) $request->query->get('status', ''));
+        $search = trim((string) $request->query->get('q', ''));
+
+        $transactions = $this->transactionRepository->findPaginatedWithFilters($page, $limit, $status ?: null, $search ?: null);
+        $totalTransactions = $this->transactionRepository->countWithFilters($status ?: null, $search ?: null);
+        $totalPages = max(1, (int) ceil($totalTransactions / $limit));
+        $statusCounts = $this->transactionRepository->getStatusCounts($search ?: null);
 
         return $this->render('admin/transactions/index.html.twig', [
             'transactions' => $transactions,
+            'page' => $page,
+            'limit' => $limit,
+            'statusFilter' => $status,
+            'search' => $search,
+            'totalTransactions' => $totalTransactions,
+            'totalPages' => $totalPages,
+            'statusCounts' => $statusCounts,
+        ]);
+    }
+
+    #[Route('/payments/{id<\d+>}', name: 'app_payment_show', methods: ['GET'])]
+    public function paymentShow(Payment $payment): Response
+    {
+        return $this->render('admin/payments/show.html.twig', [
+            'payment' => $payment,
+        ]);
+    }
+
+    #[Route('/transactions/{id<\d+>}', name: 'app_transaction_show', methods: ['GET'])]
+    public function transactionShow(Transaction $transaction): Response
+    {
+        return $this->render('admin/transactions/show.html.twig', [
+            'transaction' => $transaction,
         ]);
     }
 }

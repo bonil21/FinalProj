@@ -10,11 +10,36 @@
     </a>
 </div>
 
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <input type="text" class="form-control" name="q" value="{{ search }}" placeholder="Search customer, reference, type...">
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" name="status">
+            <option value="">All statuses</option>
+            {% for s in ['completed', 'pending', 'failed', 'cancelled'] %}
+                <option value="{{ s }}" {% if statusFilter == s %}selected{% endif %}>{{ s|title }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" name="limit">
+            {% for n in [10, 20, 50, 100] %}
+                <option value="{{ n }}" {% if limit == n %}selected{% endif %}>{{ n }} / page</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3 d-flex gap-2">
+        <button class="btn btn-primary" type="submit">Apply</button>
+        <a class="btn btn-outline-secondary" href="{{ path('app_transaction_index') }}">Reset</a>
+    </div>
+</form>
+
 <div class="row mb-3">
     <div class="col-md-3">
         <div class="card text-center">
             <div class="card-body">
-                <h4 class="text-success">{{ transactions|filter(t => t.status == 'completed')|length }}</h4>
+                <h4 class="text-success">{{ statusCounts['completed'] ?? 0 }}</h4>
                 <small class="text-muted">Completed</small>
             </div>
         </div>
@@ -22,7 +47,7 @@
     <div class="col-md-3">
         <div class="card text-center">
             <div class="card-body">
-                <h4 class="text-warning">{{ transactions|filter(t => t.status == 'pending')|length }}</h4>
+                <h4 class="text-warning">{{ statusCounts['pending'] ?? 0 }}</h4>
                 <small class="text-muted">Pending</small>
             </div>
         </div>
@@ -30,7 +55,7 @@
     <div class="col-md-3">
         <div class="card text-center">
             <div class="card-body">
-                <h4 class="text-danger">{{ transactions|filter(t => t.status == 'failed')|length }}</h4>
+                <h4 class="text-danger">{{ statusCounts['failed'] ?? 0 }}</h4>
                 <small class="text-muted">Failed</small>
             </div>
         </div>
@@ -38,7 +63,7 @@
     <div class="col-md-3">
         <div class="card text-center">
             <div class="card-body">
-                <h4 class="text-info">{{ transactions|length }}</h4>
+                <h4 class="text-info">{{ totalTransactions }}</h4>
                 <small class="text-muted">Total</small>
             </div>
         </div>
@@ -132,14 +157,9 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewTransaction({{ transaction.id }})">
+                                        <a href="{{ path('app_transaction_show', {'id': transaction.id}) }}" class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-eye"></i>
-                                        </button>
-                                        {% if transaction.status == 'pending' %}
-                                            <button type="button" class="btn btn-sm btn-outline-success" onclick="processTransaction({{ transaction.id }})">
-                                                <i class="fas fa-check"></i>
-                                            </button>
-                                        {% endif %}
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
@@ -148,22 +168,20 @@
                 </table>
             </div>
         {% endif %}
+
+        {% if totalPages > 1 %}
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <small class="text-muted">Page {{ page }} of {{ totalPages }}</small>
+                <div class="btn-group">
+                    {% set prevPage = page - 1 %}
+                    {% set nextPage = page + 1 %}
+                    <a class="btn btn-outline-secondary btn-sm {% if page <= 1 %}disabled{% endif %}" href="{{ path('app_transaction_index', {page: prevPage, limit: limit, status: statusFilter, q: search}) }}">Prev</a>
+                    <a class="btn btn-outline-secondary btn-sm {% if page >= totalPages %}disabled{% endif %}" href="{{ path('app_transaction_index', {page: nextPage, limit: limit, status: statusFilter, q: search}) }}">Next</a>
+                </div>
+            </div>
+        {% endif %}
     </div>
 </div>
-
-<script>
-function viewTransaction(id) {
-    // Add transaction details modal logic here
-    alert('Transaction details feature coming soon!');
-}
-
-function processTransaction(id) {
-    if (confirm('Are you sure you want to process this transaction?')) {
-        // Add process transaction logic here
-        alert('Transaction processing feature coming soon!');
-    }
-}
-</script>
 
 <style>
 .avatar-sm {

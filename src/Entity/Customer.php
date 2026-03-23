@@ -2,6 +2,12 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\CustomerRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -9,36 +15,50 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 #[UniqueEntity(fields: ['email'], message: 'This email is already registered.')]
+#[ApiResource(
+    operations: [new Get(), new GetCollection(), new Post(), new Put(), new Delete()],
+    normalizationContext: ['groups' => ['practice_api:read']],
+    denormalizationContext: ['groups' => ['practice_api:write']]
+)]
 class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['practice_api:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 20)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?string $address = null;
 
     #[ORM\Column]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['practice_api:write'])]
     private ?string $password = null;
 
     /** @var list<string> */
     #[ORM\Column(type: 'json')]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private array $roles = ['ROLE_CUSTOMER'];
 
     /**

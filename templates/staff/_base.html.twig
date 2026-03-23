@@ -9,30 +9,30 @@
 <div class="dashboard-container">
   <div class="sidebar">
     <div>
-      <img src="{{ asset('imageeee/logo.png') }}" alt="GreenBites Logo 2025" style="width:80px; margin-bottom:1.5rem;">
+      <img src="{{ asset('imageeee/logo.png') }}" alt="GreenBites Logo 2025" class="sidebar-logo-img">
       <h2>GreenBites</h2>
       <a href="{{ path('app_landing_page') }}" class="{% if active_menu is defined and active_menu == 'home' %}active{% endif %}"><i class="bi bi-house-door"></i> Home</a>
       <a href="{{ path('staff_dashboard') }}" class="{% if active_menu is defined and active_menu == 'dashboard' %}active{% endif %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
-      <a href="{{ path('app_products_index') }}" class="{% if active_menu is defined and active_menu == 'products' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-basket"></i> Products</a>
-      <a href="{{ path('app_products_new') }}" class="{% if active_menu is defined and active_menu == 'products_new' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-plus-circle"></i> Create Product</a>
-      <a href="{{ path('staff_orders_index') }}" class="{% if active_menu is defined and active_menu == 'orders' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-file-earmark-text"></i> Records</a>
+      <a href="{{ path('app_products_index') }}" class="sidebar-link-emphasis {% if active_menu is defined and active_menu == 'products' %}active{% endif %}"><i class="bi bi-basket"></i> Products</a>
+      <a href="{{ path('app_products_new') }}" class="sidebar-link-emphasis {% if active_menu is defined and active_menu == 'products_new' %}active{% endif %}"><i class="bi bi-plus-circle"></i> Create Product</a>
+      <a href="{{ path('staff_orders_index') }}" class="sidebar-link-emphasis {% if active_menu is defined and active_menu == 'orders' %}active{% endif %}"><i class="bi bi-file-earmark-text"></i> Records</a>
       <hr>
-      <a href="{{ path('staff_subscription_index') }}" class="{% if active_menu is defined and active_menu == 'subscriptions' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-file-earmark-text"></i> Subscriptions</a>
+      <a href="{{ path('staff_subscription_index') }}" class="sidebar-link-emphasis {% if active_menu is defined and active_menu == 'subscriptions' %}active{% endif %}"><i class="bi bi-file-earmark-text"></i> Subscriptions</a>
       <hr>
-      <a href="{{ path('staff_profile') }}" class="{% if active_menu is defined and active_menu == 'profile' %}active{% endif %}" style="font-weight: bold; font-size: 1.1em;"><i class="bi bi-person-circle"></i> My Profile</a>
+      <a href="{{ path('staff_profile') }}" class="sidebar-link-emphasis {% if active_menu is defined and active_menu == 'profile' %}active{% endif %}"><i class="bi bi-person-circle"></i> My Profile</a>
       <hr>
-      <a href="{{ path('app_logout') }}" style="text-align:center; margin-top:1rem; color: #E7F0DC;"><i class="bi bi-box-arrow-right"></i> Logout</a>
+      <a href="{{ path('app_logout') }}" class="sidebar-logout-link"><i class="bi bi-box-arrow-right"></i> Logout</a>
     </div>
   </div>
 
   <div class="main-content">
     {% for message in app.flashes('error') %}
-        <div style="background: #fee; border: 2px solid #fcc; color: #c33; padding: 1rem; margin: 1rem; border-radius: 8px; font-weight: 600;">
+        <div class="staff-flash staff-flash--error">
             {{ message }}
         </div>
     {% endfor %}
     {% for message in app.flashes('success') %}
-        <div style="background: #efe; border: 2px solid #cfc; color: #3c3; padding: 1rem; margin: 1rem; border-radius: 8px; font-weight: 600;">
+        <div class="staff-flash staff-flash--success">
             {{ message }}
         </div>
     {% endfor %}

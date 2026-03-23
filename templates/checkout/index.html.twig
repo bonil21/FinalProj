@@ -52,6 +52,7 @@
             <h2 style="font-size: 1.8rem; color: #2F5133; font-weight: 700; margin-bottom: 24px;">Delivery Information</h2>
             
             <form method="POST" action="{{ path('app_checkout_create_order') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('checkout_create_order') }}">
                 <div style="margin-bottom: 20px;">
                     <label style="display: block; font-weight: 700; color: #2F5133; margin-bottom: 8px;">Delivery Address *</label>
                     <textarea 

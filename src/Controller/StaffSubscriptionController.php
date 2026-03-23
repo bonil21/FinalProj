@@ -39,13 +39,27 @@ class StaffSubscriptionController extends AbstractController
     ) {}
 
     #[Route('/', name: 'staff_subscription_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        // Staff can see all subscriptions
-        $subscriptions = $this->subscriptionRepository->findAll();
+        $page = max(1, (int) $request->query->get('page', 1));
+        $limit = max(5, min(100, (int) $request->query->get('limit', 20)));
+        $status = trim((string) $request->query->get('status', ''));
+        $search = trim((string) $request->query->get('q', ''));
+
+        $subscriptions = $this->subscriptionRepository->findPaginatedWithFilters($page, $limit, $status ?: null, $search ?: null);
+        $totalSubscriptions = $this->subscriptionRepository->countWithFilters($status ?: null, $search ?: null);
+        $totalPages = max(1, (int) ceil($totalSubscriptions / $limit));
+        $statusCounts = $this->subscriptionRepository->getStatusCounts($search ?: null);
 
         return $this->render('staff/subscriptions/index.html.twig', [
             'subscriptions' => $subscriptions,
+            'page' => $page,
+            'limit' => $limit,
+            'statusFilter' => $status,
+            'search' => $search,
+            'totalSubscriptions' => $totalSubscriptions,
+            'totalPages' => $totalPages,
+            'statusCounts' => $statusCounts,
             'active_menu' => 'subscriptions',
         ]);
     }
@@ -143,12 +157,27 @@ class StaffSubscriptionController extends AbstractController
     }
 
     #[Route('/plans/', name: 'staff_subscription_plan_index', methods: ['GET'])]
-    public function plansIndex(): Response
+    public function plansIndex(Request $request): Response
     {
-        $plans = $this->subscriptionPlanRepository->findAll();
+        $page = max(1, (int) $request->query->get('page', 1));
+        $limit = max(5, min(100, (int) $request->query->get('limit', 12)));
+        $active = trim((string) $request->query->get('active', ''));
+        $search = trim((string) $request->query->get('q', ''));
+
+        $plans = $this->subscriptionPlanRepository->findPaginatedWithFilters($page, $limit, $active, $search ?: null);
+        $totalPlans = $this->subscriptionPlanRepository->countWithFilters($active, $search ?: null);
+        $totalPages = max(1, (int) ceil($totalPlans / $limit));
+        $activeCounts = $this->subscriptionPlanRepository->getActiveCounts($search ?: null);
 
         return $this->render('staff/subscription_plans/index.html.twig', [
             'plans' => $plans,
+            'page' => $page,
+            'limit' => $limit,
+            'activeFilter' => $active,
+            'search' => $search,
+            'totalPlans' => $totalPlans,
+            'totalPages' => $totalPages,
+            'activeCounts' => $activeCounts,
             'active_menu' => 'subscriptions',
         ]);
     }

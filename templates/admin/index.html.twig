@@ -2,149 +2,81 @@
 {% set active_menu = 'dashboard' %}
 {% block title %}GreenBites | Admin Dashboard{% endblock %}
 
-{% block stylesheets %}
-  {{ parent() }}
-  <style>
-    /* Keep previous light theme; only enhance structure like the reference */
-
-    .dashboard-tables { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.2rem; }
-    @media (max-width: 992px) { .dashboard-tables { grid-template-columns: 1fr; } }
-    .table-section { background: #F6E6D7; border: 1px solid #E4CFBF; border-radius: 16px; box-shadow: 0 8px 26px rgba(0,0,0,0.06); padding: 1.1rem; }
-    .table-section h2 { margin: 0 0 .9rem 0; color: #2F5133; font-size: 1.1rem; font-weight: 800; letter-spacing: .02em; }
-    table { width: 100%; border-collapse: collapse; }
-    thead th { font-size: .8rem; font-weight: 700; color: #2F5133; text-transform: uppercase; letter-spacing: .06em; background: #ECD5C4; }
-    tbody td, thead th { padding: .9rem 1rem; border-bottom: 1px solid #E4CFBF; }
-    tbody td { color: #1f2937; }
-    .table-section a { color: #3B6B4A; text-decoration: none; }
-    .table-section a:hover { text-decoration: underline; }
-    tbody tr:hover { background: #FAF0E8; }
-
-    .text-center { text-align: center; }
-    .text-start { text-align: left; }
-    .text-end { text-align: right; }
-    .badge { display: inline-block; padding: .3rem .65rem; border-radius: 999px; font-size: .72rem; font-weight: 700; color: #0e1a12; background: #6BB97F; box-shadow: 0 4px 10px rgba(107,185,127,.35); }
-    .badge.badge-warn { background: #ffb300; color: #1a1200; box-shadow: 0 4px 10px rgba(255,179,0,.35); }
-    .badge.badge-info { background: #42a5f5; color: #04121a; box-shadow: 0 4px 10px rgba(66,165,245,.35); }
-    .badge.badge-danger { background: #ef5350; color: #1a0404; box-shadow: 0 4px 10px rgba(239,83,80,.35); }
-
-    /* New structured layout inspired by reference (light theme preserved) */
-    .dash-grid { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 1rem; align-items: start; }
-    @media (max-width: 1200px) { .dash-grid { grid-template-columns: 1fr; } }
-
-    .panel { background: linear-gradient(135deg, #FFFFFF, #F9F9F9); border: 1px solid #E4CFBF; border-radius: 18px; box-shadow: 0 12px 32px rgba(0,0,0,0.08); padding: 0.75rem; }
-    .panel h3 { margin: 0 0 .75rem 0; color: #2F5133; font-weight: 900; font-size: 1.1rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.05); }
-    .muted { color: #6b7280; font-size: .9rem; }
-
-    /* Next order panel */
-    .next-order-card { background: #E7F0DC; border-radius: 14px; padding: .85rem 1rem; color: #2F5133; display: grid; gap: .25rem; }
-    .mini-list { display: grid; gap: .75rem; margin-top: 1rem; }
-    .mini-item { display: grid; grid-template-columns: 48px 1fr auto; gap: .65rem; align-items: center; }
-    .mini-item img { width: 48px; height: 48px; object-fit: cover; border-radius: 10px; background: #ECD5C4; }
-    .chip { background: #F6E6D7; border: 1px solid #E4CFBF; border-radius: 999px; padding: .2rem .6rem; font-size: .75rem; color: #3B6B4A; }
-
-    /* Calendar */
-    .calendar { background: #F6E6D7; border: 1px solid #E4CFBF; border-radius: 16px; padding: 0.75rem; }
-    .calendar .month { display: flex; justify-content: space-between; align-items: center; margin-bottom: .5rem; color: #2F5133; font-weight: 800; font-size: 0.9rem; }
-    .calendar .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: .25rem; }
-    .calendar .dow, .calendar .day { text-align: center; padding: .35rem 0; border-radius: 8px; font-size: 0.8rem; }
-    .calendar .dow { font-weight: 700; color: #3B6B4A; }
-    .calendar .day { background: #fff; border: 1px solid #E4CFBF; color: #2F5133; }
-    .calendar .day.today { background: #E7F0DC; border-color: #6BB97F; font-weight: 800; }
-
-    /* Product showcase cards */
-    .product-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
-    .p-card { background: #fff; border: 1px solid #E4CFBF; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 26px rgba(0,0,0,.06); display: grid; }
-    .p-media { height: 120px; background: #ECD5C4; display: grid; place-items: center; color: #6b7280; }
-    .p-media img { width: 100%; height: 100%; object-fit: cover; }
-    .p-body { padding: .9rem; display: grid; gap: .35rem; }
-    .p-title { color: #2F5133; font-weight: 800; }
-    .p-cta { margin-top: .35rem; }
-    .btn-ghost { display: inline-block; border: 1px solid #3B6B4A; color: #3B6B4A; background: transparent; padding: .45rem .7rem; border-radius: 10px; text-decoration: none; font-weight: 700; }
-    .btn-ghost:hover { background: #E7F0DC; }
-
-    /* Right rail last-orders */
-    .last-orders { display: grid; gap: .75rem; }
-    .last-item { background: #fff; border: 1px solid #E4CFBF; border-radius: 12px; padding: .6rem .7rem; display: grid; grid-template-columns: auto 1fr auto; gap: .6rem; align-items: center; }
-    .dot { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 999px; background: #E7F0DC; color: #2F5133; font-weight: 800; }
-  </style>
-{% endblock %}
-
 {% block admin_content %}
-  <div style="margin-bottom: 1.5rem;">
-    <h1 class="page-title"><span class="emoji">👋</span> Welcome Back, Admin</h1>
-    <div class="admin-info" style="margin-top: 0.5rem;">
-      <span style="color: #6b7280; font-size: 0.9rem;">Admin Panel - Last updated: {{ "now"|date("M d, Y H:i") }}</span>
-    </div>
-  </div>
-
-  <div class="kpis" style="margin-bottom:1.5rem;">
-    <div class="kpi"><div class="icon"><i class="bi bi-basket" style="font-size: 2rem;"></i></div><div class="meta"><span class="label">Total Products</span><span class="value">{{ totalProducts ?? 0 }}</span><span class="sub">Live items</span></div></div>
-    <div class="kpi"><div class="icon"><i class="bi bi-people" style="font-size: 2rem;"></i></div><div class="meta"><span class="label">Total Users</span><span class="value">{{ totalUsers ?? 0 }}</span><span class="sub">All accounts</span></div></div>
-    <div class="kpi"><div class="icon"><i class="bi bi-person" style="font-size: 2rem;"></i></div><div class="meta"><span class="label">Total Staff</span><span class="value">{{ totalStaff ?? 0 }}</span><span class="sub">Staff members</span></div></div>
-    <div class="kpi"><div class="icon"><i class="bi bi-file-earmark-text" style="font-size: 2rem;"></i></div><div class="meta"><span class="label">Active Subscriptions</span><span class="value">{{ activeSubscriptions ?? 0 }}</span><span class="sub">Current billing cycle</span></div></div>
-    <div class="kpi"><div class="icon"><i class="bi bi-box-seam" style="font-size: 2rem;"></i></div><div class="meta"><span class="label">Orders Today</span><span class="value">{{ ordersToday ?? 0 }}</span><span class="sub">Since midnight</span></div></div>
-    <div class="kpi"><div class="icon">₱</div><div class="meta"><span class="label">Revenue</span><span class="value">₱{{ (todayRevenue ?? 0)|number_format(0, '.', ',') }}</span><span class="sub">Gross today</span></div></div>
-  </div>
-
-  <div class="dash-grid">
-    <!-- Left rail: Next Order + today list -->
-    <div class="panel">
-      <h3>Next Order</h3>
-      {% set next = recentOrders|first %}
-      <div class="next-order-card">
-        <div class="muted">{{ next ? (next.createdAt ? next.createdAt|date('M d, Y') : 'Scheduled') : 'No orders yet' }}</div>
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <div style="font-weight:800;">{{ next ? (next.customer ? next.customer.name : 'N/A') : '—' }}</div>
-            <div class="muted">Order # {{ next ? next.orderNumber : '—' }}</div>
-          </div>
-          <span class="chip">₱{{ next ? (next.totalAmount|number_format(2)) : '0.00' }}</span>
-        </div>
-      </div>
-
-      <div class="mini-list">
-        {% for product in products|slice(0,3) %}
-          <div class="mini-item">
-            {% if product.image %}
-              <img src="{{ asset('uploads/images/' ~ product.image) }}" alt="{{ product.name }}">
-            {% else %}
-              <img alt="" />
-            {% endif %}
-            <div>
-              <div style="font-weight:700; color:#2F5133;">{{ product.name }}</div>
-              <div class="muted">{{ product.category }}</div>
-            </div>
-            <div class="muted">₱{{ product.price }}</div>
-          </div>
-        {% endfor %}
+  <div class="dashboard-shell">
+    <div class="mb-4">
+      <h1 class="page-title"><span class="emoji">👋</span> Welcome Back, Admin</h1>
+      <div class="admin-info dashboard-note">
+        <span>Admin Panel - Last updated: {{ "now"|date("M d, Y H:i") }}</span>
       </div>
     </div>
 
-    <!-- Center: Calendar + Top meals + Product cards -->
-    <div class="panel" style="padding:0; background:transparent; border:none; box-shadow:none;">
-      <div class="calendar">
+    <div class="kpis mb-4">
+      <div class="kpi"><div class="icon"><i class="bi bi-basket"></i></div><div class="meta"><span class="label">Total Products</span><span class="value">{{ totalProducts ?? 0 }}</span><span class="sub">Live items</span></div></div>
+      <div class="kpi"><div class="icon"><i class="bi bi-people"></i></div><div class="meta"><span class="label">Total Users</span><span class="value">{{ totalUsers ?? 0 }}</span><span class="sub">All accounts</span></div></div>
+      <div class="kpi"><div class="icon"><i class="bi bi-person"></i></div><div class="meta"><span class="label">Total Staff</span><span class="value">{{ totalStaff ?? 0 }}</span><span class="sub">Staff members</span></div></div>
+      <div class="kpi"><div class="icon"><i class="bi bi-file-earmark-text"></i></div><div class="meta"><span class="label">Active Subscriptions</span><span class="value">{{ activeSubscriptions ?? 0 }}</span><span class="sub">Current billing cycle</span></div></div>
+      <div class="kpi"><div class="icon"><i class="bi bi-box-seam"></i></div><div class="meta"><span class="label">Orders Today</span><span class="value">{{ ordersToday ?? 0 }}</span><span class="sub">Since midnight</span></div></div>
+      <div class="kpi"><div class="icon">₱</div><div class="meta"><span class="label">Revenue</span><span class="value">₱{{ (todayRevenue ?? 0)|number_format(0, '.', ',') }}</span><span class="sub">Gross today</span></div></div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="panel">
+        <h3>Next Order</h3>
         {% set now = date('now') %}
-        {% set first = (now|date('Y-m-01'))|date('Y-m-d') %}
-        {% set daysInMonth = now|date('t') %}
-        {% set startDow = (first|date('N')) %} {# 1..7 Mon..Sun #}
-        <div class="month">
-          <div style="font-size:1.1rem;">{{ now|date('F') }}</div>
-          <div class="chip">{{ now|date('Y') }}</div>
+        {% set next = recentOrders|first %}
+        <div class="next-order-card">
+          <div class="muted">{{ next ? (next.createdAt ? next.createdAt|date('M d, Y') : 'Scheduled') : 'No orders yet' }}</div>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="fw-bold">{{ next ? (next.customer ? next.customer.name : 'N/A') : '—' }}</div>
+              <div class="muted">Order # {{ next ? next.orderNumber : '—' }}</div>
+            </div>
+            <span class="chip">₱{{ next ? (next.totalAmount|number_format(2)) : '0.00' }}</span>
+          </div>
         </div>
-        <div class="grid">
-          {% for d in ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] %}
-            <div class="dow">{{ d }}</div>
-          {% endfor %}
-          {% for i in 1..(startDow-1) %}<div></div>{% endfor %}
-          {% for d in 1..daysInMonth %}
-            {% set isToday = (now|date('j') == d) %}
-            <div class="day {{ isToday ? 'today' : '' }}">{{ d }}</div>
+
+        <div class="mini-list">
+          {% for product in products|slice(0,3) %}
+            <div class="mini-item">
+              {% if product.image %}
+                <img src="{{ asset('uploads/images/' ~ product.image) }}" alt="{{ product.name }}">
+              {% else %}
+                <img alt="">
+              {% endif %}
+              <div>
+                <div class="fw-bold">{{ product.name }}</div>
+                <div class="muted">{{ product.category }}</div>
+              </div>
+              <div class="muted">₱{{ product.price }}</div>
+            </div>
           {% endfor %}
         </div>
       </div>
 
-      <div style="display:grid; grid-template-columns: 1fr; gap: 0.75rem; margin-top:0.75rem;">
-        <div class="panel" style="margin:0;">
+      <div class="panel">
+        <div class="calendar">
+          {% set now = date('now') %}
+          {% set first = (now|date('Y-m-01'))|date('Y-m-d') %}
+          {% set daysInMonth = now|date('t') %}
+          {% set startDow = (first|date('N')) %}
+          <div class="month">
+            <div class="h6 m-0">{{ now|date('F') }}</div>
+            <div class="chip">{{ now|date('Y') }}</div>
+          </div>
+          <div class="grid">
+            {% for d in ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] %}
+              <div class="dow">{{ d }}</div>
+            {% endfor %}
+            {% for i in 1..(startDow-1) %}<div></div>{% endfor %}
+            {% for d in 1..daysInMonth %}
+              {% set isToday = (now|date('j') == d) %}
+              <div class="day {{ isToday ? 'today' : '' }}">{{ d }}</div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="panel mt-3 mb-0">
           <h3>Top 3 Meals</h3>
           <div class="mini-list">
             {% for product in products|slice(0,3) %}
@@ -152,10 +84,10 @@
                 {% if product.image %}
                   <img src="{{ asset('uploads/images/' ~ product.image) }}" alt="{{ product.name }}">
                 {% else %}
-                  <img alt="" />
+                  <img alt="">
                 {% endif %}
                 <div>
-                  <div style="font-weight:700; color:#2F5133;">{{ product.name }}</div>
+                  <div class="fw-bold">{{ product.name }}</div>
                   <div class="muted">{{ product.category }}</div>
                 </div>
                 <span class="chip">₱{{ product.price }}</span>
@@ -165,45 +97,48 @@
             {% endfor %}
           </div>
         </div>
-
-
       </div>
-    </div>
 
-    <!-- Right rail: Last Orders -->
-    <div class="panel">
-      <h3>Last Orders</h3>
-      <div class="last-orders">
-        {% for order in recentOrders %}
-          <div class="last-item">
-            <div class="dot">{{ loop.index }}</div>
-            <div>
-              <div style="font-weight:700; color:#2F5133;">{{ order.customer ? order.customer.name : 'N/A' }}</div>
-              <div class="muted">Order #{{ order.orderNumber }} • {{ order.createdAt ? order.createdAt|date('M d, Y') : '' }}</div>
+      <div class="panel">
+        <h3>Last Orders</h3>
+        <div class="last-orders">
+          {% for order in recentOrders %}
+            <div class="last-item">
+              <div class="dot">{{ loop.index }}</div>
+              <div>
+                <div class="fw-bold">{{ order.customer ? order.customer.name : 'N/A' }}</div>
+                <div class="muted">Order #{{ order.orderNumber }} • {{ order.createdAt ? order.createdAt|date('M d, Y') : '' }}</div>
+              </div>
+              <span class="chip">₱{{ order.totalAmount|number_format(0) }}</span>
             </div>
-            <span class="chip">₱{{ order.totalAmount|number_format(0) }}</span>
-          </div>
-        {% else %}
-          <div class="muted">No recent orders.</div>
-        {% endfor %}
-      </div>
+          {% else %}
+            <div class="muted">No recent orders.</div>
+          {% endfor %}
+        </div>
 
-      <h3 style="margin-top: 1.5rem;">Recent Activity</h3>
-      <div class="last-orders">
-        {% for log in recentLogs|slice(0, 5) %}
-          <div class="last-item">
-            <div class="dot" style="background: {% if log.action == 'CREATE' %}#6BB97F{% elseif log.action == 'UPDATE' %}#ffb300{% elseif log.action == 'DELETE' %}#ef5350{% elseif log.action == 'LOGIN' %}#42a5f5{% else %}#6b7280{% endif %}; color: white;">{{ log.action|slice(0,1) }}</div>
-            <div>
-              <div style="font-weight:700; color:#2F5133;">{{ log.userEmail }}</div>
-              <div class="muted">{{ log.action }} {{ log.entity ?? 'N/A' }} • {{ log.createdAt|date('M d, H:i') }}</div>
+        <h3 class="mt-4">Recent Activity</h3>
+        <div class="last-orders">
+          {% for log in recentLogs|slice(0, 5) %}
+            {% set actionClass = {
+              'CREATE': 'dot--create',
+              'UPDATE': 'dot--update',
+              'DELETE': 'dot--delete',
+              'LOGIN': 'dot--login'
+            } %}
+            <div class="last-item">
+              <div class="dot {{ actionClass[log.action] ?? 'dot--default' }}">{{ log.action|slice(0,1) }}</div>
+              <div>
+                <div class="fw-bold">{{ log.userEmail }}</div>
+                <div class="muted">{{ log.action }} {{ log.entity ?? 'N/A' }} • {{ log.createdAt|date('M d, H:i') }}</div>
+              </div>
             </div>
-          </div>
-        {% else %}
-          <div class="muted">No recent activity.</div>
-        {% endfor %}
-      </div>
-      <div style="margin-top: 1rem;">
-        <a href="{{ path('admin_logs_index') }}" class="btn-ghost" style="width: 100%; text-align: center; display: block;">View All Logs →</a>
+          {% else %}
+            <div class="muted">No recent activity.</div>
+          {% endfor %}
+        </div>
+        <div class="mt-3">
+          <a href="{{ path('admin_logs_index') }}" class="btn-ghost d-block text-center">View All Logs →</a>
+        </div>
       </div>
     </div>
   </div>

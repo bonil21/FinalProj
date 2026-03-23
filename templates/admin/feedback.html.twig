@@ -1,9 +1,78 @@
 {% extends 'admin/_base.html.twig' %}
 {% set active_menu = 'feedback' %}
-{% block title %}Feedback - Admin{% endblock %}
+{% block title %}Feedback & Reviews - Admin{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    .feedback-page-header { margin-bottom: 1.5rem; }
+    .feedback-page-header h1 { margin: 0 0 0.25rem 0; color: #2F5133; font-weight: 900; font-size: 2rem; }
+    .feedback-page-header p { margin: 0; color: #6b7280; font-size: 0.95rem; }
+    .feedback-stats { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .feedback-stats .stat { background: #E7F0DC; padding: 0.75rem 1.25rem; border-radius: 12px; font-weight: 600; color: #2F5133; }
+    .feedback-list { display: flex; flex-direction: column; gap: 1rem; }
+    .feedback-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #E4CFBF; border-left: 4px solid #43b649; padding: 1.5rem; transition: box-shadow 0.2s; }
+    .feedback-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .feedback-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid #E4CFBF; }
+    .feedback-author-block { display: flex; flex-direction: column; gap: 0.25rem; }
+    .feedback-author { font-weight: 700; color: #2F5133; font-size: 1.05rem; }
+    .feedback-email { font-size: 0.875rem; color: #6b7280; }
+    .feedback-meta { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .feedback-date { font-size: 0.875rem; color: #6b7280; }
+    .feedback-rating { color: #f9a825; font-size: 1.1rem; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .feedback-message { color: #374151; line-height: 1.6; font-size: 0.95rem; margin: 0; white-space: pre-wrap; }
+    .feedback-product { font-size: 0.875rem; color: #6b7280; margin-top: 0.75rem; padding-top: 0.5rem; border-top: 1px dashed #E4CFBF; }
+    .feedback-product strong { color: #2F5133; }
+    .no-feedback { text-align: center; padding: 4rem 2rem; background: #F6E6D7; border-radius: 16px; color: #6b7280; }
+    .no-feedback p { margin: 0.5rem 0; }
+    .no-feedback .text-muted { color: #9ca3af; font-size: 0.9rem; }
+  </style>
+{% endblock %}
 
 {% block admin_content %}
-<h1><i class="bi bi-star"></i> Feedback & Reviews</h1>
-<p>Read and manage customer reviews and feedback here.</p>
-<!-- Feedback management UI goes here -->
+<div class="feedback-page-header">
+  <h1><i class="bi bi-star"></i> Feedback & Reviews</h1>
+  <p>Read and manage customer feedback and reviews.</p>
+</div>
+
+{% for message in app.flashes('success') %}
+  <div style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">{{ message }}</div>
+{% endfor %}
+
+{% if feedbacks is empty %}
+  <div class="no-feedback">
+    <p style="font-size: 1.1rem; font-weight: 600;">No feedback or reviews yet.</p>
+    <p class="text-muted">Customers can submit feedback from the feedback form when logged in.</p>
+  </div>
+{% else %}
+  <div class="feedback-stats">
+    <span class="stat">{{ feedbacks|length }} total</span>
+  </div>
+  <div class="feedback-list">
+    {% for feedback in feedbacks %}
+      <div class="feedback-card">
+        <div class="feedback-card-header">
+          <div class="feedback-author-block">
+            <span class="feedback-author">{{ feedback.author ? feedback.author.name : 'Unknown' }}</span>
+            <span class="feedback-email">{{ feedback.author ? feedback.author.email : '—' }}</span>
+          </div>
+          <div class="feedback-meta">
+            <span class="feedback-date">{{ feedback.createdAt|date('M d, Y H:i') }}</span>
+            <form method="post" action="{{ path('admin_feedback_delete', {id: feedback.id}) }}" style="display: inline;">
+              <input type="hidden" name="_token" value="{{ csrf_token('delete_feedback_' ~ feedback.id) }}">
+              <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this feedback?');">Delete</button>
+            </form>
+          </div>
+        </div>
+        {% if feedback.rating %}
+          <div class="feedback-rating">{% for i in 1..feedback.rating %}★{% endfor %}{% for i in (feedback.rating+1)..5 %}☆{% endfor %}</div>
+        {% endif %}
+        <p class="feedback-message">{{ feedback.message }}</p>
+        {% if feedback.product %}
+          <div class="feedback-product"><strong>Product:</strong> {{ feedback.product.name }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
 {% endblock %}

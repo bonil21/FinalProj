@@ -49,6 +49,16 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
                 if ($user->getStatus() === 'disabled') {
                     throw new \Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException('Your account is disabled.');
                 }
+
+                // Only block logins that are clearly pending email verification.
+                if (\method_exists($user, 'isVerified') && \method_exists($user, 'getVerificationToken')) {
+                    $isVerified = $user->isVerified();
+                    $verificationToken = $user->getVerificationToken();
+
+                    if ($isVerified === false && !empty($verificationToken)) {
+                        throw new CustomUserMessageAuthenticationException('Please verify your email address before logging in.');
+                    }
+                }
                 
                 return $user;
             }),
@@ -72,16 +82,20 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
             ['email' => $user->getUserIdentifier()]
         );
 
-        // #1 Comment out the default redirect:
-        // if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
-        //     return new RedirectResponse($targetPath);
-        // }
+        if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
+            return new RedirectResponse($targetPath);
+        }
 
-        // #2 Uncomment the custom redirect:
-        // #3 Change the route to your desired post-login route
+        $roles = \method_exists($user, 'getRoles') ? $user->getRoles() : [];
+        if (\in_array('ROLE_ADMIN', $roles, true)) {
+            return new RedirectResponse($this->urlGenerator->generate('admin_dashboard'));
+        }
+
+        if (\in_array('ROLE_STAFF', $roles, true)) {
+            return new RedirectResponse($this->urlGenerator->generate('staff_dashboard'));
+        }
+
         return new RedirectResponse($this->urlGenerator->generate('app_landing_page'));
-        
-        // throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
     }
 
     protected function getLoginUrl(Request $request): string

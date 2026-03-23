@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+{% block title %}My Feedback - GreenBites{% endblock %}
+
+{% block body %}
+<div style="max-width: 800px; margin: 2rem auto; padding: 2rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+    <h1 style="color: #2F5133; margin: 0; font-size: 1.75rem; font-weight: 800;"><i class="bi bi-star"></i> My Feedback</h1>
+    <a href="{{ path('feedback_new') }}" style="background: #43b649; color: white; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600;">+ Submit new feedback</a>
+  </div>
+
+  {% if feedbacks is empty %}
+    <div style="background: #F6E6D7; padding: 3rem; border-radius: 16px; text-align: center; color: #6b7280;">
+      <p style="margin: 0 0 1rem 0; font-size: 1.05rem;">You haven't submitted any feedback yet.</p>
+      <a href="{{ path('feedback_new') }}" style="color: #43b649; font-weight: 600;">Submit your first feedback</a>
+    </div>
+  {% else %}
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      {% for feedback in feedbacks %}
+        <div style="background: #fff; border: 1px solid #E4CFBF; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border-left: 4px solid #43b649;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+            <span style="font-weight: 600; color: #2F5133;">{{ feedback.createdAt|date('M d, Y') }}</span>
+            {% if feedback.rating %}
+              <span style="color: #f9a825; font-size: 1.1rem;">{% for i in 1..feedback.rating %}★{% endfor %}{% for i in (feedback.rating+1)..5 %}☆{% endfor %}</span>
+            {% endif %}
+          </div>
+          <p style="color: #374151; margin: 0; line-height: 1.6; white-space: pre-wrap;">{{ feedback.message }}</p>
+          {% if feedback.product %}
+            <p style="font-size: 0.875rem; color: #6b7280; margin: 0.75rem 0 0 0; padding-top: 0.5rem; border-top: 1px dashed #E4CFBF;">Product: {{ feedback.product.name }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

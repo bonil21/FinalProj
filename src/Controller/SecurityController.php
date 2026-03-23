@@ -38,16 +38,12 @@ class SecurityController extends AbstractController
         
         // Check if password was reset by admin
         $passwordReset = $request->query->get('password_reset') === '1';
-        $tempPassword = $request->query->get('temp_password', '');
-        $resetEmail = $request->query->get('email', '');
 
         return $this->render('security/login.html.twig', [
             'last_username' => $lastUsername,
             'error' => $error,
             'password_changed' => $passwordChanged,
             'password_reset' => $passwordReset,
-            'temp_password' => $tempPassword,
-            'reset_email' => $resetEmail,
         ]);
     }
 

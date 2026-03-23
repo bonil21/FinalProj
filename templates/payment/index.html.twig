@@ -46,6 +46,17 @@
                     <span style="color: #6b7280;"><strong>Amount:</strong></span>
                     <span style="color: #43b649; font-weight: 900; font-size: 1.5rem;">₱{{ amount|number_format(2, '.', ',') }}</span>
                 </div>
+
+                {% if subscription.selectedMeals is defined and subscription.selectedMeals|length > 0 %}
+                <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #E4CFBF;">
+                    <span style="color: #6b7280;"><strong>Selected Meals:</strong></span>
+                    <ul style="margin: 8px 0 0; padding-left: 18px; color: #2F5133;">
+                        {% for meal in subscription.selectedMeals %}
+                            <li>{{ meal.name }} x {{ meal.quantity }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
             </div>
         {% endif %}
     </div>
@@ -54,6 +65,7 @@
         <h2 style="font-size: 1.8rem; color: #2F5133; font-weight: 700; margin-bottom: 24px;">Select Payment Method</h2>
         
         <form method="POST" action="{{ path('app_payment_process') }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('payment_process') }}">
             {% if type == 'order' %}
                 <input type="hidden" name="order_id" value="{{ order.id }}">
             {% else %}

@@ -50,28 +50,19 @@ class OrderRepository extends ServiceEntityRepository
     }
 
     /**
-     * Count completed orders for today (orders created today with successful payments)
-     * Counts orders created today that have at least one payment with status 'completed' or 'succeeded'
+     * Count all orders created today.
      */
     public function countOrdersToday(): int
     {
         $today = new \DateTimeImmutable();
         $today = $today->setTime(0, 0, 0);
-        
-        // Count distinct orders created today that have completed payments
-        $em = $this->getEntityManager();
-        $result = $em->createQueryBuilder()
-            ->select('COUNT(DISTINCT o.id)')
-            ->from('App\Entity\Order', 'o')
-            ->innerJoin('App\Entity\Payment', 'p', 'WITH', 'p.order = o.id')
-            ->where('o.createdAt >= :today')
-            ->andWhere('p.status IN (:completedStatuses)')
-            ->setParameter('completedStatuses', ['completed', 'succeeded'])
+
+        return (int) $this->createQueryBuilder('o')
+            ->select('COUNT(o.id)')
+            ->andWhere('o.createdAt >= :today')
             ->setParameter('today', $today)
             ->getQuery()
             ->getSingleScalarResult();
-            
-        return (int) $result;
     }
 
     /**
@@ -115,5 +106,57 @@ class OrderRepository extends ServiceEntityRepository
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @return Order[]
+     */
+    public function findWithFilters(
+        ?string $search = null,
+        ?string $status = null,
+        ?\DateTimeImmutable $dateFrom = null,
+        ?\DateTimeImmutable $dateTo = null
+    ): array {
+        $qb = $this->createQueryBuilder('o')
+            ->leftJoin('o.customer', 'c')
+            ->addSelect('c')
+            ->orderBy('o.createdAt', 'DESC');
+
+        if ($search) {
+            $qb->andWhere('LOWER(o.orderNumber) LIKE :search OR LOWER(c.name) LIKE :search OR LOWER(c.email) LIKE :search')
+                ->setParameter('search', '%'.mb_strtolower($search).'%');
+        }
+
+        if ($status) {
+            $qb->andWhere('o.status = :status')
+                ->setParameter('status', $status);
+        }
+
+        if ($dateFrom) {
+            $qb->andWhere('o.createdAt >= :dateFrom')
+                ->setParameter('dateFrom', $dateFrom);
+        }
+
+        if ($dateTo) {
+            $qb->andWhere('o.createdAt <= :dateTo')
+                ->setParameter('dateTo', $dateTo);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return string[]
+     */
+    public function findDistinctStatuses(): array
+    {
+        $rows = $this->createQueryBuilder('o')
+            ->select('DISTINCT o.status AS status')
+            ->where('o.status IS NOT NULL')
+            ->orderBy('o.status', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_values(array_filter(array_map(static fn(array $row) => $row['status'] ?? null, $rows)));
     }
 }

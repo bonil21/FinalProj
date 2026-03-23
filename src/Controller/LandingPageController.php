@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Repository\ProductsRepository;
 use App\Repository\SubscriptionPlanRepository;
-use App\Repository\CategoryRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,22 +24,23 @@ final class LandingPageController extends AbstractController
     #[Route('/', name: 'app_landing_page')]
     public function index(
         ProductsRepository $productsRepository,
-        CategoryRepository $categoryRepository,
         SubscriptionPlanRepository $planRepository
     ): Response {
-        $products = $productsRepository->findAll();
-        $categories = $categoryRepository->findAll();
-        
-        // Get featured products (first 6 products)
-        $featuredProducts = array_slice($products, 0, 6);
+        if ($this->isGranted('ROLE_ADMIN')) {
+            return $this->redirectToRoute('admin_dashboard');
+        }
+
+        if ($this->isGranted('ROLE_STAFF')) {
+            return $this->redirectToRoute('staff_dashboard');
+        }
+
+        $featuredProducts = $productsRepository->findFeatured(6);
         
         // Get active subscription plans (synced with Admin/Staff dashboards)
-        $plans = $planRepository->findBy(['active' => true]);
+        $plans = $planRepository->findActivePlans();
         
         return $this->render('landing_page/index.html.twig', [
-            'products' => $products,
             'featuredProducts' => $featuredProducts,
-            'categories' => $categories,
             'plans' => $plans,
         ]);
     }

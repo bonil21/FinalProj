@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Verify Your Email</title>
+	</head>
+	<body>
+		<p style="font-size:12px;color:#64748b;margin:0 0 10px 0;">Template Version: GB-EMAIL-V3</p>
+		<h1>Welcome to GreenBites,
+			{{ user.name ?? user.email }}!🌿</h1>
+
+		<p>Thank you for creating your GreenBites account. We’re honored to have you with us. </p>
+        <p>To complete your registration and ensure the security of your account, please verify your email address by clicking the button below. This step allows you to fully access our services and keeps your information protected. </p>
+
+		<p>
+			<a href="{{ verificationUrl }}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">
+				Verify Email Address
+			</a>
+		</p>
+
+		<p>If needed, you may also verify using the link below:</p>
+		<p>{{ verificationUrl }}</p>
+
+		<p>If you did not sign up for GreenBites, please disregard this email.</p>
+        <p>We look forward to providing you with a seamless and refreshing experience.</p>
+
+		<p>Warm regards,<br>GreenBites Team🥗</p>
+	</body>
+</html>

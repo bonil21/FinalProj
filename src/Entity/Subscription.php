@@ -2,56 +2,84 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\SubscriptionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\User;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: SubscriptionRepository::class)]
+#[ApiResource(
+    operations: [new Get(), new GetCollection(), new Post(), new Put(), new Delete()],
+    normalizationContext: ['groups' => ['practice_api:read']],
+    denormalizationContext: ['groups' => ['practice_api:write']]
+)]
 class Subscription
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['practice_api:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'subscriptions')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?Customer $customer = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?SubscriptionPlan $plan = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?User $createdBy = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?string $stripeSubscriptionId = null;
 
     #[ORM\Column(length: 20)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?string $status = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?\DateTime $startDate = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?\DateTime $currentPeriodStart = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?\DateTime $currentPeriodEnd = null;
 
     #[ORM\Column]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?bool $cancelAtPeriodEnd = false;
 
     #[ORM\Column]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
     private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    #[Groups(['practice_api:read', 'practice_api:write'])]
+    private ?array $selectedMeals = null;
 
     public function __construct()
     {
         $this->cancelAtPeriodEnd = false;
         $this->createdAt = new \DateTimeImmutable();
+        $this->selectedMeals = [];
     }
 
     public function getId(): ?int
@@ -175,6 +203,18 @@ class Subscription
     public function setCreatedBy(?User $createdBy): static
     {
         $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function getSelectedMeals(): array
+    {
+        return $this->selectedMeals ?? [];
+    }
+
+    public function setSelectedMeals(?array $selectedMeals): static
+    {
+        $this->selectedMeals = $selectedMeals ?? [];
 
         return $this;
     }

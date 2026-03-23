@@ -1,17 +1,26 @@
 import './bootstrap.js';
-/*
- * Welcome to your app's main JavaScript file!
- *
- * We recommend including the built version of this JavaScript file
- * (and its CSS file) in your base layout (base.html.twig).
- */
 
-// any CSS you import will output into a single css file (app.css in this case)
 import './styles/app.css';
 
-// Add to cart functionality
-window.addToCart = function(productId) {
-    // TODO: Implement actual cart functionality
-    alert('Product added to cart! (Product ID: ' + productId + ')');
-    console.log('Add to cart:', productId);
+/**
+ * Submit add-to-cart via a programmatically built form (same CSRF + POST as Twig forms).
+ * Use from Stimulus or inline onclick only when a real form is not present.
+ */
+window.addToCart = function (productId, csrfToken) {
+    const id = parseInt(String(productId), 10);
+    if (!id) {
+        return;
+    }
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/cart/add/product/' + id;
+
+    const token = document.createElement('input');
+    token.type = 'hidden';
+    token.name = '_token';
+    token.value = csrfToken || '';
+    form.appendChild(token);
+
+    document.body.appendChild(form);
+    form.submit();
 };

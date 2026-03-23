@@ -3,108 +3,106 @@
 {% block title %}GreenBites | User Management{% endblock %}
 
 {% block admin_content %}
-<div class="header">
-  <h1 class="page-title"><i class="bi bi-person"></i> User Management</h1>
-  <a href="{{ path('admin_users_new') }}" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Create New User</a>
-</div>
-
-{% for message in app.flashes('success') %}
-  <div style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-    <strong>✓ Success:</strong> {{ message|raw }}
+  <div class="header mb-4">
+    <h1 class="page-title"><i class="bi bi-people"></i> User Management</h1>
+    <a href="{{ path('admin_users_new') }}" class="btn btn-primary">
+      <i class="bi bi-plus-circle"></i> Create User
+    </a>
   </div>
-{% endfor %}
 
-{% for message in app.flashes('error') %}
-  <div style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-    <strong>✗ Error:</strong> {{ message|raw }}
-  </div>
-{% endfor %}
+  {% for message in app.flashes('success') %}
+    <div class="staff-flash staff-flash--success">{{ message }}</div>
+  {% endfor %}
+  {% for message in app.flashes('error') %}
+    <div class="staff-flash staff-flash--error">{{ message }}</div>
+  {% endfor %}
 
-<div class="filters" style="background: #F6E6D7; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-  <form method="get" style="display: flex; gap: 1rem; flex-wrap: wrap; flex: 1;">
-    <input type="text" name="search" placeholder="Search by email or name..." value="{{ search }}" style="flex: 1; min-width: 200px; padding: 0.5rem; border: 1px solid #E4CFBF; border-radius: 8px;">
-    <select name="role" style="padding: 0.5rem; border: 1px solid #E4CFBF; border-radius: 8px;">
-      <option value="">All Roles</option>
-      <option value="ROLE_USER" {% if roleFilter == 'ROLE_USER' %}selected{% endif %}>User</option>
-      <option value="ROLE_STAFF" {% if roleFilter == 'ROLE_STAFF' %}selected{% endif %}>Staff</option>
-      <option value="ROLE_ADMIN" {% if roleFilter == 'ROLE_ADMIN' %}selected{% endif %}>Admin</option>
-    </select>
-    <select name="status" style="padding: 0.5rem; border: 1px solid #E4CFBF; border-radius: 8px;">
-      <option value="">All Status</option>
-      <option value="active" {% if statusFilter == 'active' %}selected{% endif %}>Active</option>
-      <option value="disabled" {% if statusFilter == 'disabled' %}selected{% endif %}>Disabled</option>
-      <option value="archived" {% if statusFilter == 'archived' %}selected{% endif %}>Archived</option>
-    </select>
-    <button type="submit" style="padding: 0.5rem 1.5rem; background: #3B6B4A; color: white; border: none; border-radius: 8px; cursor: pointer;">Filter</button>
-    <a href="{{ path('admin_users_index') }}" style="padding: 0.5rem 1.5rem; background: #6b7280; color: white; border: none; border-radius: 8px; text-decoration: none; display: inline-block;">Clear</a>
-  </form>
-</div>
+  <div class="card mb-4">
+    <div class="card-body">
+      <form method="get" class="d-flex gap-1">
+        <input type="text" name="search" value="{{ search }}" placeholder="Search name/email" class="form-control">
+        <select name="role" class="form-control">
+          <option value="">All Roles</option>
+          <option value="ROLE_ADMIN" {{ roleFilter == 'ROLE_ADMIN' ? 'selected' : '' }}>Admin</option>
+          <option value="ROLE_STAFF" {{ roleFilter == 'ROLE_STAFF' ? 'selected' : '' }}>Staff</option>
+          <option value="ROLE_USER" {{ roleFilter == 'ROLE_USER' ? 'selected' : '' }}>User</option>
+        </select>
+        <select name="status" class="form-control">
+          <option value="">All Statuses</option>
+          <option value="active" {{ statusFilter == 'active' ? 'selected' : '' }}>Active</option>
+          <option value="disabled" {{ statusFilter == 'disabled' ? 'selected' : '' }}>Disabled</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="{{ path('admin_users_index') }}" class="btn btn-outline-info">Reset</a>
+      </form>
+    </div>
+  </div>
 
-<div class="stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
-  <div style="background: #E7F0DC; padding: 1rem; border-radius: 12px;">
-    <div style="font-size: 0.9rem; color: #6b7280;">Total Users</div>
-    <div style="font-size: 2rem; font-weight: 800; color: #2F5133;">{{ totalUsers }}</div>
+  <div class="kpis mb-4">
+    <div class="kpi">
+      <div class="icon"><i class="bi bi-people"></i></div>
+      <div class="meta"><span class="label">Total Users</span><span class="value">{{ totalUsers }}</span></div>
+    </div>
+    <div class="kpi">
+      <div class="icon"><i class="bi bi-person-badge"></i></div>
+      <div class="meta"><span class="label">Staff Accounts</span><span class="value">{{ totalStaff }}</span></div>
+    </div>
+    <div class="kpi">
+      <div class="icon"><i class="bi bi-shield-lock"></i></div>
+      <div class="meta"><span class="label">Admin Accounts</span><span class="value">{{ totalAdmins }}</span></div>
+    </div>
   </div>
-  <div style="background: #ECD5C4; padding: 1rem; border-radius: 12px;">
-    <div style="font-size: 0.9rem; color: #6b7280;">Total Staff</div>
-    <div style="font-size: 2rem; font-weight: 800; color: #2F5133;">{{ totalStaff }}</div>
-  </div>
-  <div style="background: #fee2e2; padding: 1rem; border-radius: 12px;">
-    <div style="font-size: 0.9rem; color: #6b7280;">Total Admins</div>
-    <div style="font-size: 2rem; font-weight: 800; color: #2F5133;">{{ totalAdmins }}</div>
-  </div>
-</div>
 
-<table style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-  <thead>
-    <tr style="background: #2F5133; color: white;">
-      <th style="padding: 1rem; text-align: left;">Name</th>
-      <th style="padding: 1rem; text-align: left;">Email</th>
-      <th style="padding: 1rem; text-align: left;">Role</th>
-      <th style="padding: 1rem; text-align: left;">Status</th>
-      <th style="padding: 1rem; text-align: left;">Created</th>
-      <th style="padding: 1rem; text-align: center;">Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for user in users %}
-    <tr style="border-bottom: 1px solid #E4CFBF;">
-      <td style="padding: 1rem;">{{ user.name ?? 'N/A' }}</td>
-      <td style="padding: 1rem;">{{ user.email }}</td>
-      <td style="padding: 1rem;">
-        {% for role in user.roles %}
-          <span style="background: #E7F0DC; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; margin-right: 0.25rem;">{{ role }}</span>
+  <div class="table-section">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Roles</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+          <tr>
+            <td>#{{ user.id }}</td>
+            <td>{{ user.name ?? 'N/A' }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.roles|join(', ') }}</td>
+            <td>{{ user.status|upper }}</td>
+            <td>{{ user.createdAt ? user.createdAt|date('Y-m-d H:i') : 'N/A' }}</td>
+            <td>
+              <a href="{{ path('admin_users_show', {id: user.id}) }}" class="btn btn-outline-info btn-sm">View</a>
+              <a href="{{ path('admin_users_edit', {id: user.id}) }}" class="btn btn-outline-warning btn-sm">Edit</a>
+
+              <form method="post" action="{{ path('admin_users_toggle_status', {id: user.id}) }}" class="d-inline">
+                <input type="hidden" name="_token" value="{{ csrf_token('toggle_status' ~ user.id) }}">
+                <button type="submit" class="btn btn-outline-warning btn-sm">
+                  {{ user.status == 'active' ? 'Disable' : 'Enable' }}
+                </button>
+              </form>
+
+              <form method="post" action="{{ path('admin_users_reset_password', {id: user.id}) }}" class="d-inline">
+                <input type="hidden" name="_token" value="{{ csrf_token('reset_password' ~ user.id) }}">
+                <button type="submit" class="btn btn-outline-info btn-sm">Reset Pass</button>
+              </form>
+
+              <form method="post" action="{{ path('admin_users_delete', {id: user.id}) }}" class="d-inline" onsubmit="return confirm('Delete this user?')">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="7" class="text-center">No users found.</td>
+          </tr>
         {% endfor %}
-      </td>
-      <td style="padding: 1rem;">
-        <span style="background: {% if user.status == 'active' %}#6BB97F{% elseif user.status == 'disabled' %}#ef5350{% else %}#6b7280{% endif %}; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 700;">{{ user.status|upper }}</span>
-      </td>
-      <td style="padding: 1rem;">{{ user.createdAt ? user.createdAt|date('Y-m-d') : 'N/A' }}</td>
-      <td style="padding: 1rem; text-align: center;">
-        <div style="display: flex; gap: 0.5rem; justify-content: center;">
-          <a href="{{ path('admin_users_show', {id: user.id}) }}" style="padding: 0.25rem 0.5rem; background: #42a5f5; color: white; text-decoration: none; border-radius: 4px; font-size: 0.8rem;">View</a>
-          <a href="{{ path('admin_users_edit', {id: user.id}) }}" style="padding: 0.25rem 0.5rem; background: #ffb300; color: white; text-decoration: none; border-radius: 4px; font-size: 0.8rem;">Edit</a>
-          <form method="post" action="{{ path('admin_users_reset_password', {id: user.id}) }}" style="display: inline;">
-            <input type="hidden" name="_token" value="{{ csrf_token('reset_password' ~ user.id) }}">
-            <button type="submit" onclick="return confirm('Reset password for {{ user.email }}?')" style="padding: 0.25rem 0.5rem; background: #6BB97F; color: white; border: none; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">Reset PW</button>
-          </form>
-          <form method="post" action="{{ path('admin_users_toggle_status', {id: user.id}) }}" style="display: inline;">
-            <input type="hidden" name="_token" value="{{ csrf_token('toggle_status' ~ user.id) }}">
-            <button type="submit" style="padding: 0.25rem 0.5rem; background: #6b7280; color: white; border: none; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">Toggle</button>
-          </form>
-          <form method="post" action="{{ path('admin_users_delete', {id: user.id}) }}" style="display: inline;">
-            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-            <button type="submit" onclick="return confirm('Are you sure you want to delete {{ user.email }}? This cannot be undone!')" style="padding: 0.25rem 0.5rem; background: #ef5350; color: white; border: none; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">Delete</button>
-          </form>
-        </div>
-      </td>
-    </tr>
-    {% else %}
-    <tr>
-      <td colspan="6" style="padding: 2rem; text-align: center; color: #6b7280;">No users found.</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+      </tbody>
+    </table>
+  </div>
 {% endblock %}
-

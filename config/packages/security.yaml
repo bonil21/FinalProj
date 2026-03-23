@@ -22,25 +22,50 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
+        api_platform:
+            pattern: ^/api
+            stateless: true
+            provider: app_user_provider
+            json_login:
+                check_path: /api/login
+                username_path: username
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            jwt: ~
         
         main:
             lazy: true
             provider: app_user_provider
             custom_authenticator: App\Security\LoginFormAuthenticator
+            login_throttling:
+                max_attempts: 5
+                interval: '15 minutes'
             logout:
                 path: app_logout
     
     #3 Access control rules:
     access_control:
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/product$, roles: ROLE_USER }
+
         # Public auth endpoints
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/verify-email, roles: PUBLIC_ACCESS }
         - { path: ^/logout, roles: PUBLIC_ACCESS }
         - { path: ^/$, roles: PUBLIC_ACCESS }
 
         # Public catalog browse
         - { path: ^/products$, roles: PUBLIC_ACCESS }
         - { path: ^/products/\d+$, roles: PUBLIC_ACCESS }
+
+        # Product search and guest cart (session-based; checkout still requires login)
+        - { path: ^/search, roles: PUBLIC_ACCESS }
+        - { path: ^/cart, roles: PUBLIC_ACCESS }
+        - { path: ^/our-story, roles: PUBLIC_ACCESS }
 
         # Admin-only zone (strict - staff cannot access)
         - { path: ^/admin, roles: ROLE_ADMIN }
